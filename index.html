@@ -1,0 +1,54 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>jQuery.easyBanner</title>
+	<meta charset="UTF-8">
+</head>
+<style type="text/css">
+	body, h1, h2, h3, h4, h5, h6, p, ul, ol, li, dl, dd, th, td, input, textarea, button, hr, pre, blockquote, fieldset, legend, figure, menu{margin:0;padding:0;}
+	body{color: #666;font: 12px/1.8 "Microsoft YaHei", "Arial", "Helvetica", "sans-serif";}
+	a{outline: none;color: #666;text-decoration: none;star:expression(this.onFocus=this.blur());}
+	h1, h2, h3, h4, h5, h6 {font-weight: normal;font-size: 100%;}
+	img {border: none;}
+	ul, li{list-style: none;}
+	input, textarea, select{outline: none;}
+	input[type="button"], input[type="submit"], input[type="image"]{cursor: pointer;}
+	input[type="radio"], input[type="checkbox"]{border: none;}
+	input[type="text"], input[type="password"], input[type="file"], textarea{border: 1px solid #ccc;border-radius: 3px;}
+	input::-ms-clear, input::-ms-reveal{display: none;}
+	textarea{outline:none;resize: none;}
+	table, th, td {border-collapse: collapse;}
+
+	.clearfix{*zoom: 1;}
+	.clearfix:after{display: block;clear: both;height: 0;content: '';}
+	.fl{float: left;}
+	.fr{float: right;}
+	.show{display: block}
+	.hide{display: none}
+
+	.banner{height: 550px;}
+	.banner .btn-control{position: absolute;bottom: 10px;}
+	.banner .btn-control dd{float: left;margin: 0 5px;border-radius: 100%;width: 14px;height: 14px;background: #fff;box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.5);}
+	.banner .btn-control dd.active{background: #FF8000}
+	.banner .nav-arrow{position: absolute;display: block;width: 70px;height: 70px;}
+	.banner .nav-arrow.prev{left: 30px;background: url(img/icon-prev.png) no-repeat;}
+	.banner .nav-arrow.next{right: 30px;background: url(img/icon-next.png) no-repeat;}
+</style>
+<body>
+	<div class="banner banner1">
+		<ul>
+			<li><img src="img/img1.jpg"></li>
+			<li><img src="img/img2.jpg"></li>
+			<li><img src="img/img3.jpg"></li>
+			<li><img src="img/img4.jpg"></li>
+			<li><img src="img/img5.jpg"></li>
+			<li><img src="img/img6.jpg"></li>
+		</ul>
+	</div>
+</body>
+<script type="text/javascript" src="src/jquery-1.7.2.min.js"></script>
+<script type="text/javascript" src="src/jquery.easyBanner.js"></script>
+<script type="text/javascript">
+	$('.banner').easyBanner();
+</script>
+</html>
