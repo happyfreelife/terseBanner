@@ -1,26 +1,30 @@
-// 一行代码调用
-// 也可以在banner的容器上指定一个class自动进行调用
-// 接入easing效果
-// 加入是否循环的判定功能
+// 在banner的容器上指定一个class自动进行调用
+
+// fade样式也可以使用css3 transition效果
+
+// 延迟加载，预加载
+// 尝试使用css3 transition效果来切换-----------参考flexSlider
+// 连续点击卡壳问题,需要改为transition效果
 
 // 样式漏加保护
 // 定时器优化
-// 延迟加载，预加载
+
+
+
 // 动画进行过程中需要清除定时器
-// 无过渡效果
-// 添加滑动时淡入淡出的效果  slideFade
-// 尝试使用css3 transition效果来切换-----------参考flexSlider
+
 
 ;(function ($, window, document, undefined) {
     $.fn.easyBanner = function(newOption) {
         var option = $.extend({
             animation     : 'slide',  // 轮播动画          : 'slide', 'fade'
             triggerEvent  : 'click',  // 触发切换的事件类型: 'click', 'hover'
+            direction     : 'left',   // 滑动方向         : 'left', 'right', 'top', 'bottom'
             showNavArrow  : true,     // 显示手动切换按钮  : true, false
             showControlBtn: true,     // 显示控制按钮      :true, false
-            direction     : 'left',    // 滑动方向         : 'left', 'right', 'top', 'bottom'
             fadeSpeed     : 400,      // 淡入淡出的速度
-            slideSpeed    : 300,      // 左右滑动的速度
+            slideSpeed    : 500,      // 左右滑动的速度
+            lazyLoad      : true,     // 图片延迟加载:true, false
             autoPlay      : true,     // 自动轮播          :true, false
             interval      : 4000      // 自动切换间隔
         }, newOption);
@@ -34,6 +38,31 @@
                 currentIndex = 0,
                 horizonal = option.direction === 'left' || option.direction === 'right' ? true : false,
                 vertical  = option.direction === 'up' || option.direction === 'down' ? true : false;
+
+            // 判断浏览器是否支持CSS3的transition属性
+            var supportTransition = function() {  
+                var i,
+                    prefix = ['webkit', 'Moz', 'ms', 'o'],  
+                    htmlStyle = document.documentElement.style,  
+                    humpStyleArr = [],  
+                    toHumpStyle = function (string) {  
+                        return string.replace(/-(\w)/g, function ($0, $1) {  
+                            return $1.toUpperCase();  
+                        });  
+                    };  
+                   
+                for (i in prefix) {
+                    humpStyleArr.push(toHumpStyle(prefix[i] + '-transition'));
+                }
+                humpStyleArr.push(toHumpStyle('transition'));  
+                   
+                for (i in humpStyleArr) {
+                    if (humpStyleArr[i] in htmlStyle) {
+                        return true
+                    }; 
+                }
+                return false;  
+            }();
 
             var init = function() {
                 $this.css('overflow', 'hidden');
@@ -49,8 +78,12 @@
                 });
 
                 if (option.animation === 'slide' && horizonal) {
-                    $list.css('width', 100 * (len + 1) + '%');
-                    $item.css('float', 'left');
+                    $list.css('width', (len + 1) * 100 + '%');
+                    // $item.css('float', 'left');
+                    $item.css({
+                        float: 'left',
+                        width: 1 / (len + 1) * 100 + '%'
+                    });
                 }
             };
 
@@ -65,10 +98,12 @@
 
             var resetItemWidth = function() {
                 $(window).resize(function() {
-                    var viewportWidth = $(window).width();
-                    if(viewportWidth <= $this.width()) {
-                        $list.children().width(viewportWidth);
-                        $list.css('left', - currentIndex * viewportWidth);
+                    if($(window).width() <= $this.width()) {
+                        $list.removeClass('list-transition');
+                        $list.css('left', - currentIndex * $(window).width());
+                        setTimeout(function() {
+                            $list.addClass('list-transition');
+                        }, 10);
                     }
                 });  
             };
@@ -82,7 +117,11 @@
                 $controlBtnList.children(':first').addClass('active');
 
                 // 控制按钮没有添加样式，则设置为居中
-                if ($controlBtnList.css('left') === 'auto' && $controlBtnList.css('right') === 'auto') {
+                if ( 
+                    ($controlBtnList.css('left') === 'auto' && $controlBtnList.css('right') === 'auto')
+                    ||
+                    !(parseInt($controlBtnList.css('left')) && parseInt($controlBtnList.css('right')))
+                ) {
                     $controlBtnList.css({
                         left: '50%',
                         'margin-left': - $controlBtnList.width() / 2
@@ -110,21 +149,20 @@
             };
 
             var fade = {
-                play: function () {
+                hideItem: function() {
                     $item.css({
                         position: 'absolute',
                         left    : 0,
                         top     : 0
                     });
                     $item.first().show().siblings().hide();
+                },
 
+                play: function () {
                     currentIndex = currentIndex === len ?  0 :
-                        currentIndex === -1 ? len - 1 : currentIndex;
-                    $item.stop(true, false).eq(currentIndex).fadeIn(option.fadeSpeed).siblings().fadeOut(option.fadeSpeed);
+                                        currentIndex === -1 ? len - 1 : currentIndex;
+                    $item.stop(true, true).eq(currentIndex).fadeIn(option.fadeSpeed).siblings().fadeOut(option.fadeSpeed);
                     $controlBtn.eq(currentIndex).addClass('active').siblings().removeClass('active');
-
-                    this.clickHandler();
-                    this.hoverHandler();
                 }
             };
 
@@ -147,7 +185,12 @@
                         $list.css('left', - itemWidth * len);
                         currentIndex = len - 1;
                     }
-                    $list.stop(true, false).animate({left: - currentIndex * itemWidth}, option.slideSpeed);
+
+                    if (supportTransition) {
+                        $list.css('left', - currentIndex * itemWidth);
+                    } else {
+                        $list.stop(true, false).animate({left: - currentIndex * itemWidth}, option.slideSpeed);
+                    }
                 },
 
                 verticalPlay: function() {
@@ -168,7 +211,7 @@
                         $list.css('top', - itemHeight * len);
                         currentIndex = len - 1;
                     }
-                    $list.stop(true, false).animate({top: - currentIndex * itemHeight}, option.slideSpeed);
+                    $list.stop(true, false).animate({ top: - currentIndex * itemHeight }, option.slideSpeed);
                 },
 
                 activeControlBtn: function() {
@@ -208,12 +251,12 @@
             var controlBtnHoverHandler = function() {
                 $controlBtn.live({
                     mouseenter: function() {
-                        var $this = $(this);
-                        // 防止指针快速地移入移出控制按钮而导致动画序列错乱
+                        var $self = $(this);
+                        // 防止指针快速地移入移出控制按钮导致动画序列错乱
                         timer = setTimeout(function(){
-                            currentIndex = $this.index();
+                            currentIndex = $self.index();
                             bannerPlay();
-                        }, 200);
+                        }, 100);
                     },
 
                     mouseleave: function() {
@@ -244,10 +287,27 @@
                 init();
                 setBackground();
                 resetItemWidth();
+
                 if (len <= 1) {
                     return false;
                 }
-                option.animation === 'slide' ? mirrorItem() : '';
+
+                if (supportTransition) {
+                    $('head').append(
+                        '<style type="text/css">' +
+                            '.list-transition{' +
+                                'transition: all ' + option.slideSpeed + 'ms ease;' +
+                                '-webkit-transition: all ' + option.slideSpeed + 'ms ease' +
+                            '};' +
+                        '</style>'
+                    );
+                    setTimeout(function() {
+                        $list.addClass('list-transition');
+                    }, 10);
+                }
+
+
+                option.animation === 'slide' ? mirrorItem() : fade.hideItem();
                 option.showNavArrow ? addNavArrow() : '';
                 option.showControlBtn ? addControlBtn() : '';
                 option.autoPlay ? autoPlay() : '';
