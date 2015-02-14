@@ -1,17 +1,10 @@
-// 在banner的容器上指定一个class自动进行调用
-
-// fade样式也可以使用css3 transition效果
-
 // 延迟加载，预加载
-// 尝试使用css3 transition效果来切换-----------参考flexSlider
-// 连续点击卡壳问题,需要改为transition效果
-
+// fade样式也可以使用css3 transition效果
+// 在banner的容器上指定一个class自动进行调用
 // 样式漏加保护
-// 定时器优化
-
-
-
 // 动画进行过程中需要清除定时器
+// 列表外层需要套上容器
+// live方法改为on方法
 
 
 ;(function ($, window, document, undefined) {
@@ -22,8 +15,7 @@
             direction     : 'left',   // 滑动方向         : 'left', 'right', 'top', 'bottom'
             showNavArrow  : true,     // 显示手动切换按钮  : true, false
             showControlBtn: true,     // 显示控制按钮      :true, false
-            fadeSpeed     : 400,      // 淡入淡出的速度
-            slideSpeed    : 500,      // 左右滑动的速度
+            speed         : 500,      // 动画的速度
             lazyLoad      : true,     // 图片延迟加载:true, false
             autoPlay      : true,     // 自动轮播          :true, false
             interval      : 4000      // 自动切换间隔
@@ -65,8 +57,12 @@
             }();
 
             var init = function() {
-                $this.css('overflow', 'hidden');
-                $this.css('position') === 'static' ? $this.css('position', 'relative') : '';
+                $this.css({
+                    position: $this.css('position') === 'static' ? 'relative' : $this.css('position'),
+                    overflow: 'hidden'
+                });
+
+                // $this.css('position') === 'static' ? $this.css('position', 'relative') : '';
                 $list.css({
                     position: 'relative',
                     height: '100%'
@@ -78,8 +74,11 @@
                 });
 
                 if (option.animation === 'slide' && horizonal) {
-                    $list.css('width', (len + 1) * 100 + '%');
-                    // $item.css('float', 'left');
+                    $list.css({
+                        left: 0,
+                        width: (len + 1) * 100 + '%'
+                    });
+
                     $item.css({
                         float: 'left',
                         width: 1 / (len + 1) * 100 + '%'
@@ -87,7 +86,8 @@
                 }
             };
 
-            var setBackground = function() {
+            // 图片转换为背景图片
+            var imgToBackground = function() {
                 $item.each(function() {
                     var $img = $(this).find('img');
                     var bg = 'url(' + $img.attr('src') + ') no-repeat center top';
@@ -96,11 +96,10 @@
                 });   
             };
 
-            var resetItemWidth = function() {
+            var windowResizeHandler = function() {
                 $(window).resize(function() {
                     if($(window).width() <= $this.width()) {
-                        $list.removeClass('list-transition');
-                        $list.css('left', - currentIndex * $(window).width());
+                        $list.removeClass('list-transition').css('left', - currentIndex * $(window).width());
                         setTimeout(function() {
                             $list.addClass('list-transition');
                         }, 10);
@@ -161,15 +160,25 @@
                 play: function () {
                     currentIndex = currentIndex === len ?  0 :
                                         currentIndex === -1 ? len - 1 : currentIndex;
-                    $item.stop(true, true).eq(currentIndex).fadeIn(option.fadeSpeed).siblings().fadeOut(option.fadeSpeed);
+                    $item.stop(true, true).eq(currentIndex).fadeIn(option.speed).siblings().fadeOut(option.speed);
                     $controlBtn.eq(currentIndex).addClass('active').siblings().removeClass('active');
                 }
             };
 
             var slide = {
                 horizonalPlay: function() {
+
                     var itemWidth = $item.width();
-                    // -> first item
+                    
+                    if (
+                        - itemWidth * len === parseInt($list.css('left')) ||
+                        currentIndex < 0 ||
+                        currentIndex > len
+                    ) {
+                        supportTransition ? $list.removeClass('list-transition') : '';
+                    }
+
+                    // current show first item -> trigger first controlBtn
                     if (- itemWidth * len === parseInt($list.css('left'))) {
                         $list.css('left', 0);
                     }
@@ -187,9 +196,11 @@
                     }
 
                     if (supportTransition) {
-                        $list.css('left', - currentIndex * itemWidth);
+                        setTimeout(function() {
+                            $list.addClass('list-transition').css('left', - currentIndex * itemWidth);
+                        }, 10);
                     } else {
-                        $list.stop(true, false).animate({left: - currentIndex * itemWidth}, option.slideSpeed);
+                        $list.stop(true, false).animate({left: - currentIndex * itemWidth}, option.speed);
                     }
                 },
 
@@ -211,7 +222,7 @@
                         $list.css('top', - itemHeight * len);
                         currentIndex = len - 1;
                     }
-                    $list.stop(true, false).animate({ top: - currentIndex * itemHeight }, option.slideSpeed);
+                    $list.stop(true, false).animate({ top: - currentIndex * itemHeight }, option.speed);
                 },
 
                 activeControlBtn: function() {
@@ -285,8 +296,9 @@
 
             var run = function() {
                 init();
-                setBackground();
-                resetItemWidth();
+                // 图片转换为背景图片
+                imgToBackground();
+                windowResizeHandler();
 
                 if (len <= 1) {
                     return false;
@@ -296,8 +308,8 @@
                     $('head').append(
                         '<style type="text/css">' +
                             '.list-transition{' +
-                                'transition: all ' + option.slideSpeed + 'ms ease;' +
-                                '-webkit-transition: all ' + option.slideSpeed + 'ms ease' +
+                                'transition: all ' + option.speed + 'ms ease;' +
+                                '-webkit-transition: all ' + option.speed + 'ms ease' +
                             '};' +
                         '</style>'
                     );
@@ -305,7 +317,6 @@
                         $list.addClass('list-transition');
                     }, 10);
                 }
-
 
                 option.animation === 'slide' ? mirrorItem() : fade.hideItem();
                 option.showNavArrow ? addNavArrow() : '';
