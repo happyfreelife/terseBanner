@@ -183,13 +183,18 @@
                 $navArrowList.append($('<dd class="prev"></dd>'), $('<dd class="next"></dd>'));
                 $navArrow = $('dd', $navArrowList);
 
-                console.log($navArrowList.width() === $this.width());
-
                 if ($navArrowList.width() === $this.width()) {
                     $navArrowList.css('width', '100%');
                 }
 
                 // 设置navArrowList的默认位置
+                if ($navArrowList.css('left') === 'auto' && $navArrowList.css('right') === 'auto') {
+                    $navArrowList.css({
+                        left: '50%',
+                        'margin-left': -($navArrowList.width() / $this.width() / 2).toFixed(2) * 100 + '%'
+                    });
+                }
+
                 if ($navArrowList.css('top') === 'auto' && $navArrowList.css('bottom') === 'auto') {
                     $navArrowList.css({
                         top: '50%',
@@ -197,19 +202,15 @@
                     });
                 }
 
-                $navArrowList.appendTo($this).css({
-                    position :'absolute',
-                    left: '50%',
-                    height: 0,
-                    'margin-left': -($navArrowList.width() / $this.width() / 2).toFixed(2) * 100 + '%'
-                });
-
-                $navArrow.css({
-                    cursor: 'pointer',
-                    'z-index': 2,
-                });
+                $navArrow.css('cursor', 'pointer');
                 $navArrow.first().css('float', 'left');
                 $navArrow.last().css('float', 'right');
+
+                $navArrowList.appendTo($this).css({
+                    position :'absolute',
+                    height: 0,
+                    'z-index': 2
+                });
 
                 navArrowHandler();
             };
@@ -222,12 +223,7 @@
                 }
                 $controlBtn = $('li', $controlBtnList);
 
-                $controlBtnList.appendTo($this).css({
-                    position :'absolute',
-                    'z-index': 2
-                }).children(':first').addClass('active');
-
-                // 设置controlBtnList的默认位置(不兼容firefox)
+                // 设置controlBtnList的默认位置
                 if ($controlBtnList.css('left') === 'auto' && $controlBtnList.css('right') === 'auto') {
                     $controlBtnList.css({
                         left: '50%',
@@ -238,6 +234,11 @@
                 if ($controlBtnList.css('top') === 'auto' && $controlBtnList.css('bottom') === 'auto') {
                     $controlBtnList.css('bottom', $this.height() / 25 + 'px');
                 }
+
+                $controlBtnList.appendTo($this).css({
+                    position :'absolute',
+                    'z-index': 2
+                }).children(':first').addClass('active');
 
                 if (option.triggerEvent === 'click') {
                     controlBtnClickHandler();
