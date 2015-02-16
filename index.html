@@ -16,9 +16,9 @@
 	.clearfix:after{display: block;clear: both;height: 0;content: '';}
 
 	.banner{height: 550px;/*width: 1000px;margin: 0 auto;*/}
-	.banner .btn-control{position: absolute;bottom: 10px;}
-	.banner .btn-control dd{float: left;margin: 0 5px;border-radius: 100%;width: 14px;height: 14px;background: #fff;box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.5);}
-	.banner .btn-control dd.active{background: #FF8000}
+	.banner .btn-control{position: absolute;bottom: 10px;right: 0;left: 0;}
+	.banner .btn-control li{float: left;margin: 0 5px;border-radius: 100%;width: 14px;height: 14px;background: #fff;box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.5);}
+	.banner .btn-control li.active{background: #FF8000}
 	.banner .nav-arrow{position: absolute;display: block;width: 70px;height: 70px;}
 	.banner .nav-arrow.prev{left: 30px;background: url(img/icon-prev.png) no-repeat;}
 	.banner .nav-arrow.next{right: 30px;background: url(img/icon-next.png) no-repeat;}
@@ -38,6 +38,13 @@
 <script type="text/javascript" src="src/jquery-1.7.2.min.js"></script>
 <script type="text/javascript" src="src/jquery.easyBanner.js"></script>
 <script type="text/javascript">
-	$('.banner').easyBanner();
+	$('.banner').easyBanner({
+		// direction: 'vertical',
+		speed: 800,
+		showNavArrow: true,
+		showControlBtn: true,
+		autoPlay: true,
+		// animation: 'fade'
+	});
 </script>
 </html>
