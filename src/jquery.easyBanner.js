@@ -1,13 +1,6 @@
-// 动画的px改为百分比***********
-// live方法改为on方法*************
-// fade测试,最后一个切换到第一个有问题*************
-
-// 延迟加载，预加载----基本完成,需要在加载图片时清除定时器
-// animate, transition动画进行过程中需要清除定时器
-// addNavArrow需要增加位置判断,外层加dl
-// controlBtn中写入数字
 // 列表外层需要套上容器
 // 在banner的容器上指定一个class自动进行调用
+// navArrow, btnControl转为svg
 
 ;(function ($, window, document, undefined) {
     $.fn.easyBanner = function(newOption) {
@@ -21,7 +14,7 @@
             lazyLoad     : false,       // 图片延迟加载:true, false
             autoPlay     : true,        // 自动轮播:true, false
             speed        : 500,         // 动画的速度
-            interval     : 4000         // 自动轮播间隔
+            interval     : 3000         // 自动播放间隔
         }, newOption);
 
         return this.each(function() {
@@ -30,6 +23,7 @@
                 $list = $this.children(),
                 $item = $list.children(),
                 len   = $item.length,
+                $navArrow,
                 $controlBtn,
                 currentIndex = 0,
                 horizonal = option.direction === 'horizonal' ? true : false,
@@ -61,6 +55,8 @@
             }();
 
             var init = function() {
+                self.hovered = false;
+
                 $this.css({
                     position: $this.css('position') === 'static' ? 'relative' : $this.css('position'),
                     overflow: 'hidden'
@@ -90,7 +86,7 @@
                     if (supportTransition) {
                         $('head').append(
                             '<style type="text/css">' +
-                                '.transition-animation{' +
+                                '.transition{' +
                                     'transition: all ' + option.speed + 'ms ease;' +
                                     '-webkit-transition: all ' + option.speed + 'ms ease' +
                                 '};' +
@@ -98,7 +94,7 @@
                         );
 
                         setTimeout(function() {
-                            $list.addClass('transition-animation');
+                            $list.addClass('transition');
                         }, 10);
                     }
 
@@ -182,38 +178,65 @@
             };
 
             var addNavArrow = function() {
-                var $prev = $('<a href="javascript:" class="nav-arrow prev"></a>');
-                var $next = $('<a href="javascript:" class="nav-arrow next"></a>');
-                $this.append($prev, $next);
-                $navArrow = $('.nav-arrow', $this);
-                $navArrow.css({
-                    top: '50%',
-                    'z-index': 2,
-                    'margin-top': -$('.nav-arrow').height() / 2
+                $this.append($('<dl class="nav-arrow"></dl>'));
+                var $navArrowList = $('.nav-arrow', $this);
+                $navArrowList.append($('<dd class="prev"></dd>'), $('<dd class="next"></dd>'));
+                $navArrow = $('dd', $navArrowList);
+
+                console.log($navArrowList.width() === $this.width());
+
+                if ($navArrowList.width() === $this.width()) {
+                    $navArrowList.css('width', '100%');
+                }
+
+                // 设置navArrowList的默认位置
+                if ($navArrowList.css('top') === 'auto' && $navArrowList.css('bottom') === 'auto') {
+                    $navArrowList.css({
+                        top: '50%',
+                        'margin-top': -$navArrow.height() / 2 + 'px'
+                    });
+                }
+
+                $navArrowList.appendTo($this).css({
+                    position :'absolute',
+                    left: '50%',
+                    height: 0,
+                    'margin-left': -($navArrowList.width() / $this.width() / 2).toFixed(2) * 100 + '%'
                 });
+
+                $navArrow.css({
+                    cursor: 'pointer',
+                    'z-index': 2,
+                });
+                $navArrow.first().css('float', 'left');
+                $navArrow.last().css('float', 'right');
+
                 navArrowHandler();
             };
 
             var addControlBtn = function() {
-                var $controlBtnList = $('<ol class="btn-control"></ol>');
+                $this.append($('<ol class="btn-control"></ol>'));
+                var $controlBtnList = $('.btn-control', $this);
                 for (var i = 0; i < len; i++) {
                     $controlBtnList.append($('<li></li>'));
                 }
-                $controlBtnList.appendTo($this).children(':first').addClass('active');
+                $controlBtn = $('li', $controlBtnList);
 
-                $controlBtn = $('.btn-control li', $this);
-
-                $controlBtnList.css({
-                    width: $controlBtn.outerWidth(true) * len,
+                $controlBtnList.appendTo($this).css({
+                    position :'absolute',
                     'z-index': 2
-                });
-                
-                // 控制按钮的样式没有添加left和right，则默认居中
-                var listLeft = $controlBtnList.css('left'),
-                    listRight = $controlBtnList.css('right');
+                }).children(':first').addClass('active');
 
-                if ((listLeft === 'auto' && listRight === 'auto') || (listLeft === '0px' && listRight === '0px')) {
-                    $controlBtnList.css('margin', '0 auto');
+                // 设置controlBtnList的默认位置(不兼容firefox)
+                if ($controlBtnList.css('left') === 'auto' && $controlBtnList.css('right') === 'auto') {
+                    $controlBtnList.css({
+                        left: '50%',
+                        'margin-left': -$controlBtn.outerWidth(true) * len / 2 + 'px'
+                    });
+                }
+
+                if ($controlBtnList.css('top') === 'auto' && $controlBtnList.css('bottom') === 'auto') {
+                    $controlBtnList.css('bottom', $this.height() / 25 + 'px');
                 }
 
                 if (option.triggerEvent === 'click') {
@@ -274,7 +297,7 @@
                     listTop    = Math.abs(parseInt($list.css('top')));
 
                 if (listWidth === listLeft || listHeight === listTop || currentIndex < 0 || currentIndex > len) {
-                    supportTransition ? $list.removeClass('transition-animation') : '';
+                    supportTransition ? $list.removeClass('transition') : '';
                 }
 
                 // mirror item show -> trigger first controlBtn
@@ -294,16 +317,33 @@
                     currentIndex = 1;
                 }
 
+                clearInterval(self.autoTimer);
+
                 if (supportTransition) {
+                    // 动画进行时需要清除定时器，防止实际的自动播放间隔与设置的有误差
+                    
                     setTimeout(function() {
-                        $list.addClass('transition-animation');
+                        self.animated = true;
+                        !$list.hasClass('transition') ? $list.addClass('transition') : '';
                         horizonal ? $list.css('left', -currentIndex * 100 + '%') : $list.css('top', -currentIndex * 100 + '%');
+
+                        setTimeout(function() {
+                            self.animated = false;
+                            !self.hovered ? addAutoTimer() : '';
+                        }, option.speed);
                     }, 10);
                 } else {
+                    self.animated = true;
                     horizonal ?
-                        $list.stop(true, false).animate({ left: -currentIndex * 100 + '%' }, option.speed)
+                        $list.stop(true, false).animate({ left: -currentIndex * 100 + '%' }, option.speed, function() {
+                            self.animated = false;
+                            !self.hovered ? addAutoTimer() : '';
+                        })
                     :
-                        $list.stop(true, false).animate({ top: -currentIndex * 100 + '%' }, option.speed);
+                        $list.stop(true, false).animate({ top: -currentIndex * 100 + '%' }, option.speed, function() {
+                            self.animated = false;
+                            !self.hovered ? addAutoTimer() : '';
+                        });
                 }
 
                 var activeIndex = currentIndex === len ? 0 : (currentIndex === -1 ? len - 1 : currentIndex);
@@ -312,21 +352,22 @@
                 imgLazyLoader(currentIndex);
             };
 
-
             var bannerPlay = function() {
                 option.animation === 'fade' ? fadeAnimation() : slideAnimation();
             };
 
             var autoPlay = function() {
-                autoPlayTimer();
+                addAutoTimer();
                 $this.hover(function() {
+                    self.hovered = true;
                     clearInterval(self.autoTimer);
                 }, function() {
-                    autoPlayTimer();
+                    self.hovered = false;
+                    !self.animated ? addAutoTimer() : '';
                 });
             };
 
-            var autoPlayTimer = function() {
+            var addAutoTimer = function() {
                 clearInterval(self.autoTimer);
                 self.autoTimer = setInterval(function() {
                     currentIndex++;
