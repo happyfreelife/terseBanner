@@ -1,6 +1,4 @@
-// 列表外层需要套上容器
 // 在banner的容器上指定一个class自动进行调用
-// navArrow, btnControl转为svg
 
 ;(function ($, window, document, undefined) {
     $.fn.easyBanner = function(newOption) {
@@ -8,11 +6,11 @@
             animation    : 'slide',     // 轮播动画: 'slide', 'fade'
             triggerEvent : 'click',     // 触发切换的事件类型: 'click', 'hover'
             direction    : 'horizonal', // 滑动方向: 'horizonal', 'vertical'
-            navArrow     : true,        // 手动切换按钮: true, false
-            controlBtn   : true,        // 控制按钮:true, false
-            controlBtnNum: true,        // 控制按钮数字:true, false
-            lazyLoad     : false,       // 图片延迟加载:true, false
-            autoPlay     : true,        // 自动轮播:true, false
+            navArrow     : true,        // 手动切换按钮
+            controlBtn   : true,        // 控制按钮
+            controlBtnNum: true,        // 控制按钮数字
+            lazyLoad     : false,       // 图片延迟加载
+            autoPlay     : true,        // 自动轮播
             speed        : 500,         // 动画的速度
             interval     : 3000         // 自动播放间隔
         }, newOption);
@@ -57,10 +55,9 @@
             var init = function() {
                 self.hovered = false;
 
-                $this.css({
-                    position: $this.css('position') === 'static' ? 'relative' : $this.css('position'),
-                    overflow: 'hidden'
-                });
+                $list.wrap('<div class="wrap-list"></div>');
+                $this.css('position', 'relative');
+                $('.wrap-list', $this).css('overflow', 'hidden');
 
                 $list.css({
                     position: 'relative',
@@ -180,7 +177,10 @@
             var addNavArrow = function() {
                 $this.append($('<dl class="nav-arrow"></dl>'));
                 var $navArrowList = $('.nav-arrow', $this);
-                $navArrowList.append($('<dd class="prev"></dd>'), $('<dd class="next"></dd>'));
+                $navArrowList.append(
+                    $('<dd class="prev" style="float: left;"></dd>'),
+                    $('<dd class="next" style="float: right;"></dd>')
+                );
                 $navArrow = $('dd', $navArrowList);
 
                 if ($navArrowList.width() === $this.width()) {
@@ -202,13 +202,8 @@
                     });
                 }
 
-                $navArrow.css('cursor', 'pointer');
-                $navArrow.first().css('float', 'left');
-                $navArrow.last().css('float', 'right');
-
                 $navArrowList.appendTo($this).css({
                     position :'absolute',
-                    height: 0,
                     'z-index': 2
                 });
 
@@ -239,6 +234,8 @@
                     position :'absolute',
                     'z-index': 2
                 }).children(':first').addClass('active');
+
+                $controlBtn.css('float', 'left');
 
                 if (option.triggerEvent === 'click') {
                     controlBtnClickHandler();
@@ -394,3 +391,7 @@
         });
     };
 })(jQuery, window, document);
+
+$(function () {
+    
+});
