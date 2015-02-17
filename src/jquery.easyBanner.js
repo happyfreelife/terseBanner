@@ -1,7 +1,16 @@
-// 在banner的容器上指定一个class自动进行调用
+/**
+ * jquery.easyBanner.js
+ * @author    HappyFreeLife
+ * @version   1.0.9
+ * @url       https://github.com/happyfreelife/easyBanner/
+ */
 
 ;(function ($, window, document, undefined) {
+    var autoCallMain = true;
+
     $.fn.easyBanner = function(newOption) {
+        autoCallMain = false;
+
         var option = $.extend({
             animation    : 'slide',     // 轮播动画: 'slide', 'fade'
             triggerEvent : 'click',     // 触发切换的事件类型: 'click', 'hover'
@@ -12,7 +21,7 @@
             lazyLoad     : false,       // 图片延迟加载
             autoPlay     : true,        // 自动轮播
             speed        : 500,         // 动画的速度
-            interval     : 3000         // 自动播放间隔
+            interval     : 4000         // 自动播放间隔
         }, newOption);
 
         return this.each(function() {
@@ -56,8 +65,14 @@
                 self.hovered = false;
 
                 $list.wrap('<div class="wrap-list"></div>');
-                $this.css('position', 'relative');
-                $('.wrap-list', $this).css('overflow', 'hidden');
+                $this.css('position') === 'static' ? $this.css('position', 'relative') : '';
+
+                $('.wrap-list', $this).css({
+                    position: 'relative',
+                    width: '100%',
+                    height: '100%',
+                    overflow: 'hidden'
+                });
 
                 $list.css({
                     position: 'relative',
@@ -103,7 +118,7 @@
 
                         $item.css({
                             float : 'left',
-                            width : 1 / (len + 1) * 100 + '%'
+                            width : $this.css('width')
                         });
                     }
 
@@ -133,6 +148,11 @@
                 option.lazyLoad ? imgLazyLoader(currentIndex) : '';
             };
 
+            var resizeHandler = function() {
+                $(window).resize(function() {
+                    $list.children().css('width', $this.css('width'));
+                });
+            };
             // 背景图片延迟加载器
             var imgLazyLoader = function(loadingItemIndex) {
                 // 只能预加载当前图片之后的1张图片
@@ -376,6 +396,7 @@
             var run = function() {
                 init();
                 imgToBackgroundImage();
+                resizeHandler();
                 if (len <= 1) {
                     return false;
                 }
@@ -390,8 +411,10 @@
             run();
         });
     };
-})(jQuery, window, document);
 
-$(function () {
-    
-});
+    $(function () {
+        if ($('.easy-banner').length && autoCallMain) {
+            $('.easy-banner').easyBanner();
+        }
+    });
+})(jQuery, window, document);

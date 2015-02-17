@@ -14,7 +14,7 @@
 	.clearfix{*zoom: 1;}
 	.clearfix:after{display: block;clear: both;height: 0;content: '';}
 
-	.banner{height: 350px;}
+	.banner{height: 350px;/*width: 1000px;margin: 0 auto;*/}
 	.nav-arrow dd{width: 60px;height: 60px;border-radius: 5px;opacity: 0;transition: all .5s ease;}
 	.banner:hover .nav-arrow dd{opacity: .8;}
 	.nav-arrow .prev{margin-left: 30px;background: #666 url(img/nav-arrow-prev.png) no-repeat center center;}
@@ -35,14 +35,8 @@
 	</div>
 </body>
 <script type="text/javascript" src="src/jquery-1.7.2.min.js"></script>
-<script type="text/javascript" src="src/jquery.easyBanner.js"></script>
+<script type="text/javascript" src="src/jquery.easyBanner.min.js"></script>
 <script type="text/javascript">
-	$('.banner').easyBanner({
-		// direction: 'vertical',
-		speed: 600,
-		showNavArrow: true,
-		showControlBtn: true,
-		autoPlay: true
-	});
+	$('.banner').easyBanner();
 </script>
 </html>
