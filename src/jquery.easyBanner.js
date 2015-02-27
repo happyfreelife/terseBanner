@@ -98,15 +98,17 @@
                     if (supportTransition) {
                         $('head').append(
                             '<style type="text/css">' +
-                                '.transition{' +
+                                '.transition-' + option.speed + '{' +
                                     'transition: all ' + option.speed + 'ms ease;' +
                                     '-webkit-transition: all ' + option.speed + 'ms ease' +
+                                    '-moz-transition: all ' + option.speed + 'ms ease' +
+                                    '-o-transition: all ' + option.speed + 'ms ease' +
                                 '};' +
                             '</style>'
                         );
 
                         setTimeout(function() {
-                            $list.addClass('transition');
+                            $list.addClass('transition-' + option.speed);
                         }, 10);
                     }
 
@@ -197,15 +199,13 @@
             var addNavArrow = function() {
                 $this.append($('<dl class="nav-arrow"></dl>'));
                 var $navArrowList = $('.nav-arrow', $this);
+                $navArrowList.width() === $this.width() ? $navArrowList.css('width', '100%') : '';
+
                 $navArrowList.append(
                     $('<dd class="prev" style="float: left;"></dd>'),
                     $('<dd class="next" style="float: right;"></dd>')
                 );
                 $navArrow = $('dd', $navArrowList);
-
-                if ($navArrowList.width() === $this.width()) {
-                    $navArrowList.css('width', '100%');
-                }
 
                 // 设置navArrowList的默认位置
                 if ($navArrowList.css('left') === 'auto' && $navArrowList.css('right') === 'auto') {
@@ -218,7 +218,7 @@
                 if ($navArrowList.css('top') === 'auto' && $navArrowList.css('bottom') === 'auto') {
                     $navArrowList.css({
                         top: '50%',
-                        'margin-top': -$navArrow.height() / 2 + 'px'
+                        'margin-top': -$navArrow.height() / 2
                     });
                 }
 
@@ -242,12 +242,12 @@
                 if ($controlBtnList.css('left') === 'auto' && $controlBtnList.css('right') === 'auto') {
                     $controlBtnList.css({
                         left: '50%',
-                        'margin-left': -$controlBtn.outerWidth(true) * len / 2 + 'px'
+                        'margin-left': -$controlBtn.outerWidth(true) * len / 2
                     });
                 }
 
                 if ($controlBtnList.css('top') === 'auto' && $controlBtnList.css('bottom') === 'auto') {
-                    $controlBtnList.css('bottom', $this.height() / 25 + 'px');
+                    $controlBtnList.css('bottom', $this.height() / 25);
                 }
 
                 $controlBtnList.appendTo($this).css({
@@ -270,25 +270,25 @@
                         return false;
                     }
                     $(this).hasClass('prev') ? currentIndex-- : currentIndex++;   
-                    bannerPlay();
+                    play();
                 });
             };
 
             var controlBtnClickHandler = function() {
-                $controlBtn.live('click', function() {
+                $controlBtn.on('click', function() {
                     currentIndex = $(this).index();
-                    bannerPlay();
+                    play();
                 });
             };
 
             var controlBtnHoverHandler = function() {
-                $controlBtn.live({
+                $controlBtn.on({
                     mouseenter: function() {
                         var $self = $(this);
                         // 防止指针快速地移入移出控制按钮导致动画序列错乱
                         timer = setTimeout(function(){
                             currentIndex = $self.index();
-                            bannerPlay();
+                            play();
                         }, 100);
                     },
 
@@ -315,7 +315,7 @@
                     listTop    = Math.abs(parseInt($list.css('top')));
 
                 if (listWidth === listLeft || listHeight === listTop || currentIndex < 0 || currentIndex > len) {
-                    supportTransition ? $list.removeClass('transition') : '';
+                    supportTransition ? $list.removeClass('transition-' + option.speed) : '';
                 }
 
                 // mirror item show -> trigger first controlBtn
@@ -335,14 +335,13 @@
                     currentIndex = 1;
                 }
 
+                // 动画进行时需要清除定时器，防止实际的自动播放间隔与设置的有误差
                 clearInterval(self.autoTimer);
 
                 if (supportTransition) {
-                    // 动画进行时需要清除定时器，防止实际的自动播放间隔与设置的有误差
-                    
                     setTimeout(function() {
                         self.animated = true;
-                        !$list.hasClass('transition') ? $list.addClass('transition') : '';
+                        supportTransition ? $list.addClass('transition-' + option.speed) : '';
                         horizonal ? $list.css('left', -currentIndex * 100 + '%') : $list.css('top', -currentIndex * 100 + '%');
 
                         setTimeout(function() {
@@ -352,16 +351,17 @@
                     }, 10);
                 } else {
                     self.animated = true;
-                    horizonal ?
+                    if (horizonal) {
                         $list.stop(true, false).animate({ left: -currentIndex * 100 + '%' }, option.speed, function() {
                             self.animated = false;
                             !self.hovered ? addAutoTimer() : '';
                         })
-                    :
+                    } else {
                         $list.stop(true, false).animate({ top: -currentIndex * 100 + '%' }, option.speed, function() {
                             self.animated = false;
                             !self.hovered ? addAutoTimer() : '';
                         });
+                    }
                 }
 
                 var activeIndex = currentIndex === len ? 0 : (currentIndex === -1 ? len - 1 : currentIndex);
@@ -370,7 +370,7 @@
                 imgLazyLoader(currentIndex);
             };
 
-            var bannerPlay = function() {
+            var play = function() {
                 option.animation === 'fade' ? fadeAnimation() : slideAnimation();
             };
 
@@ -389,7 +389,7 @@
                 clearInterval(self.autoTimer);
                 self.autoTimer = setInterval(function() {
                     currentIndex++;
-                    bannerPlay();
+                    play();
                 }, option.interval);    
             };
 
