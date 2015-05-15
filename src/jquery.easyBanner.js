@@ -22,7 +22,7 @@
             autoPlay     : true,        // 自动轮播
             speed        : 500,         // 动画的速度
             interval     : 4000         // 自动播放间隔
-        }, newOption);
+        }, newOption || {});
 
         return this.each(function() {
             var self  = this,
@@ -37,31 +37,9 @@
                 vertical = option.direction === 'vertical' ? true : false;
 
             // 判断浏览器是否支持CSS3的transition属性
-            var supportTransition = function() {  
-                var i,
-                    prefix = ['webkit', 'Moz', 'ms', 'o'],  
-                    htmlStyle = document.documentElement.style,
-                    humpStyleArr = [],  
-                    toHumpStyle = function (string) {  
-                        return string.replace(/-(\w)/g, function ($0, $1) {  
-                            return $1.toUpperCase();  
-                        });  
-                    };  
-                   
-                for (i in prefix) {
-                    humpStyleArr.push(toHumpStyle(prefix[i] + '-transition'));
-                }
-                humpStyleArr.push(toHumpStyle('transition'));  
-                   
-                for (i in humpStyleArr) {
-                    if (humpStyleArr[i] in htmlStyle) {
-                        return true
-                    }; 
-                }
-                return false;  
-            }();
+            var isSupportCss3Transition = 'transition' in document.documentElement.style;
 
-            var init = function() {
+            function init() {
                 self.hovered = false;
 
                 $list.wrap('<div class="wrap-list"></div>');
@@ -95,14 +73,12 @@
                 }
 
                 if (option.animation === 'slide') {
-                    if (supportTransition) {
+                    if (isSupportCss3Transition) {
                         $('head').append(
                             '<style type="text/css">' +
                                 '.transition-' + option.speed + '{' +
                                     'transition: all ' + option.speed + 'ms ease;' +
-                                    '-webkit-transition: all ' + option.speed + 'ms ease' +
-                                    '-moz-transition: all ' + option.speed + 'ms ease' +
-                                    '-o-transition: all ' + option.speed + 'ms ease' +
+                                    '-webkit-transition: all ' + option.speed + 'ms ease;' +
                                 '};' +
                             '</style>'
                         );
@@ -131,10 +107,10 @@
                         });
                     }
                 }
-            };
+            }
 
             // 图片转换为背景图片
-            var imgToBackgroundImage = function() {
+            function imgToBackgroundImage() {
                 $item.each(function() {
                     var $img = $(this).find('img');
                     if (option.lazyLoad && $img.attr('data-src')) {
@@ -148,15 +124,16 @@
                 });
 
                 option.lazyLoad ? imgLazyLoader(currentIndex) : '';
-            };
+            }
 
-            var resizeHandler = function() {
+            function resizeHandler() {
                 $(window).resize(function() {
                     $list.children().css('width', $this.css('width'));
                 });
-            };
+            }
+
             // 背景图片延迟加载器
-            var imgLazyLoader = function(loadingItemIndex) {
+            function imgLazyLoader(loadingItemIndex) {
                 // 只能预加载当前图片之后的1张图片
                 if (loadingItemIndex - currentIndex > 1) {
                     return false;
@@ -194,9 +171,9 @@
                     loadingItemIndex++;
                     imgLazyLoader(loadingItemIndex);
                 }
-            };
+            }
 
-            var addNavArrow = function() {
+            function addNavArrow() {
                 $this.append($('<dl class="nav-arrow"></dl>'));
                 var $navArrowList = $('.nav-arrow', $this);
                 $navArrowList.width() === $this.width() ? $navArrowList.css('width', '100%') : '';
@@ -228,13 +205,13 @@
                 });
 
                 navArrowHandler();
-            };
+            }
 
-            var addControlBtn = function() {
+            function addControlBtn() {
                 $this.append($('<ol class="btn-control"></ol>'));
                 var $controlBtnList = $('.btn-control', $this);
                 for (var i = 0; i < len; i++) {
-                    $controlBtnList.append($('<li></li>'));
+                    $controlBtnList.append('<li></li>');
                 }
                 $controlBtn = $('li', $controlBtnList);
 
@@ -262,26 +239,27 @@
                 } else if (option.triggerEvent === 'hover') {
                     controlBtnHoverHandler();
                 }
-            };
+            }
 
-            var navArrowHandler = function() {
+            function navArrowHandler() {
                 $navArrow.on('click', function() {
-                    if (option.animation === 'fade' && $item.is(':animated')) {
-                        return false;
+                    if ($list.animated) {
+                        return;
                     }
+
                     $(this).hasClass('prev') ? currentIndex-- : currentIndex++;   
                     play();
                 });
-            };
+            }
 
-            var controlBtnClickHandler = function() {
+            function controlBtnClickHandler() {
                 $controlBtn.on('click', function() {
                     currentIndex = $(this).index();
                     play();
                 });
-            };
+            }
 
-            var controlBtnHoverHandler = function() {
+            function controlBtnHoverHandler() {
                 $controlBtn.on({
                     mouseenter: function() {
                         var $self = $(this);
@@ -296,9 +274,9 @@
                         clearTimeout(timer);
                     }
                 });
-            };
+            }
 
-            var fadeAnimation = function() {
+            function fadeAnimation() {
                 currentIndex = currentIndex === len ?  0 : (currentIndex === -1 ? len - 1 : currentIndex);
                 $item.removeClass('top-item').eq(currentIndex).addClass('top-item').fadeIn(option.speed);
                 setTimeout(function() {
@@ -306,16 +284,16 @@
                 }, option.speed);
                 $controlBtn.eq(currentIndex).addClass('active').siblings().removeClass('active');
                 imgLazyLoader(currentIndex);
-            };
+            }
 
-            var slideAnimation = function() {
+            function slideAnimation() {
                 var listWidth  = $item.width()* len,
                     listHeight = $item.height() * len,
                     listLeft   = Math.abs(parseInt($list.css('left'))),
                     listTop    = Math.abs(parseInt($list.css('top')));
 
                 if (listWidth === listLeft || listHeight === listTop || currentIndex < 0 || currentIndex > len) {
-                    supportTransition ? $list.removeClass('transition-' + option.speed) : '';
+                    isSupportCss3Transition ? $list.removeClass('transition-' + option.speed) : '';
                 }
 
                 // mirror item show -> trigger first controlBtn
@@ -338,75 +316,81 @@
                 // 动画进行时需要清除定时器，防止实际的自动播放间隔与设置的有误差
                 clearInterval(self.autoTimer);
 
-                if (supportTransition) {
+                if (isSupportCss3Transition) {
                     setTimeout(function() {
-                        self.animated = true;
-                        supportTransition ? $list.addClass('transition-' + option.speed) : '';
+                        $list.animated = true;
+                        isSupportCss3Transition ? $list.addClass('transition-' + option.speed) : '';
                         horizonal ? $list.css('left', -currentIndex * 100 + '%') : $list.css('top', -currentIndex * 100 + '%');
 
                         setTimeout(function() {
-                            self.animated = false;
-                            !self.hovered ? addAutoTimer() : '';
+                            $list.animated = false;
+                            option.autoPlay && !self.hovered ? addAutoTimer() : '';
                         }, option.speed);
                     }, 10);
                 } else {
-                    self.animated = true;
+                    $list.animated = true;
                     if (horizonal) {
                         $list.stop(true, false).animate({ left: -currentIndex * 100 + '%' }, option.speed, function() {
-                            self.animated = false;
-                            !self.hovered ? addAutoTimer() : '';
+                            $list.animated = false;
+                            option.autoPlay && !self.hovered ? addAutoTimer() : '';
                         })
                     } else {
                         $list.stop(true, false).animate({ top: -currentIndex * 100 + '%' }, option.speed, function() {
-                            self.animated = false;
-                            !self.hovered ? addAutoTimer() : '';
+                            $list.animated = false;
+                            option.autoPlay && !self.hovered ? addAutoTimer() : '';
                         });
                     }
                 }
 
                 var activeIndex = currentIndex === len ? 0 : (currentIndex === -1 ? len - 1 : currentIndex);
                 $controlBtn.eq(activeIndex).addClass('active').siblings().removeClass('active');
-
                 imgLazyLoader(currentIndex);
-            };
+            }
 
-            var play = function() {
+            function play() {
                 option.animation === 'fade' ? fadeAnimation() : slideAnimation();
             };
 
-            var autoPlay = function() {
+            function autoPlay() {
                 addAutoTimer();
                 $this.hover(function() {
                     self.hovered = true;
                     clearInterval(self.autoTimer);
                 }, function() {
                     self.hovered = false;
-                    !self.animated ? addAutoTimer() : '';
+                    !$list.animated ? addAutoTimer() : '';
                 });
-            };
+            }
 
-            var addAutoTimer = function() {
+            function addAutoTimer() {
                 clearInterval(self.autoTimer);
                 self.autoTimer = setInterval(function() {
                     currentIndex++;
                     play();
                 }, option.interval);    
-            };
+            }
 
-            var run = function() {
+            function run() {
                 init();
                 imgToBackgroundImage();
                 resizeHandler();
+
                 if (len <= 1) {
-                    return false;
+                    return;
                 }
                 if (option.animation === 'slide') {
                     $item.first().clone().appendTo($list);
                 }
-                option.navArrow ? addNavArrow() : '';
-                option.controlBtn ? addControlBtn() : '';
-                option.autoPlay ? autoPlay() : '';
-            };
+                if (option.navArrow) {
+                	addNavArrow();
+                }
+                if (option.controlBtn) {
+                	addControlBtn();
+                }
+                if (option.autoPlay) {
+                	autoPlay();
+                }
+            }
 
             run();
         });
