@@ -1,28 +1,27 @@
 /**
  * jquery.easyBanner.js
  * @author    HappyFreeLife
- * @version   1.1.1
+ * @version   1.1.2
  * @url       https://github.com/happyfreelife/easyBanner/
  */
 
 ;(function ($, window, document, undefined) {
     var autoCallMain = true;
 
-    $.fn.easyBanner = function(newOption) {
+    $.fn.easyBanner = function(newOpt) {
         autoCallMain = false;
 
-        var option = $.extend({
-            animation    : 'slide',     // 轮播动画: 'slide', 'fade'
-            triggerEvent : 'click',     // 触发切换的事件类型: 'click', 'hover'
-            direction    : 'horizonal', // 滑动方向: 'horizonal', 'vertical'
-            navArrow     : true,        // 手动切换按钮
-            controlBtn   : true,        // 控制按钮
-            controlBtnNum: true,        // 控制按钮数字
-            lazyLoad     : false,       // 图片延迟加载
-            autoPlay     : true,        // 自动轮播
-            speed        : 500,         // 动画的速度
-            interval     : 4000         // 自动播放间隔
-        }, newOption || {});
+        var opt = $.extend({
+            animation: 'slide',    // 轮播动画: 'slide', 'fade'
+            trigger  : 'click',    // 触发切换的事件类型: 'click', 'hover'
+            direction: 'x',        // 滑动方向: 'x', 'y'
+            arrowBtn : true,       // 手动切换按钮
+            serialBtn: true,       // 控制按钮
+            lazyLoad : false,      // 图片延迟加载
+            auto     : true,       // 自动轮播
+            speed    : 500,        // 动画的速度
+            interval : 5000        // 自动播放间隔
+        }, newOpt || {});
 
         return this.each(function() {
             var self  = this,
@@ -30,11 +29,11 @@
                 $list = $this.children(),
                 $item = $list.children(),
                 len   = $item.length,
-                $navArrow,
-                $controlBtn,
+                $arrowBtn,
+                $serialBtn,
                 currentIndex = 0,
-                horizonal = option.direction === 'horizonal' ? true : false,
-                vertical = option.direction === 'vertical' ? true : false;
+                horizonal = opt.direction.toLowerCase() === 'x' ? true : false,
+                vertical = opt.direction.toLowerCase() === 'y' ? true : false;
 
             // 判断浏览器是否支持CSS3的transition属性
             var isSupportCss3Transition = 'transition' in document.documentElement.style;
@@ -62,7 +61,7 @@
                     height: $this.height()
                 });
 
-                if (option.animation === 'fade') {
+                if (opt.animation === 'fade') {
                     $('head').append('<style type="text/css">.top-item{z-index: 1;}</style>');
                     $item.css({
                         position: 'absolute',
@@ -72,19 +71,19 @@
                     $item.first().show().siblings().hide();
                 }
 
-                if (option.animation === 'slide') {
+                if (opt.animation === 'slide') {
                     if (isSupportCss3Transition) {
                         $('head').append(
                             '<style type="text/css">' +
-                                '.transition-' + option.speed + '{' +
-                                    'transition: all ' + option.speed + 'ms ease;' +
-                                    '-webkit-transition: all ' + option.speed + 'ms ease;' +
+                                '.transition-' + opt.speed + '{' +
+                                    'transition: all ' + opt.speed + 'ms ease;' +
+                                    '-webkit-transition: all ' + opt.speed + 'ms ease;' +
                                 '};' +
                             '</style>'
                         );
 
                         setTimeout(function() {
-                            $list.addClass('transition-' + option.speed);
+                            $list.addClass('transition-' + opt.speed);
                         }, 10);
                     }
 
@@ -113,7 +112,7 @@
             function imgToBackgroundImage() {
                 $item.each(function() {
                     var $img = $(this).find('img');
-                    if (option.lazyLoad && $img.attr('data-src')) {
+                    if (opt.lazyLoad && $img.attr('data-src')) {
                         $(this).attr('background-image', $img.attr('data-src'));
                     } else {
                         var imgUrl = $img.attr('src') || $img.attr('data-src'),
@@ -123,7 +122,7 @@
                     $img.remove();
                 });
 
-                option.lazyLoad ? imgLazyLoader(currentIndex) : '';
+                opt.lazyLoad ? imgLazyLoader(currentIndex) : '';
             }
 
             function resizeHandler() {
@@ -146,7 +145,7 @@
                         $loadingItem.removeClass('loading').removeAttr('background-image');
                         loadingItemIndex ? $loadingItem.css('opacity', 0) : '';
                         $loadingItem.css('background', 'url(' + imgSrc + ') no-repeat center top');
-                        loadingItemIndex ? $loadingItem.animate({ opacity: 1 }, option.speed / 2) : '';
+                        loadingItemIndex ? $loadingItem.animate({ opacity: 1 }, opt.speed / 2) : '';
 
                         // 预加载下一张图片
                         loadingItemIndex++;
@@ -173,76 +172,78 @@
                 }
             }
 
-            function addNavArrow() {
-                $this.append($('<dl class="nav-arrow"></dl>'));
-                var $navArrowList = $('.nav-arrow', $this);
-                $navArrowList.width() === $this.width() ? $navArrowList.css('width', '100%') : '';
+            function addArrowBtn() {
+                $this.append('<div class="btn-arrow">');
+                var $arrowBtnWrap = $('.btn-arrow', $this);
+                if ($arrowBtnWrap.width() === $this.width()) {
+                    $arrowBtnWrap.css('width', '100%')
+                }
 
-                $navArrowList.append(
-                    $('<dd class="prev" style="float: left;"></dd>'),
-                    $('<dd class="next" style="float: right;"></dd>')
+                $arrowBtnWrap.append(
+                    $('<a class="prev" style="display: block;float: left;">'),
+                    $('<a class="next" style="display: block;float: right;">')
                 );
-                $navArrow = $('dd', $navArrowList);
+                $arrowBtn = $('a', $arrowBtnWrap);
 
                 // 设置navArrowList的默认位置
-                if ($navArrowList.css('left') === 'auto' && $navArrowList.css('right') === 'auto') {
-                    $navArrowList.css({
+                if ($arrowBtnWrap.css('left') === 'auto' && $arrowBtnWrap.css('right') === 'auto') {
+                    $arrowBtnWrap.css({
                         left: '50%',
-                        'margin-left': -($navArrowList.width() / $this.width() / 2).toFixed(2) * 100 + '%'
+                        'margin-left': -($arrowBtnWrap.width() / $this.width() / 2).toFixed(2) * 100 + '%'
                     });
                 }
 
-                if ($navArrowList.css('top') === 'auto' && $navArrowList.css('bottom') === 'auto') {
-                    $navArrowList.css({
+                if ($arrowBtnWrap.css('top') === 'auto' && $arrowBtnWrap.css('bottom') === 'auto') {
+                    $arrowBtnWrap.css({
                         top: '50%',
-                        'margin-top': -$navArrow.height() / 2
+                        'margin-top': -$arrowBtn.height() / 2
                     });
                 }
 
-                $navArrowList.appendTo($this).css({
+                $arrowBtnWrap.appendTo($this).css({
                     position :'absolute',
                     'z-index': 2
                 });
 
-                navArrowHandler();
+                arrowBtnHandler();
             }
 
-            function addControlBtn() {
-                $this.append($('<ol class="btn-control"></ol>'));
-                var $controlBtnList = $('.btn-control', $this);
+            function addSerialBtn() {
+                $this.append('<ol class="btn-serial">');
+                var $serialBtnList = $('.btn-serial', $this);
                 for (var i = 0; i < len; i++) {
-                    $controlBtnList.append('<li></li>');
+                    $serialBtnList.append('<li>');
                 }
-                $controlBtn = $('li', $controlBtnList);
+                $serialBtn = $('li', $serialBtnList);
 
-                // 设置controlBtnList的默认位置
-                if ($controlBtnList.css('left') === 'auto' && $controlBtnList.css('right') === 'auto') {
-                    $controlBtnList.css({
+                // 设置serialBtnList的默认位置
+                if ($serialBtnList.css('left') === 'auto' && $serialBtnList.css('right') === 'auto') {
+                    $serialBtnList.css({
                         left: '50%',
-                        'margin-left': -$controlBtn.outerWidth(true) * len / 2
+                        'margin-left': -$serialBtn.outerWidth(true) * len / 2
                     });
                 }
 
-                if ($controlBtnList.css('top') === 'auto' && $controlBtnList.css('bottom') === 'auto') {
-                    $controlBtnList.css('bottom', $this.height() / 25);
+                if ($serialBtnList.css('top') === 'auto' && $serialBtnList.css('bottom') === 'auto') {
+                    $serialBtnList.css('bottom', $this.height() / 25);
                 }
 
-                $controlBtnList.appendTo($this).css({
+                $serialBtnList.appendTo($this).css({
                     position :'absolute',
                     'z-index': 2
                 }).children(':first').addClass('active');
 
-                $controlBtn.css('float', 'left');
+                $serialBtn.css('float', 'left');
 
-                if (option.triggerEvent === 'click') {
-                    controlBtnClickHandler();
-                } else if (option.triggerEvent === 'hover') {
-                    controlBtnHoverHandler();
+                if (opt.trigger === 'click') {
+                    serialBtnClickHandler();
+                } else if (opt.trigger === 'hover') {
+                    serialBtnHoverHandler();
                 }
             }
 
-            function navArrowHandler() {
-                $navArrow.on('click', function() {
+            function arrowBtnHandler() {
+                $arrowBtn.on('click', function() {
                     if ($list.animated) {
                         return;
                     }
@@ -252,15 +253,15 @@
                 });
             }
 
-            function controlBtnClickHandler() {
-                $controlBtn.on('click', function() {
+            function serialBtnClickHandler() {
+                $serialBtn.on('click', function() {
                     currentIndex = $(this).index();
                     play();
                 });
             }
 
-            function controlBtnHoverHandler() {
-                $controlBtn.on({
+            function serialBtnHoverHandler() {
+                $serialBtn.on({
                     mouseenter: function() {
                         var $self = $(this);
                         // 防止指针快速地移入移出控制按钮导致动画序列错乱
@@ -278,11 +279,11 @@
 
             function fadeAnimation() {
                 currentIndex = currentIndex === len ?  0 : (currentIndex === -1 ? len - 1 : currentIndex);
-                $item.removeClass('top-item').eq(currentIndex).addClass('top-item').fadeIn(option.speed);
+                $item.removeClass('top-item').eq(currentIndex).addClass('top-item').fadeIn(opt.speed);
                 setTimeout(function() {
                     $item.eq(currentIndex).siblings().hide();
-                }, option.speed);
-                $controlBtn.eq(currentIndex).addClass('active').siblings().removeClass('active');
+                }, opt.speed);
+                $serialBtn.eq(currentIndex).addClass('active').siblings().removeClass('active');
                 imgLazyLoader(currentIndex);
             }
 
@@ -293,10 +294,10 @@
                     listTop    = Math.abs(parseInt($list.css('top')));
 
                 if (listWidth === listLeft || listHeight === listTop || currentIndex < 0 || currentIndex > len) {
-                    isSupportCss3Transition ? $list.removeClass('transition-' + option.speed) : '';
+                    isSupportCss3Transition ? $list.removeClass('transition-' + opt.speed) : '';
                 }
 
-                // mirror item show -> trigger first controlBtn
+                // mirror item show -> trigger first serialBtn
                 if (!currentIndex && (listWidth === listLeft || listHeight === listTop)) {
                     horizonal ? $list.css('left', 0) : $list.css('top', 0);
                 }
@@ -319,39 +320,42 @@
                 if (isSupportCss3Transition) {
                     setTimeout(function() {
                         $list.animated = true;
-                        isSupportCss3Transition ? $list.addClass('transition-' + option.speed) : '';
+                        isSupportCss3Transition ? $list.addClass('transition-' + opt.speed) : '';
                         horizonal ? $list.css('left', -currentIndex * 100 + '%') : $list.css('top', -currentIndex * 100 + '%');
 
                         setTimeout(function() {
                             $list.animated = false;
-                            option.autoPlay && !self.hovered ? addAutoTimer() : '';
-                        }, option.speed);
+                            opt.auto && !self.hovered ? addAutoTimer() : '';
+                        }, opt.speed);
                     }, 10);
                 } else {
                     $list.animated = true;
                     if (horizonal) {
-                        $list.stop(true, false).animate({ left: -currentIndex * 100 + '%' }, option.speed, function() {
+                        $list.stop(true, false).animate({ left: -currentIndex * 100 + '%' }, opt.speed, function() {
                             $list.animated = false;
-                            option.autoPlay && !self.hovered ? addAutoTimer() : '';
+                            opt.auto && !self.hovered ? addAutoTimer() : '';
                         })
                     } else {
-                        $list.stop(true, false).animate({ top: -currentIndex * 100 + '%' }, option.speed, function() {
+                        $list.stop(true, false).animate({ top: -currentIndex * 100 + '%' }, opt.speed, function() {
                             $list.animated = false;
-                            option.autoPlay && !self.hovered ? addAutoTimer() : '';
+                            opt.auto && !self.hovered ? addAutoTimer() : '';
                         });
                     }
                 }
 
-                var activeIndex = currentIndex === len ? 0 : (currentIndex === -1 ? len - 1 : currentIndex);
-                $controlBtn.eq(activeIndex).addClass('active').siblings().removeClass('active');
+                if (opt.serialBtn) {
+                    var activeIndex = currentIndex === len ? 0 : (currentIndex === -1 ? len - 1 : currentIndex);
+                    $serialBtn.eq(activeIndex).addClass('active').siblings().removeClass('active');
+                }
+
                 imgLazyLoader(currentIndex);
             }
 
             function play() {
-                option.animation === 'fade' ? fadeAnimation() : slideAnimation();
+                opt.animation === 'fade' ? fadeAnimation() : slideAnimation();
             };
 
-            function autoPlay() {
+            function auto() {
                 addAutoTimer();
                 $this.hover(function() {
                     self.hovered = true;
@@ -367,7 +371,7 @@
                 self.autoTimer = setInterval(function() {
                     currentIndex++;
                     play();
-                }, option.interval);    
+                }, opt.interval);    
             }
 
             function run() {
@@ -378,17 +382,17 @@
                 if (len <= 1) {
                     return;
                 }
-                if (option.animation === 'slide') {
+                if (opt.animation === 'slide') {
                     $item.first().clone().appendTo($list);
                 }
-                if (option.navArrow) {
-                	addNavArrow();
+                if (opt.serialBtn) {
+                	addSerialBtn();
                 }
-                if (option.controlBtn) {
-                	addControlBtn();
+                if (opt.arrowBtn) {
+                    addArrowBtn();
                 }
-                if (option.autoPlay) {
-                	autoPlay();
+                if (opt.auto) {
+                	auto();
                 }
             }
 

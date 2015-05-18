@@ -15,12 +15,13 @@
 	.clearfix:after{display: block;clear: both;height: 0;content: '';}
 
 	.banner{height: 350px;/*width: 1000px;margin: 0 auto;*/}
-	.nav-arrow dd{width: 60px;height: 60px;border-radius: 5px;opacity: 0;transition: all .5s ease;}
-	.banner:hover .nav-arrow dd{opacity: .8;}
-	.nav-arrow .prev{margin-left: 30px;background: #666 url(img/nav-arrow-prev.png) no-repeat center center;}
-	.nav-arrow .next{margin-right: 30px;background: #666 url(img/nav-arrow-next.png) no-repeat center center;}
-	.btn-control li{margin: 0 5px;width: 16px;height: 16px;background: url(img/btn-control.png) no-repeat;}
-	.btn-control li.active{background: url(img/btn-control-active.png) no-repeat;}
+	.btn-arrow a{width: 60px;height: 60px;border-radius: 5px;opacity: 0;transition: all .5s ease;}
+	.banner:hover .btn-arrow a{opacity: .8;}
+	.btn-arrow a.prev{margin-left: 30px;background: #666 url(img/nav-arrow-prev.png) no-repeat center center;}
+	.btn-arrow a.next{margin-right: 30px;background: #666 url(img/nav-arrow-next.png) no-repeat center center;}
+
+	.btn-serial li{margin: 0 5px;width: 12px;height: 12px;background: #fff;border-radius: 50%;}
+	.btn-serial li.active{background: #ff8000;}
 </style>
 <body>
 	<div class="banner">
@@ -34,7 +35,7 @@
 		</ul>
 	</div>
 </body>
-<script type="text/javascript" src="src/jquery-1.7.2.min.js"></script>
+<script type="text/javascript" src="lib/jquery-1.7.2.min.js"></script>
 <script type="text/javascript" src="src/jquery.easyBanner.js"></script>
 <script type="text/javascript">
 	$('.banner').easyBanner();
