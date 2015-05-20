@@ -1,26 +1,22 @@
 /**
  * jquery.easyBanner.js
  * @author    HappyFreeLife
- * @version   1.1.2
+ * @version   1.1.3
  * @url       https://github.com/happyfreelife/easyBanner/
  */
 
 ;(function ($, window, document, undefined) {
-    var autoCallMain = true;
-
     $.fn.easyBanner = function(newOpt) {
-        autoCallMain = false;
-
         var opt = $.extend({
-            animation: 'slide',    // 轮播动画: 'slide', 'fade'
-            trigger  : 'click',    // 触发切换的事件类型: 'click', 'hover'
-            direction: 'x',        // 滑动方向: 'x', 'y'
-            arrowBtn : true,       // 手动切换按钮
-            serialBtn: true,       // 控制按钮
-            lazyLoad : false,      // 图片延迟加载
+            animation: 'slide',    // 动画模式: ['slide', 'fade']
+            trigger  : 'click',    // 触发动画的事件类型: ['click', 'hover']
+            direction: 'x',        // 滑动方向: ['x', 'y'](只适用于'slide'动画模式)
+            arrowBtn : true,       // 左右箭头按钮
+            serialBtn: true,       // 序列按钮
+            lazyLoad : false,      // 图片预加载
             auto     : true,       // 自动轮播
-            speed    : 500,        // 动画的速度
-            interval : 5000        // 自动播放间隔
+            speed    : 800,        // 动画速度
+            interval : 5000        // 自动轮播间隔
         }, newOpt || {});
 
         return this.each(function() {
@@ -35,7 +31,7 @@
                 horizonal = opt.direction.toLowerCase() === 'x' ? true : false,
                 vertical = opt.direction.toLowerCase() === 'y' ? true : false;
 
-            // 判断浏览器是否支持CSS3的transition属性
+            // 判断浏览器是否支持CSS3动画
             var isSupportCss3Transition = 'transition' in document.documentElement.style;
 
             function init() {
@@ -46,19 +42,21 @@
 
                 $('.wrap-list', $this).css({
                     position: 'relative',
-                    width: '100%',
-                    height: '100%',
+                    width   : '100%',
+                    height  : '100%',
                     overflow: 'hidden'
                 });
 
                 $list.css({
                     position: 'relative',
-                    height: '100%'
+                    display : 'block',
+                    height  : '100%'
                 });
 
                 $item.css({
-                    width: $this.width(),
-                    height: $this.height()
+                    display: 'block',
+                    width  : $this.width(),
+                    height : $this.height()
                 });
 
                 if (opt.animation === 'fade') {
@@ -78,7 +76,7 @@
                                 '.transition-' + opt.speed + '{' +
                                     'transition: all ' + opt.speed + 'ms ease;' +
                                     '-webkit-transition: all ' + opt.speed + 'ms ease;' +
-                                '};' +
+                                '}' +
                             '</style>'
                         );
 
@@ -122,7 +120,7 @@
                     $img.remove();
                 });
 
-                opt.lazyLoad ? imgLazyLoader(currentIndex) : '';
+                opt.lazyLoad ? imgPreLoader(currentIndex) : '';
             }
 
             function resizeHandler() {
@@ -131,8 +129,8 @@
                 });
             }
 
-            // 背景图片延迟加载器
-            function imgLazyLoader(loadingItemIndex) {
+            // 图片预加载器(延迟加载)
+            function imgPreLoader(loadingItemIndex) {
                 // 只能预加载当前图片之后的1张图片
                 if (loadingItemIndex - currentIndex > 1) {
                     return false;
@@ -149,7 +147,7 @@
 
                         // 预加载下一张图片
                         loadingItemIndex++;
-                        imgLazyLoader(loadingItemIndex);
+                        imgPreLoader(loadingItemIndex);
                     };
 
                 if (imgSrc) {
@@ -168,7 +166,7 @@
                 } else {
                     // 已经加载过当前图片则直接加载下一张
                     loadingItemIndex++;
-                    imgLazyLoader(loadingItemIndex);
+                    imgPreLoader(loadingItemIndex);
                 }
             }
 
@@ -180,12 +178,24 @@
                 }
 
                 $arrowBtnWrap.append(
-                    $('<a class="prev" style="display: block;float: left;">'),
-                    $('<a class="next" style="display: block;float: right;">')
+                    '<a class="prev" style="display: block;float: left;"></a>',
+                    '<a class="next" style="display: block;float: right;"></a>'
                 );
                 $arrowBtn = $('a', $arrowBtnWrap);
+                
+                if ($arrowBtn.css('background-image') === 'none'  || $arrowBtn.css('background-image') === undefined) {
+                    $('.prev', $arrowBtnWrap).html('&lt;');
+                    $('.next', $arrowBtnWrap).html('&gt;');
+                    console.log($arrowBtn.css('width'));
 
-                // 设置navArrowList的默认位置
+                    $arrowBtn.css({
+                        font: $this.height() * 0.133 + 'px/' + $arrowBtn.height() + 'px SimHei',
+                        color: '#fff',
+                        'text-align': 'center'
+                    });
+                }
+
+                // 设置arrowBtnWrap的默认位置
                 if ($arrowBtnWrap.css('left') === 'auto' && $arrowBtnWrap.css('right') === 'auto') {
                     $arrowBtnWrap.css({
                         left: '50%',
@@ -247,7 +257,6 @@
                     if ($list.animated) {
                         return;
                     }
-
                     $(this).hasClass('prev') ? currentIndex-- : currentIndex++;   
                     play();
                 });
@@ -255,6 +264,9 @@
 
             function serialBtnClickHandler() {
                 $serialBtn.on('click', function() {
+                    if ($list.animated) {
+                        return;
+                    }
                     currentIndex = $(this).index();
                     play();
                 });
@@ -263,6 +275,9 @@
             function serialBtnHoverHandler() {
                 $serialBtn.on({
                     mouseenter: function() {
+                        if ($list.animated) {
+                            return;
+                        }
                         var $self = $(this);
                         // 防止指针快速地移入移出控制按钮导致动画序列错乱
                         timer = setTimeout(function(){
@@ -284,7 +299,7 @@
                     $item.eq(currentIndex).siblings().hide();
                 }, opt.speed);
                 $serialBtn.eq(currentIndex).addClass('active').siblings().removeClass('active');
-                imgLazyLoader(currentIndex);
+                imgPreLoader(currentIndex);
             }
 
             function slideAnimation() {
@@ -348,7 +363,7 @@
                     $serialBtn.eq(activeIndex).addClass('active').siblings().removeClass('active');
                 }
 
-                imgLazyLoader(currentIndex);
+                imgPreLoader(currentIndex);
             }
 
             function play() {
@@ -399,10 +414,4 @@
             run();
         });
     };
-
-    $(function () {
-        if ($('.easy-banner').length && autoCallMain) {
-            $('.easy-banner').easyBanner();
-        }
-    });
 })(jQuery, window, document);
