@@ -11,33 +11,34 @@
 	ul, li{list-style: none;}
 	.clearfix{*zoom: 1;}
 	.clearfix:after{display: block;clear: both;height: 0;content: '';}
-	.banner{height: 400px;width: 1200px;margin: 0 auto;}
+	.banner{height: 450px;width: 1200px;margin: 0 auto;}
 	.btn-arrow{width: 95%;}
-	.btn-arrow a{opacity: 0;transition: all .5s ease;cursor: pointer;}
+	.btn-arrow a{opacity: 0;cursor: pointer;}
 	.banner:hover .btn-arrow a{opacity: .8;}
-	/*.btn-arrow a.prev{margin-left: 30px;background: #666 url(img/nav-arrow-prev.png) no-repeat center center;}*/
-	/*.btn-arrow a.next{margin-right: 30px;background: #666 url(img/nav-arrow-next.png) no-repeat center center;}*/
+
 	.btn-serial li{margin: 0 5px;width: 12px;height: 12px;background: #fff;border-radius: 50%;}
 	.btn-serial li.active{background: #ff8000;}
-	.container{background: rgba(128, 128, 128, .5);}
+	.container{background: #ccc;}
 </style>
 <body>
 	<div class="container">
 		<div class="banner">
-			<ul>
-				<li><img src="img/img1.jpg"></li>
-				<li><img src="img/img2.jpg"></li>
-				<li><img src="img/img3.jpg"></li>
-				<li><img src="img/img4.jpg"></li>
-				<li><img src="img/img5.jpg"></li>
-				<li><img src="img/img6.jpg"></li>
-			</ul>
+			<div>
+				<a href=""><img src="img/img1.jpg"></a>
+				<a href=""><img src="img/img2.jpg"></a>
+				<a href=""><img src="img/img3.jpg"></a>
+				<a href=""><img src="img/img4.jpg"></a>
+				<a href=""><img src="img/img5.jpg"></a>
+				<a href=""><img src="img/img6.jpg"></a>
+			</div>
 		</div>
 	</div>
 </body>
 <script type="text/javascript" src="lib/jquery-1.11.3.min.js"></script>
 <script type="text/javascript" src="src/jquery.easyBanner.js"></script>
 <script type="text/javascript">
-	$('.banner').easyBanner();
+	$('.banner').easyBanner({
+		animation: 'fade'
+	});
 </script>
 </html>

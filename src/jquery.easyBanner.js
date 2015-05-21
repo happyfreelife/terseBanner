@@ -34,11 +34,27 @@
             // 判断浏览器是否支持CSS3动画
             var isSupportCss3Transition = 'transition' in document.documentElement.style;
 
+            // 样式检测器
+            $.fn.styleDetecter = function(prop, val) {
+                if ($.isArray(val)) {
+                    for (var i in val) {
+                        if ($(this).css(prop) === val[i]) {
+                            return true;
+                        }
+                    }
+                    return false;
+                }
+                return $(this).css(prop) === val;
+            };
+
             function init() {
                 self.hovered = false;
 
-                $list.wrap('<div class="wrap-list"></div>');
-                $this.css('position') === 'static' ? $this.css('position', 'relative') : '';
+                $list.wrap('<div class="wrap-list">');
+
+                if ($this.styleDetecter('position', 'static')) {
+                    $this.css('position', 'relative')
+                }
 
                 $('.wrap-list', $this).css({
                     position: 'relative',
@@ -107,7 +123,7 @@
             }
 
             // 图片转换为背景图片
-            function imgToBackgroundImage() {
+            function imgToBackground() {
                 $item.each(function() {
                     var $img = $(this).find('img');
                     if (opt.lazyLoad && $img.attr('data-src')) {
@@ -173,20 +189,36 @@
             function addArrowBtn() {
                 $this.append('<div class="btn-arrow">');
                 var $arrowBtnWrap = $('.btn-arrow', $this);
-                if ($arrowBtnWrap.width() === $this.width()) {
-                    $arrowBtnWrap.css('width', '100%')
-                }
-
                 $arrowBtnWrap.append(
                     '<a class="prev" style="display: block;float: left;"></a>',
                     '<a class="next" style="display: block;float: right;"></a>'
                 );
                 $arrowBtn = $('a', $arrowBtnWrap);
-                
-                if ($arrowBtn.css('background-image') === 'none'  || $arrowBtn.css('background-image') === undefined) {
+
+
+                if ($arrowBtnWrap.width() === $this.width()) {
+                    $arrowBtnWrap.css('width', '100%')
+                }
+
+                // 设置arrowBtnWrap的默认位置
+                if ($arrowBtnWrap.styleDetecter('top', 'auto') && $arrowBtnWrap.styleDetecter('bottom', 'auto')) {
+                    $arrowBtnWrap.css({
+                        top: '50%',
+                        'margin-top': -$arrowBtn.height() / 2
+                    });
+                }
+
+                if ($arrowBtnWrap.styleDetecter('left', 'auto') && $arrowBtnWrap.styleDetecter('right', 'auto')) {
+                    $arrowBtnWrap.css({
+                        left: '50%',
+                        'margin-left': -$arrowBtnWrap.width() / 2
+                    });
+                }
+
+
+                if ($arrowBtn.styleDetecter('background-image', 'none')) {
                     $('.prev', $arrowBtnWrap).html('&lt;');
                     $('.next', $arrowBtnWrap).html('&gt;');
-                    console.log($arrowBtn.css('width'));
 
                     $arrowBtn.css({
                         font: $this.height() * 0.133 + 'px/' + $arrowBtn.height() + 'px SimHei',
@@ -195,23 +227,14 @@
                     });
                 }
 
-                // 设置arrowBtnWrap的默认位置
-                if ($arrowBtnWrap.css('left') === 'auto' && $arrowBtnWrap.css('right') === 'auto') {
-                    $arrowBtnWrap.css({
-                        left: '50%',
-                        'margin-left': -($arrowBtnWrap.width() / $this.width() / 2).toFixed(2) * 100 + '%'
-                    });
-                }
-
-                if ($arrowBtnWrap.css('top') === 'auto' && $arrowBtnWrap.css('bottom') === 'auto') {
-                    $arrowBtnWrap.css({
-                        top: '50%',
-                        'margin-top': -$arrowBtn.height() / 2
-                    });
-                }
+                // 阻止连续点击箭头按钮时选中
+                $arrowBtn.on('selectstart', function(e) {
+                    e.preventDefault();
+                });
 
                 $arrowBtnWrap.appendTo($this).css({
                     position :'absolute',
+                    height: 0,
                     'z-index': 2
                 });
 
@@ -225,17 +248,18 @@
                     $serialBtnList.append('<li>');
                 }
                 $serialBtn = $('li', $serialBtnList);
+                $serialBtn.css('float', 'left');
 
                 // 设置serialBtnList的默认位置
-                if ($serialBtnList.css('left') === 'auto' && $serialBtnList.css('right') === 'auto') {
+                if ($serialBtnList.styleDetecter('top', 'auto') && $serialBtnList.styleDetecter('bottom', 'auto')) {
+                    $serialBtnList.css('bottom', $this.height() / 25);
+                }
+
+                if ($serialBtnList.styleDetecter('left', 'auto') && $serialBtnList.styleDetecter('right', 'auto')) {
                     $serialBtnList.css({
                         left: '50%',
                         'margin-left': -$serialBtn.outerWidth(true) * len / 2
                     });
-                }
-
-                if ($serialBtnList.css('top') === 'auto' && $serialBtnList.css('bottom') === 'auto') {
-                    $serialBtnList.css('bottom', $this.height() / 25);
                 }
 
                 $serialBtnList.appendTo($this).css({
@@ -243,13 +267,7 @@
                     'z-index': 2
                 }).children(':first').addClass('active');
 
-                $serialBtn.css('float', 'left');
-
-                if (opt.trigger === 'click') {
-                    serialBtnClickHandler();
-                } else if (opt.trigger === 'hover') {
-                    serialBtnHoverHandler();
-                }
+                serailBtnHandler();
             }
 
             function arrowBtnHandler() {
@@ -262,39 +280,49 @@
                 });
             }
 
-            function serialBtnClickHandler() {
-                $serialBtn.on('click', function() {
-                    if ($list.animated) {
-                        return;
-                    }
-                    currentIndex = $(this).index();
-                    play();
-                });
-            }
-
-            function serialBtnHoverHandler() {
-                $serialBtn.on({
-                    mouseenter: function() {
+            function serailBtnHandler() {
+                if (opt.trigger === 'click') {
+                    $serialBtn.on('click', function() {
                         if ($list.animated) {
                             return;
                         }
-                        var $self = $(this);
-                        // 防止指针快速地移入移出控制按钮导致动画序列错乱
-                        timer = setTimeout(function(){
-                            currentIndex = $self.index();
-                            play();
-                        }, 100);
-                    },
+                        currentIndex = $(this).index();
+                        play();
+                    });
+                }
 
-                    mouseleave: function() {
-                        clearTimeout(timer);
-                    }
-                });
+                if (opt.trigger === 'hover') {
+                    $serialBtn.on({
+                        mouseenter: function() {
+                            if ($list.animated) {
+                                return;
+                            }
+                            var $self = $(this);
+
+                            // 防止指针快速地经过序列按钮导致动画序列添加过多
+                            timer = setTimeout(function(){
+                                currentIndex = $self.index();
+                                play();
+                            }, 100);
+                        },
+
+                        mouseleave: function() {
+                            clearTimeout(timer);
+                        }
+                    });
+                }
             }
 
             function fadeAnimation() {
+                $list.animated = true;
                 currentIndex = currentIndex === len ?  0 : (currentIndex === -1 ? len - 1 : currentIndex);
-                $item.removeClass('top-item').eq(currentIndex).addClass('top-item').fadeIn(opt.speed);
+                $item.removeClass('top-item').eq(currentIndex)
+                     .addClass('top-item')
+                     .css({display: 'block', opacity: 0})
+                     .animate({opacity: 1}, opt.speed, function() {
+                         $list.animated = false;
+                     });
+
                 setTimeout(function() {
                     $item.eq(currentIndex).siblings().hide();
                 }, opt.speed);
@@ -391,7 +419,7 @@
 
             function run() {
                 init();
-                imgToBackgroundImage();
+                imgToBackground();
                 resizeHandler();
 
                 if (len <= 1) {
