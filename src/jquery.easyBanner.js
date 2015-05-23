@@ -6,18 +6,68 @@
  */
 
 ;(function ($, window, document, undefined) {
-    $.fn.easyBanner = function(newOpt) {
-        var opt = $.extend({
-            animation: 'slide',    // 动画模式: ['slide', 'fade']
-            trigger  : 'click',    // 触发动画的事件类型: ['click', 'hover']
-            direction: 'x',        // 滑动方向: ['x', 'y'](只适用于'slide'动画模式)
-            arrowBtn : true,       // 左右箭头按钮
-            serialBtn: true,       // 序列按钮
-            lazyLoad : false,      // 图片预加载
-            auto     : true,       // 自动轮播
-            speed    : 800,        // 动画速度
-            interval : 5000        // 自动轮播间隔
-        }, newOpt || {});
+    $.easyBanner = {};
+
+    $.easyBanner.defaults = {
+        animation: 'slide',    // 动画模式: ['slide', 'fade']
+        trigger  : 'click',    // 触发动画的事件类型: ['click', 'hover']
+        direction: 'x',        // 滑动方向: ['x', 'y'](只适用于'slide'动画模式)
+        arrowBtn : true,       // 左右箭头按钮
+        serialBtn: true,       // 序列按钮
+        lazyLoad : false,      // 图片预加载
+        auto     : true,       // 自动轮播
+        speed    : 800,        // 动画速度
+        interval : 5000        // 自动轮播间隔
+    };
+
+    /**
+     * 脚本加载器
+     * @param  {String}   src      外部脚本路径
+     * @param  {Function} callback 脚本加载完成后执行的函数
+     */
+    $.easyBanner.loadScript = function(src, callback) {
+        var script = document.createElement('script');
+        script.type = 'text/javascript';
+        script.src = src;
+
+        if (/msie (6.0|7.0|8.0)/i.test(navigator.userAgent)) {
+            script.onreadystatechange = function() {
+                if (script.readyState === 'loaded' || script.readyState === 'complete') {
+                    callback();
+                }
+            };
+        } else {
+            script.onload = callback;
+        }
+
+        document.getElementsByTagName('head')[0].appendChild(script);
+    }
+
+    /**
+     * 样式检测器
+     * @param  {String} prop css属性名
+     * @param  {String || Array} val  css属性值
+     * @return {Boolean}
+     */
+    $.fn.cssDetecter = function(prop, val) {
+        if ($.isArray(val)) {
+            for (var i in val) {
+                if ($(this).css(prop) === val[i]) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        return $(this).css(prop) === val;
+    };
+
+    /**
+     * 插件主方法
+     * @param  {Object} opt    自定义参数
+     * @return {HTMLElement}   调用该方法的元素集合中的每个元素
+     */
+    $.fn.easyBanner = function(option) {
+        var opt = $.extend($.easyBanner.defaults, option || {});
 
         return this.each(function() {
             var self  = this,
@@ -29,30 +79,20 @@
                 $serialBtn,
                 currentIndex = 0,
                 horizonal = opt.direction.toLowerCase() === 'x' ? true : false,
-                vertical = opt.direction.toLowerCase() === 'y' ? true : false;
+                vertical = opt.direction.toLowerCase() === 'y' ? true : false,
+                embedCss = '';
 
             // 判断浏览器是否支持CSS3动画
             var isSupportCss3Transition = 'transition' in document.documentElement.style;
 
-            // 样式检测器
-            $.fn.styleDetecter = function(prop, val) {
-                if ($.isArray(val)) {
-                    for (var i in val) {
-                        if ($(this).css(prop) === val[i]) {
-                            return true;
-                        }
-                    }
-                    return false;
-                }
-                return $(this).css(prop) === val;
-            };
+            
 
             function init() {
                 self.hovered = false;
 
                 $list.wrap('<div class="wrap-list">');
 
-                if ($this.styleDetecter('position', 'static')) {
+                if ($this.cssDetecter('position', 'static')) {
                     $this.css('position', 'relative')
                 }
 
@@ -87,14 +127,10 @@
 
                 if (opt.animation === 'slide') {
                     if (isSupportCss3Transition) {
-                        $('head').append(
-                            '<style type="text/css">' +
-                                '.transition-' + opt.speed + '{' +
-                                    'transition: all ' + opt.speed + 'ms ease;' +
-                                    '-webkit-transition: all ' + opt.speed + 'ms ease;' +
-                                '}' +
-                            '</style>'
-                        );
+                        embedCss += '.transition-' + opt.speed + '{'
+                        +                'transition: all ' + opt.speed + 'ms ease;'
+                        +                '-webkit-transition: all ' + opt.speed + 'ms ease;'
+                        +            '}\n';
 
                         setTimeout(function() {
                             $list.addClass('transition-' + opt.speed);
@@ -190,25 +226,25 @@
                 $this.append('<div class="btn-arrow">');
                 var $arrowBtnWrap = $('.btn-arrow', $this);
                 $arrowBtnWrap.append(
-                    '<a class="prev" style="display: block;float: left;"></a>',
-                    '<a class="next" style="display: block;float: right;"></a>'
+                    '<a class="prev" style="float: left;"></a>',
+                    '<a class="next" style="float: right;"></a>'
                 );
                 $arrowBtn = $('a', $arrowBtnWrap);
 
 
                 if ($arrowBtnWrap.width() === $this.width()) {
-                    $arrowBtnWrap.css('width', '100%')
+                    $arrowBtnWrap.css('width', '96%')
                 }
 
                 // 设置arrowBtnWrap的默认位置
-                if ($arrowBtnWrap.styleDetecter('top', 'auto') && $arrowBtnWrap.styleDetecter('bottom', 'auto')) {
+                if ($arrowBtnWrap.cssDetecter('top', 'auto') && $arrowBtnWrap.cssDetecter('bottom', 'auto')) {
                     $arrowBtnWrap.css({
                         top: '50%',
                         'margin-top': -$arrowBtn.height() / 2
                     });
                 }
 
-                if ($arrowBtnWrap.styleDetecter('left', 'auto') && $arrowBtnWrap.styleDetecter('right', 'auto')) {
+                if ($arrowBtnWrap.cssDetecter('left', 'auto') && $arrowBtnWrap.cssDetecter('right', 'auto')) {
                     $arrowBtnWrap.css({
                         left: '50%',
                         'margin-left': -$arrowBtnWrap.width() / 2
@@ -216,7 +252,7 @@
                 }
 
 
-                if ($arrowBtn.styleDetecter('background-image', 'none')) {
+                if ($arrowBtn.cssDetecter('background-image', 'none')) {
                     $('.prev', $arrowBtnWrap).html('&lt;');
                     $('.next', $arrowBtnWrap).html('&gt;');
 
@@ -248,14 +284,34 @@
                     $serialBtnList.append('<li>');
                 }
                 $serialBtn = $('li', $serialBtnList);
-                $serialBtn.css('float', 'left');
+                
 
-                // 设置serialBtnList的默认位置
-                if ($serialBtnList.styleDetecter('top', 'auto') && $serialBtnList.styleDetecter('bottom', 'auto')) {
+                $serialBtn.css('float', 'left');
+                if ($serialBtn.cssDetecter('width', '0px') && $serialBtn.cssDetecter('height', '0px')) {
+                    $serialBtn.css({width: '10px', height: '10px'});
+                }
+
+                if ($serialBtn.cssDetecter('margin', ['0px', ''])) {
+                    $serialBtn.css('margin', '0 5px');
+                }
+
+                if ($serialBtn.cssDetecter('background-color', ['rgba(0, 0, 0, 0)', 'transparent']) &&
+                    $serialBtn.cssDetecter('background-image', 'none')) {
+                    embedCss += '.btn-serial > *{background-color: #fff;border-radius: 50%;}\n';
+                }
+
+                $serialBtn.first().addClass('active');
+
+                if ($('.active', $serialBtnList).cssDetecter('background-color', ['rgba(0, 0, 0, 0)', 'transparent']) &&
+                    $('.active', $serialBtnList).cssDetecter('background-image', 'none')) {
+                    embedCss += '.btn-serial > .active{background-color: #ff8000;}\n';
+                }
+
+                if ($serialBtnList.cssDetecter('top', 'auto') && $serialBtnList.cssDetecter('bottom', 'auto')) {
                     $serialBtnList.css('bottom', $this.height() / 25);
                 }
 
-                if ($serialBtnList.styleDetecter('left', 'auto') && $serialBtnList.styleDetecter('right', 'auto')) {
+                if ($serialBtnList.cssDetecter('left', 'auto') && $serialBtnList.cssDetecter('right', 'auto')) {
                     $serialBtnList.css({
                         left: '50%',
                         'margin-left': -$serialBtn.outerWidth(true) * len / 2
@@ -265,8 +321,8 @@
                 $serialBtnList.appendTo($this).css({
                     position :'absolute',
                     'z-index': 2
-                }).children(':first').addClass('active');
-
+                });
+                
                 serailBtnHandler();
             }
 
@@ -429,14 +485,16 @@
                     $item.first().clone().appendTo($list);
                 }
                 if (opt.serialBtn) {
-                	addSerialBtn();
+                    addSerialBtn();
                 }
                 if (opt.arrowBtn) {
                     addArrowBtn();
                 }
+                $('head').append('<style type="text/css">' + embedCss + '</style>');
                 if (opt.auto) {
-                	auto();
+                    auto();
                 }
+
             }
 
             run();
