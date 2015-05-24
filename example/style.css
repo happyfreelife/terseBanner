@@ -1,0 +1,28 @@
+@charset "utf-8";
+
+body,  h1, h2, h3, h4, h5, h6, hr, p, blockquote, ul, ol, li, dl, dd, input, button, textarea, fieldset, legend, figure, menu, th, td, pre{margin:0;padding:0;}
+body{font: 12px/1 Helvetica, Arial, sans-serif, "Microsoft YaHei";color: #666;}
+h1, h2, h3, h4, h5, h6{font-weight: normal;font-size: inherit;}
+a{color: #999;text-decoration: none;outline: none;}
+img{border: none;}
+ul, ol{list-style: none;}
+i, em{font-style: normal;}
+table{border-collapse: collapse;}
+input, button, select, textarea, optgroup{font: inherit;color: inherit;outline:none;}
+input[type="text"], input[type="password"], button, textarea{border: 1px solid #ccc;}
+input[type="button"], input[type="submit"], button{border: none;}
+input[type="radio"], input[type="checkbox"]{border: none;}
+.fl{float: left;}
+.fr{float: right;}
+.clearfix{*zoom: 1;}
+.clearfix:after{display: block;content: "";clear: both;}
+
+.container{background: #333;}
+.banner .btn-arrow a{opacity: 0;cursor: pointer;filter: alpha(opacity=0);}
+.banner:hover .btn-arrow a{opacity: .8;filter: alpha(opacity=80);}
+
+/* basic-slide */
+.banner.slide{height: 500px;}
+
+/* basic-fade */
+.banner.fade{height: 450px;width: 1200px;margin: 0 auto;}

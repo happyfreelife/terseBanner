@@ -1,24 +1,12 @@
 /**
  * jquery.easyBanner.js
  * @author    HappyFreeLife
- * @version   1.1.3
+ * @version   1.1.4
  * @url       https://github.com/happyfreelife/easyBanner/
  */
 
 ;(function ($, window, document, undefined) {
     $.easyBanner = {};
-
-    $.easyBanner.defaults = {
-        animation: 'slide',    // 动画模式: ['slide', 'fade']
-        trigger  : 'click',    // 触发动画的事件类型: ['click', 'hover']
-        direction: 'x',        // 滑动方向: ['x', 'y'](只适用于'slide'动画模式)
-        arrowBtn : true,       // 左右箭头按钮
-        serialBtn: true,       // 序列按钮
-        lazyLoad : false,      // 图片预加载
-        auto     : true,       // 自动轮播
-        speed    : 800,        // 动画速度
-        interval : 5000        // 自动轮播间隔
-    };
 
     /**
      * 脚本加载器
@@ -67,7 +55,19 @@
      * @return {HTMLElement}   调用该方法的元素集合中的每个元素
      */
     $.fn.easyBanner = function(option) {
-        var opt = $.extend($.easyBanner.defaults, option || {});
+        $.fn.easyBanner.defaults = {
+            animation: 'slide',    // 动画模式: ['slide', 'fade']
+            trigger  : 'click',    // 触发动画的事件类型: ['click', 'hover']
+            direction: 'x',        // 滑动方向: ['x', 'y'](只适用于'slide'动画模式)
+            arrowBtn : true,       // 左右箭头按钮
+            serialBtn: true,       // 序列按钮
+            lazyLoad : false,      // 图片预加载
+            auto     : true,       // 自动轮播
+            speed    : 800,        // 动画速度
+            interval : 5000        // 自动轮播间隔
+        };
+        
+        var opt = $.extend($.fn.easyBanner.defaults, option || {});
 
         return this.each(function() {
             var self  = this,
@@ -75,7 +75,9 @@
                 $list = $this.children(),
                 $item = $list.children(),
                 len   = $item.length,
+                $arrowBtnWrap,
                 $arrowBtn,
+                $serialBtnWrap,
                 $serialBtn,
                 currentIndex = 0,
                 horizonal = opt.direction.toLowerCase() === 'x' ? true : false,
@@ -116,7 +118,7 @@
                 });
 
                 if (opt.animation === 'fade') {
-                    $('head').append('<style type="text/css">.top-item{z-index: 1;}</style>');
+                    $('head').append('<style type="text/css">.top-item{z-index: 10;}</style>');
                     $item.css({
                         position: 'absolute',
                         left    : 0,
@@ -222,21 +224,24 @@
                 }
             }
 
+            /**
+             * 添加箭头按钮
+             */
             function addArrowBtn() {
-                $this.append('<div class="btn-arrow">');
-                var $arrowBtnWrap = $('.btn-arrow', $this);
-                $arrowBtnWrap.append(
-                    '<a class="prev" style="float: left;"></a>',
-                    '<a class="next" style="float: right;"></a>'
+                $this.append(
+                    '<div class="btn-arrow">'
+                +       '<a class="prev" style="float: left;"></a>'
+                +       '<a class="next" style="float: right;"></a>'
+                +   '</div>'
                 );
-                $arrowBtn = $('a', $arrowBtnWrap);
 
+                $arrowBtnWrap = $('.btn-arrow', $this);
+                $arrowBtn = $('.btn-arrow a', $this);
 
                 if ($arrowBtnWrap.width() === $this.width()) {
                     $arrowBtnWrap.css('width', '96%')
                 }
 
-                // 设置arrowBtnWrap的默认位置
                 if ($arrowBtnWrap.cssDetecter('top', 'auto') && $arrowBtnWrap.cssDetecter('bottom', 'auto')) {
                     $arrowBtnWrap.css({
                         top: '50%',
@@ -251,7 +256,6 @@
                     });
                 }
 
-
                 if ($arrowBtn.cssDetecter('background-image', 'none')) {
                     $('.prev', $arrowBtnWrap).html('&lt;');
                     $('.next', $arrowBtnWrap).html('&gt;');
@@ -263,28 +267,25 @@
                     });
                 }
 
-                // 阻止连续点击箭头按钮时选中
-                $arrowBtn.on('selectstart', function(e) {
-                    e.preventDefault();
-                });
-
                 $arrowBtnWrap.appendTo($this).css({
                     position :'absolute',
                     height: 0,
-                    'z-index': 2
+                    'z-index': 20
                 });
 
                 arrowBtnHandler();
             }
 
+            /**
+             * 添加序列按钮
+             */
             function addSerialBtn() {
-                $this.append('<ol class="btn-serial">');
-                var $serialBtnList = $('.btn-serial', $this);
-                for (var i = 0; i < len; i++) {
-                    $serialBtnList.append('<li>');
+                for (var i = 0, str = ''; i < len; i++) {
+                    str += '<li></li>';
                 }
-                $serialBtn = $('li', $serialBtnList);
-                
+                $this.append('<ol class="btn-serial">' + str + '</ol>');
+                $serialBtnWrap = $('.btn-serial', $this);
+                $serialBtn = $('.btn-serial li', $this);
 
                 $serialBtn.css('float', 'left');
                 if ($serialBtn.cssDetecter('width', '0px') && $serialBtn.cssDetecter('height', '0px')) {
@@ -297,45 +298,54 @@
 
                 if ($serialBtn.cssDetecter('background-color', ['rgba(0, 0, 0, 0)', 'transparent']) &&
                     $serialBtn.cssDetecter('background-image', 'none')) {
-                    embedCss += '.btn-serial > *{background-color: #fff;border-radius: 50%;}\n';
+                    embedCss += '.btn-serial > *{background-color: #fff;border-radius: 50%;}\n' +
+                                '.btn-serial > .active{background-color: #ff8000;}\n';
                 }
 
-                $serialBtn.first().addClass('active');
-
-                if ($('.active', $serialBtnList).cssDetecter('background-color', ['rgba(0, 0, 0, 0)', 'transparent']) &&
-                    $('.active', $serialBtnList).cssDetecter('background-image', 'none')) {
-                    embedCss += '.btn-serial > .active{background-color: #ff8000;}\n';
+                if ($serialBtnWrap.cssDetecter('top', 'auto') && $serialBtnWrap.cssDetecter('bottom', 'auto')) {
+                    $serialBtnWrap.css('bottom', $this.height() / 25);
                 }
 
-                if ($serialBtnList.cssDetecter('top', 'auto') && $serialBtnList.cssDetecter('bottom', 'auto')) {
-                    $serialBtnList.css('bottom', $this.height() / 25);
-                }
-
-                if ($serialBtnList.cssDetecter('left', 'auto') && $serialBtnList.cssDetecter('right', 'auto')) {
-                    $serialBtnList.css({
+                if ($serialBtnWrap.cssDetecter('left', 'auto') && $serialBtnWrap.cssDetecter('right', 'auto')) {
+                    $serialBtnWrap.css({
                         left: '50%',
                         'margin-left': -$serialBtn.outerWidth(true) * len / 2
                     });
                 }
 
-                $serialBtnList.appendTo($this).css({
+                $serialBtnWrap.appendTo($this).css({
                     position :'absolute',
-                    'z-index': 2
+                    'z-index': 20
                 });
-                
+                $serialBtn.first().addClass('active');
+
                 serailBtnHandler();
             }
 
+            /**
+             * 箭头按钮事件处理器
+             */
             function arrowBtnHandler() {
-                $arrowBtn.on('click', function() {
-                    if ($list.animated) {
-                        return;
+                $arrowBtn.on({
+                    click: function() {
+                        console.log($this.data('easyBanner'));
+                        if ($list.animated) {
+                            return;
+                        }
+                        $(this).hasClass('prev') ? currentIndex-- : currentIndex++;   
+                        play();
+                    },
+
+                    // 阻止连续点击箭头按钮时选中按钮
+                    selectstart: function(e) {
+                        e.preventDefault();
                     }
-                    $(this).hasClass('prev') ? currentIndex-- : currentIndex++;   
-                    play();
                 });
             }
 
+            /**
+             * 序列按钮事件处理器
+             */
             function serailBtnHandler() {
                 if (opt.trigger === 'click') {
                     $serialBtn.on('click', function() {
@@ -451,6 +461,7 @@
             }
 
             function play() {
+                // console.log($this.data('easyBanner').animation);
                 opt.animation === 'fade' ? fadeAnimation() : slideAnimation();
             };
 
@@ -470,7 +481,7 @@
                 self.autoTimer = setInterval(function() {
                     currentIndex++;
                     play();
-                }, opt.interval);    
+                }, opt.interval);
             }
 
             function run() {
@@ -500,4 +511,6 @@
             run();
         });
     };
+
+
 })(jQuery, window, document);

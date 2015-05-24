@@ -1,0 +1,28 @@
+<!DOCTYPE html>		
+<html>
+<head>
+	<title>basic-fade - easyBanner</title>
+	<meta charset="utf-8">
+	<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+	<div class="container">
+		<div class="banner fade">
+			<ul>
+				<li><img src="img/1920-1.jpg"></li>
+				<li><img src="img/1920-2.jpg"></li>
+				<li><img src="img/1920-3.jpg"></li>
+				<li><img src="img/1920-4.jpg"></li>
+				<li><img src="img/1920-5.jpg"></li>
+			</ul>
+		</div>
+	</div>
+</body>
+<script type="text/javascript" src="../lib/jquery-1.11.3.min.js"></script>
+<script type="text/javascript" src="../src/jquery.easyBanner.js"></script>
+<script type="text/javascript">
+	$('.fade').easyBanner({
+		animation: 'fade'
+	});
+</script>
+</html>
