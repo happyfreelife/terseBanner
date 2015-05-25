@@ -1,22 +1,37 @@
 /**
  * jquery.easyBanner.js
  * @author    HappyFreeLife
- * @version   1.1.4
+ * @version   1.1.5
  * @url       https://github.com/happyfreelife/easyBanner/
  */
 
 ;(function ($, window, document, undefined) {
-    $.easyBanner = {};
+    // easyBanner对象的简写变量
+    var E = $.easyBanner = {};
+
+    // easyBanner文件的路径
+    E.selfPath = (function (scripts, i, self) {
+        // 使用脚本加载器加载本文件，则调用下面的方法查找文件自身
+        for (var i in scripts) {
+            if (scripts[i].src && scripts[i].src.indexOf('jquery.easyBanner') > -1) {
+                self = scripts[i];
+                break;
+            }
+        }
+
+        self = self || scripts[scripts.length - 1];
+        return self.src.substring(0, self.src.lastIndexOf('/') + 1);
+    }(document.scripts));
 
     /**
      * 脚本加载器
      * @param  {String}   src      外部脚本路径
      * @param  {Function} callback 脚本加载完成后执行的函数
      */
-    $.easyBanner.loadScript = function(src, callback) {
+    E.loadScript = function(src, callback) {
         var script = document.createElement('script');
         script.type = 'text/javascript';
-        script.src = src;
+        script.src = E.selfPath + src;
 
         if (/msie (6.0|7.0|8.0)/i.test(navigator.userAgent)) {
             script.onreadystatechange = function() {
@@ -92,13 +107,7 @@
             function init() {
                 self.hovered = false;
 
-                $list.wrap('<div class="wrap-list">');
-
-                if ($this.cssDetecter('position', 'static')) {
-                    $this.css('position', 'relative')
-                }
-
-                $('.wrap-list', $this).css({
+                $list.wrap('<div class="wrap-list">').parent().css({
                     position: 'relative',
                     width   : '100%',
                     height  : '100%',
@@ -117,8 +126,17 @@
                     height : $this.height()
                 });
 
+                E.loadScript('module-automatic.js', function() {
+                    
+                });
+
+                if ($this.cssDetecter('position', 'static')) {
+                    $this.css('position', 'relative')
+                }
+
                 if (opt.animation === 'fade') {
-                    $('head').append('<style type="text/css">.top-item{z-index: 10;}</style>');
+                    embedCss += '.top-item{z-index: 10;}\n'
+
                     $item.css({
                         position: 'absolute',
                         left    : 0,
@@ -328,7 +346,6 @@
             function arrowBtnHandler() {
                 $arrowBtn.on({
                     click: function() {
-                        console.log($this.data('easyBanner'));
                         if ($list.animated) {
                             return;
                         }
@@ -461,7 +478,6 @@
             }
 
             function play() {
-                // console.log($this.data('easyBanner').animation);
                 opt.animation === 'fade' ? fadeAnimation() : slideAnimation();
             };
 
