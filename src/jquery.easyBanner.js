@@ -100,9 +100,27 @@
                 embedCss = '';
 
             // 判断浏览器是否支持CSS3动画
-            var isSupportCss3Transition = 'transition' in document.documentElement.style;
+            var isSupportTransition = 'transition' in document.documentElement.style;
 
-            
+            // 图片转换为背景图片
+            function imageConvert() {
+                if ($item.find('img[data-src]').length === len) {
+                    // 根据data-src自动开启Preload
+                    $item.each(function() {
+                        $(this).attr('data-src', $(this).find('img').data('src'))
+                        .children('img').remove();
+                    });
+                    imgPreLoader(currentIndex);
+                } else {
+                    $item.each(function() {
+                        $(this).css({
+                            'background-image': 'url(' + $(this).find('img').attr('src') + ')',
+                            'background-repeat': 'no-repeat',
+                            'background-position': 'center top'
+                        }).children('img').remove();
+                    });
+                }
+            }
 
             function init() {
                 self.hovered = false;
@@ -146,7 +164,7 @@
                 }
 
                 if (opt.animation === 'slide') {
-                    if (isSupportCss3Transition) {
+                    if (isSupportTransition) {
                         embedCss += '.transition-' + opt.speed + '{'
                         +                'transition: all ' + opt.speed + 'ms ease;'
                         +                '-webkit-transition: all ' + opt.speed + 'ms ease;'
@@ -176,69 +194,49 @@
                         });
                     }
                 }
-            }
 
-            // 图片转换为背景图片
-            function imgToBackground() {
-                $item.each(function() {
-                    var $img = $(this).find('img');
-                    if (opt.lazyLoad && $img.attr('data-src')) {
-                        $(this).attr('background-image', $img.attr('data-src'));
-                    } else {
-                        var imgUrl = $img.attr('src') || $img.attr('data-src'),
-                            bgStr = 'url(' + imgUrl + ') no-repeat center top';
-                        $(this).css('background', bgStr);
-                    }
-                    $img.remove();
-                });
-
-                opt.lazyLoad ? imgPreLoader(currentIndex) : '';
-            }
-
-            function resizeHandler() {
                 $(window).resize(function() {
-                    $list.children().css('width', $this.css('width'));
+                    $list.children().css('width', $this.width() + 'px');
                 });
             }
+
 
             // 图片预加载器(延迟加载)
-            function imgPreLoader(loadingItemIndex) {
-                // 只能预加载当前图片之后的1张图片
-                if (loadingItemIndex - currentIndex > 1) {
-                    return false;
+            function imgPreLoader(loadingIndex) {
+                // 只能预加载一张图片
+                if (loadingIndex - currentIndex > 1) {
+                    return;
+                }
+
+                function preload() {
+                    $loadingItem.removeClass();
+
+                    if (loadingIndex) {
+                        $loadingItem.css({
+                            display: 'none',
+                            'background-image': 'url(' + loadingItemSrc + ')'
+                        }).fadeIn(300);
+                    }
+
+                    imgPreLoader(loadingIndex++);
                 }
 
                 var img = new Image(),
-                    $loadingItem = $item.eq(loadingItemIndex),
-                    imgSrc = $loadingItem.attr('background-image'),
-                    loadNextImg = function() {
-                        $loadingItem.removeClass('loading').removeAttr('background-image');
-                        loadingItemIndex ? $loadingItem.css('opacity', 0) : '';
-                        $loadingItem.css('background', 'url(' + imgSrc + ') no-repeat center top');
-                        loadingItemIndex ? $loadingItem.animate({ opacity: 1 }, opt.speed / 2) : '';
+                    $loadingItem = $item.eq(loadingIndex),
+                    loadingItemSrc = $loadingItem.attr('data-src');
 
-                        // 预加载下一张图片
-                        loadingItemIndex++;
-                        imgPreLoader(loadingItemIndex);
-                    };
+                if (loadingItemSrc) {
+                    $loadingItem.removeAttr('data-src');
 
-                if (imgSrc) {
-                    if (!loadingItemIndex) {
-                        // 不对第1张图片设置loading.gif的背景图片
-                        $loadingItem.css('background', 'url(' + imgSrc + ') no-repeat center top');
-                        $loadingItem.removeAttr('background-image')
+                    // 不对第1张图片设置loading动画
+                    if (!loadingIndex) {
+                        $loadingItem.css('background-image', 'url(' + loadingItemSrc + ')');
                     } else {
                         $loadingItem.addClass('loading');
                     }
 
-                    img.src = imgSrc;
-
-                    // 当前图片加载完成之后预加载下一张图片
-                    img.complete ? loadNextImg() : img.onload = loadNextImg;
-                } else {
-                    // 已经加载过当前图片则直接加载下一张
-                    loadingItemIndex++;
-                    imgPreLoader(loadingItemIndex);
+                    img.src = loadingItemSrc;
+                    img.complete ? preload() : img.onload = preload;
                 }
             }
 
@@ -266,12 +264,8 @@
                         'margin-top': -$arrowBtn.height() / 2
                     });
                 }
-
                 if ($arrowBtnWrap.cssDetecter('left', 'auto') && $arrowBtnWrap.cssDetecter('right', 'auto')) {
-                    $arrowBtnWrap.css({
-                        left: '50%',
-                        'margin-left': -$arrowBtnWrap.width() / 2
-                    });
+                    $arrowBtnWrap.css('margin-left', ($this.width() - $arrowBtnWrap.width()) / $this.width() / 2 * 100 + '%');
                 }
 
                 if ($arrowBtn.cssDetecter('background-image', 'none')) {
@@ -279,9 +273,12 @@
                     $('.next', $arrowBtnWrap).html('&gt;');
 
                     $arrowBtn.css({
-                        font: $this.height() * 0.133 + 'px/' + $arrowBtn.height() + 'px SimHei',
-                        color: '#fff',
-                        'text-align': 'center'
+                        'line-height': $arrowBtn.height() + 'px',
+                        'font-size': $this.height() * 0.133 + 'px',
+                        'font-family': 'SimHei',
+                        'text-align': 'center',
+                        'user-select': 'none',
+                        color: '#fff'
                     });
                 }
 
@@ -354,8 +351,8 @@
                     },
 
                     // 阻止连续点击箭头按钮时选中按钮
-                    selectstart: function(e) {
-                        e.preventDefault();
+                    selectstart: function() {
+                        return false;
                     }
                 });
             }
@@ -420,7 +417,7 @@
                     listTop    = Math.abs(parseInt($list.css('top')));
 
                 if (listWidth === listLeft || listHeight === listTop || currentIndex < 0 || currentIndex > len) {
-                    isSupportCss3Transition ? $list.removeClass('transition-' + opt.speed) : '';
+                    isSupportTransition ? $list.removeClass('transition-' + opt.speed) : '';
                 }
 
                 // mirror item show -> trigger first serialBtn
@@ -443,26 +440,26 @@
                 // 动画进行时需要清除定时器，防止实际的自动播放间隔与设置的有误差
                 clearInterval(self.autoTimer);
 
-                if (isSupportCss3Transition) {
+                if (isSupportTransition) {
                     setTimeout(function() {
                         $list.animated = true;
-                        isSupportCss3Transition ? $list.addClass('transition-' + opt.speed) : '';
+                        isSupportTransition ? $list.addClass('transition-' + opt.speed) : '';
                         horizonal ? $list.css('left', -currentIndex * 100 + '%') : $list.css('top', -currentIndex * 100 + '%');
 
                         setTimeout(function() {
                             $list.animated = false;
                             opt.auto && !self.hovered ? addAutoTimer() : '';
                         }, opt.speed);
-                    }, 10);
+                    }, 15);
                 } else {
                     $list.animated = true;
                     if (horizonal) {
-                        $list.stop(true, false).animate({ left: -currentIndex * 100 + '%' }, opt.speed, function() {
+                        $list.animate({ left: -currentIndex * 100 + '%' }, opt.speed, function() {
                             $list.animated = false;
                             opt.auto && !self.hovered ? addAutoTimer() : '';
                         })
                     } else {
-                        $list.stop(true, false).animate({ top: -currentIndex * 100 + '%' }, opt.speed, function() {
+                        $list.animate({ top: -currentIndex * 100 + '%' }, opt.speed, function() {
                             $list.animated = false;
                             opt.auto && !self.hovered ? addAutoTimer() : '';
                         });
@@ -501,9 +498,8 @@
             }
 
             function run() {
+                imageConvert();
                 init();
-                imgToBackground();
-                resizeHandler();
 
                 if (len <= 1) {
                     return;

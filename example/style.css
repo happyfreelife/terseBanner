@@ -18,11 +18,18 @@ input[type="radio"], input[type="checkbox"]{border: none;}
 .clearfix:after{display: block;content: "";clear: both;}
 
 .container{background: #333;}
-.banner .btn-arrow a{opacity: 0;cursor: pointer;filter: alpha(opacity=0);}
-.banner:hover .btn-arrow a{opacity: .8;filter: alpha(opacity=80);}
+.banner .btn-arrow a{display: none;cursor: pointer;}
+.banner:hover .btn-arrow a{display: block;}
 
 /* basic-slide */
 .banner.slide{height: 500px;}
 
 /* basic-fade */
 .banner.fade{height: 450px;width: 1200px;margin: 0 auto;}
+
+/* extra-preload */
+.banner.preload{height: 500px;background: #f3f3f3;}
+.banner.preload ul li.loading{background: url(img/loading.gif) no-repeat center center;}
+
+
+
