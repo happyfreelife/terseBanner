@@ -1,7 +1,7 @@
 /**
  * jquery.easyBanner.js
  * @author    HappyFreeLife
- * @version   1.1.5
+ * @version   1.1.6
  * @url       https://github.com/happyfreelife/easyBanner/
  */
 
@@ -52,7 +52,7 @@
      * @param  {String || Array} val  css属性值
      * @return {Boolean}
      */
-    $.fn.cssDetecter = function(prop, val) {
+    $.fn.cssDetector = function(prop, val) {
         if ($.isArray(val)) {
             for (var i in val) {
                 if ($(this).css(prop) === val[i]) {
@@ -66,23 +66,21 @@
 
     /**
      * 插件主方法
-     * @param  {Object} opt    自定义参数
-     * @return {HTMLElement}   调用该方法的元素集合中的每个元素
+     * @param  {Object} option    自定义参数
+     * @return {HTMLElement}      调用该方法的元素集合中的每个元素
      */
     $.fn.easyBanner = function(option) {
-        $.fn.easyBanner.defaults = {
+        var defaults = {
             animation: 'slide',    // 动画模式: ['slide', 'fade']
             trigger  : 'click',    // 触发动画的事件类型: ['click', 'hover']
             direction: 'x',        // 滑动方向: ['x', 'y'](只适用于'slide'动画模式)
             arrowBtn : true,       // 左右箭头按钮
             serialBtn: true,       // 序列按钮
-            lazyLoad : false,      // 图片预加载
             auto     : true,       // 自动轮播
             speed    : 800,        // 动画速度
             interval : 5000        // 自动轮播间隔
-        };
-        
-        var opt = $.extend($.fn.easyBanner.defaults, option || {});
+        },
+        options = $.extend(defaults, option || {});
 
         return this.each(function() {
             var self  = this,
@@ -94,30 +92,34 @@
                 $arrowBtn,
                 $serialBtnWrap,
                 $serialBtn,
+                $thumbWrap,
+                $thumb,
+                $thumbImg,
                 currentIndex = 0,
-                horizonal = opt.direction.toLowerCase() === 'x' ? true : false,
-                vertical = opt.direction.toLowerCase() === 'y' ? true : false,
+                horizonal = options.direction.toLowerCase() === 'x' ? true : false,
+                vertical = options.direction.toLowerCase() === 'y' ? true : false,
                 embedCss = '';
 
             // 判断浏览器是否支持CSS3动画
             var isSupportTransition = 'transition' in document.documentElement.style;
 
-            // 图片转换为背景图片
+             // 图片转换为背景图片
             function imageConvert() {
+                // 根据data-src自动开启Preload
                 if ($item.find('img[data-src]').length === len) {
-                    // 根据data-src自动开启Preload
                     $item.each(function() {
-                        $(this).attr('data-src', $(this).find('img').data('src'))
-                        .children('img').remove();
+                        var url = $(this).find('img').data('src');
+                        $(this).attr('data-src', url).data('url', url).children('img').remove();
                     });
                     imgPreLoader(currentIndex);
                 } else {
                     $item.each(function() {
+                        var url = $(this).find('img').attr('src');
                         $(this).css({
-                            'background-image': 'url(' + $(this).find('img').attr('src') + ')',
+                            'background-image': 'url(' + url + ')',
                             'background-repeat': 'no-repeat',
                             'background-position': 'center top'
-                        }).children('img').remove();
+                        }).data('url', url).children('img').remove();
                     });
                 }
             }
@@ -148,48 +150,48 @@
                     
                 });
 
-                if ($this.cssDetecter('position', 'static')) {
+                if ($this.cssDetector('position', 'static')) {
                     $this.css('position', 'relative')
                 }
 
-                if (opt.animation === 'fade') {
+                if (options.animation === 'fade') {
                     embedCss += '.top-item{z-index: 10;}\n'
 
                     $item.css({
                         position: 'absolute',
-                        left    : 0,
-                        top     : 0
+                            left: 0,
+                             top: 0
                     });
                     $item.first().show().siblings().hide();
                 }
 
-                if (opt.animation === 'slide') {
+                if (options.animation === 'slide') {
                     if (isSupportTransition) {
-                        embedCss += '.transition-' + opt.speed + '{'
-                        +                'transition: all ' + opt.speed + 'ms ease;'
-                        +                '-webkit-transition: all ' + opt.speed + 'ms ease;'
+                        embedCss += '.transition-' + options.speed + '{'
+                        +                'transition: all ' + options.speed + 'ms ease;'
+                        +                '-webkit-transition: all ' + options.speed + 'ms ease;'
                         +            '}\n';
 
                         setTimeout(function() {
-                            $list.addClass('transition-' + opt.speed);
+                            $list.addClass('transition-' + options.speed);
                         }, 10);
                     }
 
                     if (horizonal) {
                         $list.css({
-                            left: 0,
-                            width : (len + 1) * 100 + '%'
+                            left : 0,
+                            width: (len + 1) * 100 + '%'
                         });
 
                         $item.css({
-                            float : 'left',
-                            width : $this.css('width')
+                            float: 'left',
+                            width: $this.css('width')
                         });
                     }
 
                     if (vertical) {
                         $list.css({
-                            'top': 0,
+                            top   : 0,
                             height: 'auto'
                         });
                     }
@@ -252,40 +254,41 @@
                 );
 
                 $arrowBtnWrap = $('.btn-arrow', $this);
-                $arrowBtn = $('.btn-arrow a', $this);
+                $arrowBtn = $arrowBtnWrap.children();
 
                 if ($arrowBtnWrap.width() === $this.width()) {
                     $arrowBtnWrap.css('width', '96%')
                 }
 
-                if ($arrowBtnWrap.cssDetecter('top', 'auto') && $arrowBtnWrap.cssDetecter('bottom', 'auto')) {
+                if ($arrowBtnWrap.cssDetector('top', 'auto') && $arrowBtnWrap.cssDetector('bottom', 'auto')) {
                     $arrowBtnWrap.css({
-                        top: '50%',
+                                top : '50%',
                         'margin-top': -$arrowBtn.height() / 2
                     });
                 }
-                if ($arrowBtnWrap.cssDetecter('left', 'auto') && $arrowBtnWrap.cssDetecter('right', 'auto')) {
+                if ($arrowBtnWrap.cssDetector('left', 'auto') && $arrowBtnWrap.cssDetector('right', 'auto')) {
                     $arrowBtnWrap.css('margin-left', ($this.width() - $arrowBtnWrap.width()) / $this.width() / 2 * 100 + '%');
                 }
 
-                if ($arrowBtn.cssDetecter('background-image', 'none')) {
+                if ($arrowBtn.cssDetector('background-image', 'none')) {
                     $('.prev', $arrowBtnWrap).html('&lt;');
                     $('.next', $arrowBtnWrap).html('&gt;');
 
                     $arrowBtn.css({
                         'line-height': $arrowBtn.height() + 'px',
-                        'font-size': $this.height() * 0.133 + 'px',
+                        'font-size'  : $this.height() * 0.133 + 'px',
                         'font-family': 'SimHei',
-                        'text-align': 'center',
+                        'text-align' : 'center',
                         'user-select': 'none',
-                        color: '#fff'
+                               cursor: 'pointer',
+                                color: '#fff'
                     });
                 }
 
                 $arrowBtnWrap.appendTo($this).css({
                     position :'absolute',
-                    height: 0,
-                    'z-index': 20
+                    'z-index': 20,
+                    height   : 0
                 });
 
                 arrowBtnHandler();
@@ -295,33 +298,33 @@
              * 添加序列按钮
              */
             function addSerialBtn() {
-                for (var i = 0, str = ''; i < len; i++) {
-                    str += '<li></li>';
+                for (var i = 0, item = ''; i < len; i++) {
+                    item += '<li></li>';
                 }
-                $this.append('<ol class="btn-serial">' + str + '</ol>');
+                $this.append('<ul class="btn-serial">' + item + '</ul>');
                 $serialBtnWrap = $('.btn-serial', $this);
-                $serialBtn = $('.btn-serial li', $this);
+                $serialBtn = $serialBtnWrap.children();
 
                 $serialBtn.css('float', 'left');
-                if ($serialBtn.cssDetecter('width', '0px') && $serialBtn.cssDetecter('height', '0px')) {
+                if ($serialBtn.cssDetector('width', '0px') && $serialBtn.cssDetector('height', '0px')) {
                     $serialBtn.css({width: '10px', height: '10px'});
                 }
 
-                if ($serialBtn.cssDetecter('margin', ['0px', ''])) {
+                if ($serialBtn.cssDetector('margin', ['0px', ''])) {
                     $serialBtn.css('margin', '0 5px');
                 }
 
-                if ($serialBtn.cssDetecter('background-color', ['rgba(0, 0, 0, 0)', 'transparent']) &&
-                    $serialBtn.cssDetecter('background-image', 'none')) {
+                if ($serialBtn.cssDetector('background-color', ['rgba(0, 0, 0, 0)', 'transparent']) &&
+                    $serialBtn.cssDetector('background-image', 'none')) {
                     embedCss += '.btn-serial > *{background-color: #fff;border-radius: 50%;}\n' +
                                 '.btn-serial > .active{background-color: #ff8000;}\n';
                 }
 
-                if ($serialBtnWrap.cssDetecter('top', 'auto') && $serialBtnWrap.cssDetecter('bottom', 'auto')) {
-                    $serialBtnWrap.css('bottom', $this.height() / 25);
+                if ($serialBtnWrap.cssDetector('top', 'auto') && $serialBtnWrap.cssDetector('bottom', 'auto')) {
+                    $serialBtnWrap.css('bottom', $this.height() * 0.04);
                 }
 
-                if ($serialBtnWrap.cssDetecter('left', 'auto') && $serialBtnWrap.cssDetecter('right', 'auto')) {
+                if ($serialBtnWrap.cssDetector('left', 'auto') && $serialBtnWrap.cssDetector('right', 'auto')) {
                     $serialBtnWrap.css({
                         left: '50%',
                         'margin-left': -$serialBtn.outerWidth(true) * len / 2
@@ -331,10 +334,63 @@
                 $serialBtnWrap.appendTo($this).css({
                     position :'absolute',
                     'z-index': 20
-                });
-                $serialBtn.first().addClass('active');
+                }).children(':first').addClass('active');
 
                 serailBtnHandler();
+            }
+
+            /**
+             * 添加缩略图
+             */
+            function addThumbnail() {
+                for (var i = 0, str = ''; i < len; i++) {
+                    str += '<li>' + '<img src="' + $item.eq(i).data('url') + '">' + '</li>';
+                }
+                $this.append('<ul class="list-thumb">' + str + '</ul>');
+
+                $thumbWrap = $('.list-thumb', $this);
+                $thumb = $thumbWrap.children();
+                $thumbImg = $thumb.children();
+                
+                $thumb.css({
+                    float : 'left',
+                    overflow: 'hidden',
+                    cursor: 'pointer'
+                });
+
+                $thumbImg.hide();
+                if (!$thumb.cssDetector('height', '0px')) {
+                    $thumbImg.height($thumb.height());
+                } else {
+                    $thumbImg.height($this.height() * 0.125);
+                }
+
+                if (!$thumb.cssDetector('width', '0px')) {
+                    $thumbImg.css({
+                        position     : 'relative',
+                        left         : '50%',
+                        'margin-left': -$thumbImg.outerWidth() / 2
+                    });
+                }
+                $thumbImg.show();
+
+                if ($thumbWrap.cssDetector('top', 'auto') && $thumbWrap.cssDetector('bottom', 'auto')) {
+                    $thumbWrap.css('bottom', $this.height() / 25);
+                }
+
+                if ($thumbWrap.cssDetector('left', 'auto') && $thumbWrap.cssDetector('right', 'auto')) {
+                    $thumbWrap.css({
+                        left: '50%',
+                        'margin-left': -$thumb.outerWidth(true) * len / 2
+                    });
+                }
+
+                $thumbWrap.appendTo($this).css({
+                    position :'absolute',
+                    'z-index': 20
+                }).children(':first').addClass('active');
+
+                thumbnailHandler();
             }
 
             /**
@@ -361,7 +417,7 @@
              * 序列按钮事件处理器
              */
             function serailBtnHandler() {
-                if (opt.trigger === 'click') {
+                if (options.trigger === 'click') {
                     $serialBtn.on('click', function() {
                         if ($list.animated) {
                             return;
@@ -371,7 +427,7 @@
                     });
                 }
 
-                if (opt.trigger === 'hover') {
+                if (options.trigger === 'hover') {
                     $serialBtn.on({
                         mouseenter: function() {
                             if ($list.animated) {
@@ -393,20 +449,49 @@
                 }
             }
 
+            /*
+             * 缩略图副件处理器
+             */
+            function thumbnailHandler() {
+                $thumb.on('click', function() {
+                    if ($list.animated) {
+                        return;
+                    }
+                    currentIndex = $(this).index();   
+                    play();
+                }); 
+            }
+
+            /**
+             * 序列按钮和缩略图当前项高亮
+             */
+            function elemHighlight() {
+                var activeIndex = currentIndex === len ? 0 :
+                    currentIndex === -1 ? len - 1 : currentIndex;
+                if (options.serialBtn) {
+                    $serialBtn.eq(activeIndex).addClass('active').siblings().removeClass('active');
+                }
+
+                if (options.thumb) {
+                    $thumb.eq(activeIndex).addClass('active').siblings().removeClass('active');
+                }
+            }
+            
             function fadeAnimation() {
                 $list.animated = true;
                 currentIndex = currentIndex === len ?  0 : (currentIndex === -1 ? len - 1 : currentIndex);
                 $item.removeClass('top-item').eq(currentIndex)
                      .addClass('top-item')
                      .css({display: 'block', opacity: 0})
-                     .animate({opacity: 1}, opt.speed, function() {
+                     .animate({opacity: 1}, options.speed, function() {
                          $list.animated = false;
                      });
 
                 setTimeout(function() {
                     $item.eq(currentIndex).siblings().hide();
-                }, opt.speed);
-                $serialBtn.eq(currentIndex).addClass('active').siblings().removeClass('active');
+                }, options.speed);
+
+                elemHighlight();
                 imgPreLoader(currentIndex);
             }
 
@@ -417,7 +502,7 @@
                     listTop    = Math.abs(parseInt($list.css('top')));
 
                 if (listWidth === listLeft || listHeight === listTop || currentIndex < 0 || currentIndex > len) {
-                    isSupportTransition ? $list.removeClass('transition-' + opt.speed) : '';
+                    isSupportTransition ? $list.removeClass('transition-' + options.speed) : '';
                 }
 
                 // mirror item show -> trigger first serialBtn
@@ -443,39 +528,40 @@
                 if (isSupportTransition) {
                     setTimeout(function() {
                         $list.animated = true;
-                        isSupportTransition ? $list.addClass('transition-' + opt.speed) : '';
+                        isSupportTransition ? $list.addClass('transition-' + options.speed) : '';
                         horizonal ? $list.css('left', -currentIndex * 100 + '%') : $list.css('top', -currentIndex * 100 + '%');
 
                         setTimeout(function() {
                             $list.animated = false;
-                            opt.auto && !self.hovered ? addAutoTimer() : '';
-                        }, opt.speed);
+                            options.auto && !self.hovered ? addAutoTimer() : '';
+                        }, options.speed);
                     }, 15);
                 } else {
                     $list.animated = true;
                     if (horizonal) {
-                        $list.animate({ left: -currentIndex * 100 + '%' }, opt.speed, function() {
+                        $list.animate({ left: -currentIndex * 100 + '%' }, options.speed, function() {
                             $list.animated = false;
-                            opt.auto && !self.hovered ? addAutoTimer() : '';
+                            options.auto && !self.hovered ? addAutoTimer() : '';
                         })
                     } else {
-                        $list.animate({ top: -currentIndex * 100 + '%' }, opt.speed, function() {
+                        $list.animate({ top: -currentIndex * 100 + '%' }, options.speed, function() {
                             $list.animated = false;
-                            opt.auto && !self.hovered ? addAutoTimer() : '';
+                            options.auto && !self.hovered ? addAutoTimer() : '';
                         });
                     }
                 }
 
-                if (opt.serialBtn) {
+                if (options.serialBtn) {
                     var activeIndex = currentIndex === len ? 0 : (currentIndex === -1 ? len - 1 : currentIndex);
                     $serialBtn.eq(activeIndex).addClass('active').siblings().removeClass('active');
                 }
 
+                elemHighlight();
                 imgPreLoader(currentIndex);
             }
 
             function play() {
-                opt.animation === 'fade' ? fadeAnimation() : slideAnimation();
+                options.animation === 'fade' ? fadeAnimation() : slideAnimation();
             };
 
             function auto() {
@@ -494,7 +580,7 @@
                 self.autoTimer = setInterval(function() {
                     currentIndex++;
                     play();
-                }, opt.interval);
+                }, options.interval);
             }
 
             function run() {
@@ -504,20 +590,23 @@
                 if (len <= 1) {
                     return;
                 }
-                if (opt.animation === 'slide') {
+                if (options.animation === 'slide') {
                     $item.first().clone().appendTo($list);
                 }
-                if (opt.serialBtn) {
+                if (options.thumb || typeof options.thumb === 'object') {
+                    addThumbnail();
+                    options.serialBtn = false;
+                }
+                if (options.serialBtn) {
                     addSerialBtn();
                 }
-                if (opt.arrowBtn) {
+                if (options.arrowBtn) {
                     addArrowBtn();
                 }
                 $('head').append('<style type="text/css">' + embedCss + '</style>');
-                if (opt.auto) {
+                if (options.auto) {
                     auto();
                 }
-
             }
 
             run();
