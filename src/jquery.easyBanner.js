@@ -1,7 +1,7 @@
 /**
  * jquery.easyBanner.js
  * @author    HappyFreeLife
- * @version   1.1.6
+ * @version   1.1.7
  * @url       https://github.com/happyfreelife/easyBanner/
  */
 
@@ -10,7 +10,7 @@
     var E = $.easyBanner = {};
 
     // easyBanner文件的路径
-    E.selfPath = (function (scripts, i, self) {
+    E.scriptPath = (function (scripts, i, self) {
         // 使用脚本加载器加载本文件，则调用下面的方法查找文件自身
         for (var i in scripts) {
             if (scripts[i].src && scripts[i].src.indexOf('jquery.easyBanner') > -1) {
@@ -31,7 +31,7 @@
     E.loadScript = function(src, callback) {
         var script = document.createElement('script');
         script.type = 'text/javascript';
-        script.src = E.selfPath + src;
+        script.src = E.scriptPath + src;
 
         if (/msie (6.0|7.0|8.0)/i.test(navigator.userAgent)) {
             script.onreadystatechange = function() {
@@ -73,9 +73,9 @@
         var defaults = {
             animation: 'slide',    // 动画模式: ['slide', 'fade']
             trigger  : 'click',    // 触发动画的事件类型: ['click', 'hover']
-            direction: 'x',        // 滑动方向: ['x', 'y'](只适用于'slide'动画模式)
             arrowBtn : true,       // 左右箭头按钮
             serialBtn: true,       // 序列按钮
+            thumbnail: false,      // 缩略图
             auto     : true,       // 自动轮播
             speed    : 800,        // 动画速度
             interval : 5000        // 自动轮播间隔
@@ -88,6 +88,7 @@
                 $list = $this.children(),
                 $item = $list.children(),
                 len   = $item.length,
+                animation,
                 $arrowBtnWrap,
                 $arrowBtn,
                 $serialBtnWrap,
@@ -96,8 +97,6 @@
                 $thumb,
                 $thumbImg,
                 currentIndex = 0,
-                horizonal = options.direction.toLowerCase() === 'x' ? true : false,
-                vertical = options.direction.toLowerCase() === 'y' ? true : false,
                 embedCss = '';
 
             // 判断浏览器是否支持CSS3动画
@@ -171,30 +170,18 @@
                         +                'transition: all ' + options.speed + 'ms ease;'
                         +                '-webkit-transition: all ' + options.speed + 'ms ease;'
                         +            '}\n';
-
-                        setTimeout(function() {
-                            $list.addClass('transition-' + options.speed);
-                        }, 10);
                     }
 
-                    if (horizonal) {
-                        $list.css({
-                            left : 0,
-                            width: (len + 1) * 100 + '%'
-                        });
+                    $list.css({
+                        left : 0,
+                        width: (len + 1) * 100 + '%'
+                    });
 
-                        $item.css({
-                            float: 'left',
-                            width: $this.css('width')
-                        });
-                    }
+                    $item.css({
+                        float: 'left',
+                        width: $this.css('width')
+                    });
 
-                    if (vertical) {
-                        $list.css({
-                            top   : 0,
-                            height: 'auto'
-                        });
-                    }
                 }
 
                 $(window).resize(function() {
@@ -203,12 +190,13 @@
             }
 
 
-            // 图片预加载器(延迟加载)
+            /**
+             * 图片预加载器(延迟加载)
+             * @param  {Number} loadingIndex 当前正在加载的图片序号
+             */
             function imgPreLoader(loadingIndex) {
                 // 只能预加载一张图片
-                if (loadingIndex - currentIndex > 1) {
-                    return;
-                }
+                if (loadingIndex - currentIndex > 1) { return; }
 
                 function preload() {
                     $loadingItem.removeClass();
@@ -399,17 +387,13 @@
             function arrowBtnHandler() {
                 $arrowBtn.on({
                     click: function() {
-                        if ($list.animated) {
-                            return;
-                        }
+                        if ($list.animated) { return; }
                         $(this).hasClass('prev') ? currentIndex-- : currentIndex++;   
                         play();
                     },
 
                     // 阻止连续点击箭头按钮时选中按钮
-                    selectstart: function() {
-                        return false;
-                    }
+                    selectstart: function() { return false; }
                 });
             }
 
@@ -419,9 +403,7 @@
             function serailBtnHandler() {
                 if (options.trigger === 'click') {
                     $serialBtn.on('click', function() {
-                        if ($list.animated) {
-                            return;
-                        }
+                        if ($list.animated) { return; }
                         currentIndex = $(this).index();
                         play();
                     });
@@ -430,12 +412,10 @@
                 if (options.trigger === 'hover') {
                     $serialBtn.on({
                         mouseenter: function() {
-                            if ($list.animated) {
-                                return;
-                            }
-                            var $self = $(this);
+                            if ($list.animated) { return; }
 
                             // 防止指针快速地经过序列按钮导致动画序列添加过多
+                            var $self = $(this);
                             timer = setTimeout(function(){
                                 currentIndex = $self.index();
                                 play();
@@ -450,118 +430,141 @@
             }
 
             /*
-             * 缩略图副件处理器
+             * 缩略图事件处理器
              */
             function thumbnailHandler() {
                 $thumb.on('click', function() {
-                    if ($list.animated) {
-                        return;
-                    }
+                    if ($list.animated) { return; }
                     currentIndex = $(this).index();   
                     play();
                 }); 
             }
 
             /**
-             * 序列按钮和缩略图当前项高亮
+             * 轮播动画
+             * active    序列按钮和缩略图当前项高亮
+             * none      动画 - 无效果
+             * fade      动画 - 淡入淡出
+             * slide     动画 - 滑动
+             * fadeComplete    fade动画的回调函数
+             * slideComplete   slide动画的回调函数 
              */
-            function elemHighlight() {
-                var activeIndex = currentIndex === len ? 0 :
-                    currentIndex === -1 ? len - 1 : currentIndex;
-                if (options.serialBtn) {
-                    $serialBtn.eq(activeIndex).addClass('active').siblings().removeClass('active');
-                }
-
-                if (options.thumb) {
-                    $thumb.eq(activeIndex).addClass('active').siblings().removeClass('active');
-                }
-            }
-            
-            function fadeAnimation() {
-                $list.animated = true;
-                currentIndex = currentIndex === len ?  0 : (currentIndex === -1 ? len - 1 : currentIndex);
-                $item.removeClass('top-item').eq(currentIndex)
-                     .addClass('top-item')
-                     .css({display: 'block', opacity: 0})
-                     .animate({opacity: 1}, options.speed, function() {
-                         $list.animated = false;
-                     });
-
-                setTimeout(function() {
-                    $item.eq(currentIndex).siblings().hide();
-                }, options.speed);
-
-                elemHighlight();
-                imgPreLoader(currentIndex);
-            }
-
-            function slideAnimation() {
-                var listWidth  = $item.width()* len,
-                    listHeight = $item.height() * len,
-                    listLeft   = Math.abs(parseInt($list.css('left'))),
-                    listTop    = Math.abs(parseInt($list.css('top')));
-
-                if (listWidth === listLeft || listHeight === listTop || currentIndex < 0 || currentIndex > len) {
-                    isSupportTransition ? $list.removeClass('transition-' + options.speed) : '';
-                }
-
-                // mirror item show -> trigger first serialBtn
-                if (!currentIndex && (listWidth === listLeft || listHeight === listTop)) {
-                    horizonal ? $list.css('left', 0) : $list.css('top', 0);
-                }
-
-                // first item -> last item
-                if (currentIndex < 0) {
-                    horizonal ? $list.css('left', -len * 100 + '%') : $list.css('top', -len * 100 + '%');
-                    currentIndex = len - 1;
-                }
-
-                // last item -> first item
-                if (currentIndex > len) {
-                    horizonal ? $list.css('left', 0) : $list.css('top', 0);
-                    currentIndex = 1;
-                }
-
-                // 动画进行时需要清除定时器，防止实际的自动播放间隔与设置的有误差
-                clearInterval(self.autoTimer);
-
-                if (isSupportTransition) {
-                    setTimeout(function() {
-                        $list.animated = true;
-                        isSupportTransition ? $list.addClass('transition-' + options.speed) : '';
-                        horizonal ? $list.css('left', -currentIndex * 100 + '%') : $list.css('top', -currentIndex * 100 + '%');
-
-                        setTimeout(function() {
-                            $list.animated = false;
-                            options.auto && !self.hovered ? addAutoTimer() : '';
-                        }, options.speed);
-                    }, 15);
-                } else {
-                    $list.animated = true;
-                    if (horizonal) {
-                        $list.animate({ left: -currentIndex * 100 + '%' }, options.speed, function() {
-                            $list.animated = false;
-                            options.auto && !self.hovered ? addAutoTimer() : '';
-                        })
-                    } else {
-                        $list.animate({ top: -currentIndex * 100 + '%' }, options.speed, function() {
-                            $list.animated = false;
-                            options.auto && !self.hovered ? addAutoTimer() : '';
-                        });
+            animation = {
+                active: function() {
+                    var activeIndex = currentIndex === len ? 0 :
+                        currentIndex === -1 ? len - 1 : currentIndex;
+                    if (options.serialBtn) {
+                        $serialBtn.eq(activeIndex).addClass('active').siblings().removeClass('active');
                     }
-                }
 
-                if (options.serialBtn) {
-                    var activeIndex = currentIndex === len ? 0 : (currentIndex === -1 ? len - 1 : currentIndex);
-                    $serialBtn.eq(activeIndex).addClass('active').siblings().removeClass('active');
-                }
+                    if (options.thumbnail) {
+                        $thumb.eq(activeIndex).addClass('active').siblings().removeClass('active');
+                    }
+                },
 
-                elemHighlight();
-                imgPreLoader(currentIndex);
-            }
+                none: function() {
+                    
+                },
+
+                fade: function() {
+                    $list.animated = true;
+                    currentIndex = currentIndex === len ?  0 : (currentIndex === -1 ? len - 1 : currentIndex);
+                    $item.removeClass('top-item').eq(currentIndex)
+                         .addClass('top-item')
+                         .css({display: 'block', opacity: 0})
+                         .animate({opacity: 1}, options.speed, function() {
+                             $list.animated = false;
+                         });
+
+                    setTimeout(function() {
+                        $item.eq(currentIndex).siblings().hide();
+                    }, options.speed);
+
+                    this.active();
+                    imgPreLoader(currentIndex);
+                },
+
+                slide: function() {
+                    var $item = $list.children(),
+                        lastIndex = $list.data('lastIndex'),
+                        slideDirection = 'left';
+
+                    if (currentIndex === lastIndex){ return; }
+
+                    clearInterval(self.autoTimer);
+
+                    if (currentIndex < lastIndex) {
+                        slideDirection = 'right';
+                    }
+
+                    // first item >> last item
+                    if (currentIndex < 0) {
+                        currentIndex = len - 1;
+                        $item.eq(len).show().siblings().hide();
+                        slideDirection = 'right';
+                    }
+
+                    // first item >> last item
+                    if (currentIndex > len) {
+                        currentIndex = 1;
+                        slideDirection = 'left';
+                    }
+
+                    if (slideDirection === 'right') {
+                        $list.css('left', '-100%');
+                    }
+
+                    $item.eq(currentIndex).show();
+
+                    // 使用CSS3 Transition进行动画过渡
+                    // 相对于jQuery的animate执行的动画，可以大幅度提升流畅度
+                    if (isSupportTransition) {
+                        setTimeout(function() {
+                            $list.animated = true;
+                            $list.css('left', slideDirection === 'left' ? '-100%' : 0)
+                                 .addClass('transition-' + options.speed);
+
+                            setTimeout(function() {
+                                animation.slideComplete();
+                            }, options.speed - 20);
+                        }, 20);
+                    } else {
+                        $list.animated = true;
+                        $list.animate({
+                            left: slideDirection === 'left' ? '-100%' : 0
+                        }, {
+                            duration: options.speed,
+                            complete: animation.slideComplete
+                        })
+                    }
+
+                    this.active();
+
+                    imgPreLoader(currentIndex);
+                },
+
+                fadeComplete: function() {
+                    
+                },
+                
+                slideComplete: function() {
+                    if (currentIndex === len) {
+                        $item.first().show().siblings().hide();
+                        currentIndex = 0;
+                    }
+
+                    $list.animated = false;
+                    $list.css('left', 0).removeClass();
+                    $list.data('lastIndex', currentIndex);
+
+                    $item.eq(currentIndex).show().siblings().hide();
+
+                    options.auto && !self.hovered ? addAutoTimer() : '';
+                }
+            };
 
             function play() {
-                options.animation === 'fade' ? fadeAnimation() : slideAnimation();
+                animation[options.animation]();
             };
 
             function auto() {
@@ -583,17 +586,16 @@
                 }, options.interval);
             }
 
-            function run() {
+            (function() {
                 imageConvert();
                 init();
 
-                if (len <= 1) {
-                    return;
-                }
+                if (len <= 1) { return; }
                 if (options.animation === 'slide') {
                     $item.first().clone().appendTo($list);
+                    $item.first().show().siblings().hide();
                 }
-                if (options.thumb || typeof options.thumb === 'object') {
+                if (options.thumbnail) {
                     addThumbnail();
                     options.serialBtn = false;
                 }
@@ -607,11 +609,7 @@
                 if (options.auto) {
                     auto();
                 }
-            }
-
-            run();
+            }());
         });
     };
-
-
 })(jQuery, window, document);

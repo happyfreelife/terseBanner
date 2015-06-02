@@ -32,6 +32,6 @@ input[type="radio"], input[type="checkbox"]{border: none;}
 .banner.preload ul li.loading{background: url(img/loading.gif) no-repeat center center;}
 
 /* extra-thumb */
-.banner.thumb{height: 600px;}
+.banner.thumb{height: 550px;}
 .banner.thumb .list-thumb li{width: 160px;height: 80px;opacity: .4;margin: 0 5px;}
 .banner.thumb .list-thumb li.active{opacity: 1;}
