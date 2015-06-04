@@ -1,7 +1,7 @@
 /**
  * jquery.easyBanner.js
  * @author    HappyFreeLife
- * @version   1.1.8
+ * @version   1.1.9
  * @url       https://github.com/happyfreelife/easyBanner/
  */
 
@@ -74,8 +74,7 @@
             animation: 'slide',    // 动画模式: ['slide', 'fade']
             trigger  : 'click',    // 触发动画的事件类型: ['click', 'hover']
             arrowBtn : true,       // 左右箭头按钮
-            serialBtn: true,       // 序列按钮
-            thumbnail: false,      // 缩略图
+            serialBtn: true,       // 序列按钮[true, false, 'equal', 'thumbnail']
             auto     : true,       // 自动轮播
             speed    : 800,        // 动画速度
             interval : 5000        // 自动轮播间隔
@@ -103,7 +102,6 @@
             // 判断浏览器是否支持CSS3动画
             var isSupportTransition = 'transition' in document.documentElement.style;
 
-            // 图片转换为背景图片
             /**
              * 图片转换为背景图片
              */
@@ -127,7 +125,15 @@
              * 轮播列表初始化
              */
             function init() {
-                self.hovered = false;
+                if (isSupportTransition) {
+                    embedCss +=
+                        '.transition-' + options.speed + '{'
+                    +        'transition: all ' + options.speed + 'ms ease;'
+                    +        '-webkit-transition: all ' + options.speed + 'ms ease;'
+                    +    '}\n';
+                }
+
+                $list.hovered = false;
 
                 $list.wrap('<div class="wrap-list">').parent().css({
                     position: 'relative',
@@ -149,7 +155,7 @@
                     'background-repeat': 'no-repeat',
                     'background-position': 'center top'
                 });
-                $item.first().show().siblings().hide();
+                
 
                 E.loadScript('module-automatic.js', function() {
                     
@@ -168,16 +174,10 @@
                             left    : 0,
                             top     : 0
                         });
+                        $item.first().siblings().css('opacity', 0);
                         break;
 
                     case 'slide':
-                        if (isSupportTransition) {
-                            embedCss += '.transition-' + options.speed + '{'
-                            +                'transition: all ' + options.speed + 'ms ease;'
-                            +                '-webkit-transition: all ' + options.speed + 'ms ease;'
-                            +            '}\n';
-                        }
-
                         $list.css({
                             left : 0,
                             width: (len + 1) * 100 + '%'
@@ -188,6 +188,7 @@
                             width: $this.css('width')
                         });
                         $item.first().clone().appendTo($list);
+                        $item.first().show().siblings().hide();
                         break;
                 }
 
@@ -393,7 +394,7 @@
             function arrowBtnHandler() {
                 $arrowBtn.on({
                     click: function() {
-                        if ($list.animated) { return; }
+                        if ($list.animating) { return; }
                         $(this).hasClass('prev') ? currentIndex-- : currentIndex++;   
                         play();
                     },
@@ -409,7 +410,7 @@
             function eventHandler() {
                 if (options.trigger === 'click') {
                     $(this).on('click', function() {
-                        if ($list.animated) { return; }
+                        if ($list.animating) { return; }
                         currentIndex = $(this).index();
                         play();
                     });
@@ -417,7 +418,7 @@
 
                 if (options.trigger === 'hover') {
                     $(this).on('mouseenter', function() {
-                        if ($list.animated) { return; }
+                        if ($list.animating) { return; }
                         currentIndex = $(this).index();
                         play();
                     });
@@ -444,11 +445,11 @@
                 active: function() {
                     this.determineIndex();
 
-                    if (options.serialBtn) {
+                    if (options.serialBtn === true) {
                         $serialBtn.eq(activeIndex).addClass('active').siblings().removeClass('active');
                     }
 
-                    if (options.thumbnail) {
+                    if (options.serialBtn === 'thumbnail') {
                         $thumb.eq(activeIndex).addClass('active').siblings().removeClass('active');
                     }
                 },
@@ -460,19 +461,23 @@
                 },
 
                 fade: function() {
-                    $list.animated = true;
                     this.determineIndex();
 
-                    $item.removeClass('top-item').eq(currentIndex)
-                         .addClass('top-item')
-                         .css({display: 'block', opacity: 0})
-                         .animate({opacity: 1}, options.speed, function() {
-                             $list.animated = false;
-                         });
+                    $list.animating = true;
 
-                    setTimeout(function() {
-                        $item.eq(currentIndex).siblings().hide();
-                    }, options.speed);
+                    $item.removeClass().eq(currentIndex).addClass('top-item').css('opacity', 0);
+
+                    if (isSupportTransition) {
+                        $item.eq(currentIndex).addClass('transition-' + options.speed).css('opacity', 1);
+                        setTimeout(animation.fadeComplete, options.speed);
+                    } else {
+                        $item.eq(currentIndex).animate({
+                            opacity: 1
+                        }, {
+                            duration: options.speed,
+                            complete: animation.fadeComplete
+                        })
+                    }
 
                     this.active();
 
@@ -515,16 +520,14 @@
                     // 相对于jQuery的animate执行的动画，可以大幅度提升流畅度
                     if (isSupportTransition) {
                         setTimeout(function() {
-                            $list.animated = true;
+                            $list.animating = true;
                             $list.css('left', slideDirection === 'left' ? '-100%' : 0)
-                                 .addClass('transition-' + options.speed);
+                            .addClass('transition-' + options.speed);
 
-                            setTimeout(function() {
-                                animation.slideComplete();
-                            }, options.speed - 20);
+                            setTimeout(animation.slideComplete, options.speed - 20);
                         }, 20);
                     } else {
-                        $list.animated = true;
+                        $list.animating = true;
                         $list.animate({
                             left: slideDirection === 'left' ? '-100%' : 0
                         }, {
@@ -539,7 +542,8 @@
                 },
 
                 fadeComplete: function() {
-                    
+                    $list.animating = false;
+                    $item.eq(currentIndex).siblings().css('opacity', 0);
                 },
                 
                 slideComplete: function() {
@@ -548,13 +552,13 @@
                         currentIndex = 0;
                     }
 
-                    $list.animated = false;
+                    $list.animating = false;
                     $list.css('left', 0).removeClass();
                     $list.data('lastIndex', currentIndex);
 
                     $item.eq(currentIndex).show().siblings().hide();
 
-                    options.auto && !self.hovered ? addAutoTimer() : '';
+                    options.auto && !$list.hovered ? addAutoTimer() : '';
                 }
             };
 
@@ -565,11 +569,11 @@
             function auto() {
                 addAutoTimer();
                 $this.hover(function() {
-                    self.hovered = true;
+                    $list.hovered = true;
                     clearInterval(self.autoTimer);
                 }, function() {
-                    self.hovered = false;
-                    !$list.animated ? addAutoTimer() : '';
+                    $list.hovered = false;
+                    !$list.animating ? addAutoTimer() : '';
                 });
             }
 
@@ -586,12 +590,9 @@
                 init();
                 
                 if (len <= 1) { return; }
-                if (options.thumbnail) {
-                    addThumbnail();
-                    options.serialBtn = false;
-                }
-                if (options.serialBtn) { addSerialBtn(); }
                 if (options.arrowBtn) { addArrowBtn(); }
+                if (options.serialBtn === true) { addSerialBtn(); }
+                if (options.serialBtn === 'thumbnail') { addThumbnail(); }
                 if (options.auto) { auto(); }
 
                 $('head').append('<style type="text/css">' + embedCss + '</style>');
