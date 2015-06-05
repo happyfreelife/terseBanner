@@ -18,8 +18,6 @@
                 break;
             }
         }
-
-        self = self || scripts[scripts.length - 1];
         return self.src.substring(0, self.src.lastIndexOf('/') + 1);
     }(document.scripts));
 
@@ -74,8 +72,8 @@
             animation: 'slide',    // 动画模式: ['slide', 'fade']
             trigger  : 'click',    // 触发动画的事件类型: ['click', 'hover']
             arrowBtn : true,       // 左右箭头按钮
-            serialBtn: true,       // 序列按钮[true, false, 'equal', 'thumbnail']
-            auto     : true,       // 自动轮播
+            serialBtn: true,       // 序列按钮[true, false, 'equal', 'thumb']
+            autoPlay : true,       // 自动轮播
             speed    : 800,        // 动画速度
             interval : 5000        // 自动轮播间隔
         },
@@ -90,14 +88,14 @@
                 animation,
                 $arrowBtnWrap,
                 $arrowBtn,
-                $serialBtnWrap,
+                $serialBtnList,
                 $serialBtn,
-                $thumbWrap,
+                $thumbList,
                 $thumb,
                 $thumbImg,
                 currentIndex = 0,
                 activeIndex = 0,
-                embedCss = '';
+                embeddedStyle = '';
 
             // 判断浏览器是否支持CSS3动画
             var isSupportTransition = 'transition' in document.documentElement.style;
@@ -126,7 +124,7 @@
              */
             function init() {
                 if (isSupportTransition) {
-                    embedCss +=
+                    embeddedStyle +=
                         '.transition-' + options.speed + '{'
                     +        'transition: all ' + options.speed + 'ms ease;'
                     +        '-webkit-transition: all ' + options.speed + 'ms ease;'
@@ -157,7 +155,7 @@
                 });
                 
 
-                E.loadScript('module-automatic.js', function() {
+                E.loadScript('module-animation.js', function() {
                     
                 });
 
@@ -167,7 +165,7 @@
 
                 switch(options.animation) {
                     case 'fade':
-                        embedCss += '.top-item{z-index: 10;}\n';
+                        embeddedStyle += '.top-item{z-index: 10;}\n';
 
                         $item.css({
                             position: 'absolute',
@@ -297,8 +295,8 @@
                     item += '<li></li>';
                 }
                 $this.append('<ul class="btn-serial">' + item + '</ul>');
-                $serialBtnWrap = $('.btn-serial', $this);
-                $serialBtn = $serialBtnWrap.children();
+                $serialBtnList = $('.btn-serial', $this);
+                $serialBtn = $serialBtnList.children();
 
                 $serialBtn.css('float', 'left');
                 if ($serialBtn.cssDetector('width', '0px') && $serialBtn.cssDetector('height', '0px')) {
@@ -311,40 +309,40 @@
 
                 if ($serialBtn.cssDetector('background-color', ['rgba(0, 0, 0, 0)', 'transparent']) &&
                     $serialBtn.cssDetector('background-image', 'none')) {
-                    embedCss += '.btn-serial > *{background-color: #fff;border-radius: 50%;}\n' +
+                    embeddedStyle += '.btn-serial > *{background-color: #fff;border-radius: 50%;}\n' +
                                 '.btn-serial > .active{background-color: #ff8000;}\n';
                 }
 
-                if ($serialBtnWrap.cssDetector('top', 'auto') && $serialBtnWrap.cssDetector('bottom', 'auto')) {
-                    $serialBtnWrap.css('bottom', $this.height() * 0.04);
+                if ($serialBtnList.cssDetector('top', 'auto') && $serialBtnList.cssDetector('bottom', 'auto')) {
+                    $serialBtnList.css('bottom', $this.height() * 0.04);
                 }
 
-                if ($serialBtnWrap.cssDetector('left', 'auto') && $serialBtnWrap.cssDetector('right', 'auto')) {
-                    $serialBtnWrap.css({
+                if ($serialBtnList.cssDetector('left', 'auto') && $serialBtnList.cssDetector('right', 'auto')) {
+                    $serialBtnList.css({
                         left: '50%',
                         'margin-left': -$serialBtn.outerWidth(true) * len / 2
                     });
                 }
 
-                $serialBtnWrap.appendTo($this).css({
+                $serialBtnList.appendTo($this).css({
                     position :'absolute',
                     'z-index': 20
                 }).children(':first').addClass('active');
 
-                eventHandler.call($serialBtn);
+                serialHandler.call($serialBtn);
             }
 
             /**
              * 添加缩略图
              */
-            function addThumbnail() {
-                for (var i = 0, str = ''; i < len; i++) {
-                    str += '<li>' + '<img src="' + $item.eq(i).data('url') + '">' + '</li>';
+            function addThumb() {
+                for (var i = 0, item = ''; i < len; i++) {
+                    item += '<li>' + '<img src="' + $item.eq(i).data('url') + '">' + '</li>';
                 }
-                $this.append('<ul class="list-thumb">' + str + '</ul>');
+                $this.append('<div class="wrap-thumb"><ul>' + item + '</ul></div>');
 
-                $thumbWrap = $('.list-thumb', $this);
-                $thumb = $thumbWrap.children();
+                $thumbList = $('.wrap-thumb ul', $this);
+                $thumb = $thumbList.children();
                 $thumbImg = $thumb.children();
                 
                 $thumb.css({
@@ -369,23 +367,36 @@
                 }
                 $thumbImg.show();
 
-                if ($thumbWrap.cssDetector('top', 'auto') && $thumbWrap.cssDetector('bottom', 'auto')) {
-                    $thumbWrap.css('bottom', $this.height() / 25);
+                if ($thumbList.cssDetector('top', 'auto') && $thumbList.cssDetector('bottom', 'auto')) {
+                    $thumbList.css('bottom', $this.height() / 25);
                 }
 
-                if ($thumbWrap.cssDetector('left', 'auto') && $thumbWrap.cssDetector('right', 'auto')) {
-                    $thumbWrap.css({
+                if ($thumbList.cssDetector('left', 'auto') && $thumbList.cssDetector('right', 'auto')) {
+                    $thumbList.css({
                         left: '50%',
                         'margin-left': -$thumb.outerWidth(true) * len / 2
                     });
                 }
 
-                $thumbWrap.appendTo($this).css({
+                $thumbList.css({
                     position :'absolute',
                     'z-index': 20
                 }).children(':first').addClass('active');
 
-                eventHandler.call($thumb);
+                serialHandler.call($thumb);
+            }
+
+            /**
+             * banner容器hover事件处理器
+             */
+            function bannerHoverHandler() {
+                $this.hover(function() {
+                    $list.hovered = true;
+                    clearInterval(self.playTimer);
+                }, function() {
+                    $list.hovered = false;
+                    if (!$list.animating) { setPlayTimer(); }
+                });
             }
 
             /**
@@ -407,7 +418,7 @@
             /**
              * 序列按钮和缩略图事件处理器
              */
-            function eventHandler() {
+            function serialHandler() {
                 if (options.trigger === 'click') {
                     $(this).on('click', function() {
                         if ($list.animating) { return; }
@@ -429,6 +440,7 @@
              * 轮播动画
              * determineIndex    判定索引是否溢出
              * active            序列按钮和缩略图当前项高亮
+             * thumbScroll       缩略图滚动
              * none              动画 - 无效果
              * fade              动画 - 淡入淡出
              * slide             动画 - 滑动
@@ -449,9 +461,13 @@
                         $serialBtn.eq(activeIndex).addClass('active').siblings().removeClass('active');
                     }
 
-                    if (options.serialBtn === 'thumbnail') {
+                    if (options.serialBtn === 'thumb') {
                         $thumb.eq(activeIndex).addClass('active').siblings().removeClass('active');
                     }
+                },
+
+                thumbScroll: function() {
+                    
                 },
 
                 none: function() {
@@ -491,7 +507,7 @@
 
                     if (currentIndex === lastIndex){ return; }
 
-                    clearInterval(self.autoTimer);
+                    clearInterval(self.playTimer);
 
                     if (currentIndex < lastIndex) {
                         slideDirection = 'right';
@@ -544,6 +560,7 @@
                 fadeComplete: function() {
                     $list.animating = false;
                     $item.eq(currentIndex).siblings().css('opacity', 0);
+                    if (options.autoPlay && !$list.hovered) { setPlayTimer(); }
                 },
                 
                 slideComplete: function() {
@@ -558,28 +575,23 @@
 
                     $item.eq(currentIndex).show().siblings().hide();
 
-                    options.auto && !$list.hovered ? addAutoTimer() : '';
+                    if (options.autoPlay && !$list.hovered) { setPlayTimer(); }
                 }
             };
 
+            /**
+             * 轮播切换
+             */
             function play() {
                 animation[options.animation]();
-            };
-
-            function auto() {
-                addAutoTimer();
-                $this.hover(function() {
-                    $list.hovered = true;
-                    clearInterval(self.autoTimer);
-                }, function() {
-                    $list.hovered = false;
-                    !$list.animating ? addAutoTimer() : '';
-                });
             }
 
-            function addAutoTimer() {
-                clearInterval(self.autoTimer);
-                self.autoTimer = setInterval(function() {
+            /**
+             * 设置自动播放的定时器
+             */
+            function setPlayTimer() {
+                clearInterval(self.playTimer);
+                self.playTimer = setInterval(function() {
                     currentIndex++;
                     play();
                 }, options.interval);
@@ -588,14 +600,15 @@
             (function() {
                 imageConvert();
                 init();
+                bannerHoverHandler();
                 
                 if (len <= 1) { return; }
                 if (options.arrowBtn) { addArrowBtn(); }
                 if (options.serialBtn === true) { addSerialBtn(); }
-                if (options.serialBtn === 'thumbnail') { addThumbnail(); }
-                if (options.auto) { auto(); }
+                if (options.serialBtn === 'thumb') { addThumb(); }
+                if (options.autoPlay) { setPlayTimer(); }
 
-                $('head').append('<style type="text/css">' + embedCss + '</style>');
+                $('head').append('<style type="text/css">' + embeddedStyle + '</style>');
             }());
         });
     };

@@ -17,7 +17,6 @@ input[type="radio"], input[type="checkbox"]{border: none;}
 .clearfix{*zoom: 1;}
 .clearfix:after{display: block;content: "";clear: both;}
 
-.container{background: #333;}
 .banner .btn-arrow a{display: none;}
 .banner:hover .btn-arrow a{display: block;}
 
@@ -27,11 +26,12 @@ input[type="radio"], input[type="checkbox"]{border: none;}
 /* basic-fade */
 .banner.fade{height: 450px;width: 1200px;margin: 0 auto;}
 
-/* extra-preload */
+/* new-preload */
 .banner.preload{height: 500px;background: #f3f3f3;}
 .banner.preload ul li.loading{background: url(img/loading.gif) no-repeat center center;}
 
-/* extra-thumb */
-.banner.thumb{height: 550px;}
-.banner.thumb .list-thumb li{width: 160px;height: 80px;opacity: .4;margin: 0 5px;}
-.banner.thumb .list-thumb li.active{opacity: 1;}
+/* new-thumb */
+.banner.thumb{width: 1000px;height: 600px;margin: 0 auto;}
+.banner.thumb .wrap-thumb ul li{width: 160px;height: 80px;opacity: .5;margin: 0 5px;}
+.banner.thumb .wrap-thumb ul li.active{opacity: 1;}
+.banner.thumb .wrap-thumb ul li.active img{box-sizing: border-box;border: 2px solid #fff;}
