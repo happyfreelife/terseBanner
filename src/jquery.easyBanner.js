@@ -1,7 +1,7 @@
 /**
  * jquery.easyBanner.js
  * @author    HappyFreeLife
- * @version   1.1.9
+ * @version   1.1.10
  * @url       https://github.com/happyfreelife/easyBanner/
  */
 
