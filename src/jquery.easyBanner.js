@@ -1,7 +1,7 @@
 /**
  * jquery.easyBanner.js
  * @author    HappyFreeLife
- * @version   1.1.10
+ * @version   1.2.1
  * @url       https://github.com/happyfreelife/easyBanner/
  */
 
@@ -27,21 +27,26 @@
      * @param  {Function} callback 脚本加载完成后执行的函数
      */
     E.loadScript = function(src, callback) {
-        var script = document.createElement('script');
-        script.type = 'text/javascript';
-        script.src = E.scriptPath + src;
-
-        if (/msie (6.0|7.0|8.0)/i.test(navigator.userAgent)) {
-            script.onreadystatechange = function() {
-                if (script.readyState === 'loaded' || script.readyState === 'complete') {
-                    callback();
-                }
-            };
+        // 需要的脚本已存在就直接调用回调函数
+        if ($('[src="' + E.scriptPath + src + '"]').length) {
+            callback();
         } else {
-            script.onload = callback;
-        }
+            var script = document.createElement('script');
+            script.type = 'text/javascript';
+            script.src = E.scriptPath + src;
 
-        document.getElementsByTagName('head')[0].appendChild(script);
+            if (/msie (6.0|7.0|8.0)/i.test(navigator.userAgent)) {
+                script.onreadystatechange = function() {
+                    if (script.readyState === 'loaded' || script.readyState === 'complete') {
+                        callback();
+                    }
+                };
+            } else {
+                script.onload = callback;
+            }
+
+            document.getElementsByTagName('head')[0].appendChild(script);
+        }
     }
 
     /**
@@ -85,7 +90,6 @@
                 $list = $this.children(),
                 $item = $list.children(),
                 len   = $item.length,
-                animation,
                 $arrowBtnWrap,
                 $arrowBtn,
                 $serialBtnList,
@@ -96,6 +100,7 @@
                 currentIndex = 0,
                 activeIndex = 0,
                 embeddedStyle = '';
+
 
             // 判断浏览器是否支持CSS3动画
             var isSupportTransition = 'transition' in document.documentElement.style;
@@ -154,11 +159,6 @@
                     'background-position': 'center top'
                 });
                 
-
-                E.loadScript('module-animation.js', function() {
-                    
-                });
-
                 if ($this.cssDetector('position', 'static')) {
                     $this.css('position', 'relative')
                 }
@@ -344,7 +344,7 @@
                 $thumbList = $('.wrap-thumb ul', $this);
                 $thumb = $thumbList.children();
                 $thumbImg = $thumb.children();
-                
+
                 $thumb.css({
                     float : 'left',
                     overflow: 'hidden',
@@ -389,7 +389,7 @@
             /**
              * banner容器hover事件处理器
              */
-            function bannerHoverHandler() {
+            function bannerHandler() {
                 $this.hover(function() {
                     $list.hovered = true;
                     clearInterval(self.playTimer);
@@ -406,7 +406,7 @@
                 $arrowBtn.on({
                     click: function() {
                         if ($list.animating) { return; }
-                        $(this).hasClass('prev') ? currentIndex-- : currentIndex++;   
+                        $(this).hasClass('prev') ? currentIndex-- : currentIndex++;
                         play();
                     },
 
@@ -437,153 +437,38 @@
             }
 
             /**
-             * 轮播动画
-             * determineIndex    判定索引是否溢出
-             * active            序列按钮和缩略图当前项高亮
-             * thumbScroll       缩略图滚动
-             * none              动画 - 无效果
-             * fade              动画 - 淡入淡出
-             * slide             动画 - 滑动
-             * fadeComplete      fade动画的回调函数
-             * slideComplete     slide动画的回调函数 
+             * 更新全局的easyBanner对象
+             * (将其它组件需要的属性封装到对象中，在其它组件中重新取出这些属性)
              */
-            animation = {
-                determineIndex: function() {
-                    activeIndex =
-                    currentIndex = 
-                    currentIndex === len ? 0 : currentIndex === -1 ? len - 1 : currentIndex;
-                },
+            function updateObject() {
+                var propArr = [
+                        'options', 'isSupportTransition', 'len', 'currentIndex', 'activeIndex', 'setPlayTimer',
+                        '$list', '$item', '$arrowBtn', '$serialBtn', '$thumbList', '$thumb', 'imgPreLoader'
+                    ],
+                    valueArr = [
+                        options, isSupportTransition, len, currentIndex, activeIndex, setPlayTimer,
+                        $list, $item, $arrowBtn, $serialBtn, $thumbList, $thumb, imgPreLoader
+                    ];
 
-                active: function() {
-                    this.determineIndex();
-
-                    if (options.serialBtn === true) {
-                        $serialBtn.eq(activeIndex).addClass('active').siblings().removeClass('active');
-                    }
-
-                    if (options.serialBtn === 'thumb') {
-                        $thumb.eq(activeIndex).addClass('active').siblings().removeClass('active');
-                    }
-                },
-
-                thumbScroll: function() {
-                    
-                },
-
-                none: function() {
-                    this.determineIndex();
-                    $item.eq(currentIndex).show().siblings().hide();
-                    this.active();
-                },
-
-                fade: function() {
-                    this.determineIndex();
-
-                    $list.animating = true;
-
-                    $item.removeClass().eq(currentIndex).addClass('top-item').css('opacity', 0);
-
-                    if (isSupportTransition) {
-                        $item.eq(currentIndex).addClass('transition-' + options.speed).css('opacity', 1);
-                        setTimeout(animation.fadeComplete, options.speed);
-                    } else {
-                        $item.eq(currentIndex).animate({
-                            opacity: 1
-                        }, {
-                            duration: options.speed,
-                            complete: animation.fadeComplete
-                        })
-                    }
-
-                    this.active();
-
-                    imgPreLoader(currentIndex);
-                },
-
-                slide: function() {
-                    var $item = $list.children(),
-                        lastIndex = $list.data('lastIndex'),
-                        slideDirection = 'left';
-
-                    if (currentIndex === lastIndex){ return; }
-
-                    clearInterval(self.playTimer);
-
-                    if (currentIndex < lastIndex) {
-                        slideDirection = 'right';
-                    }
-
-                    // first item >> last item
-                    if (currentIndex < 0) {
-                        currentIndex = len - 1;
-                        $item.eq(len).show().siblings().hide();
-                        slideDirection = 'right';
-                    }
-
-                    // first item >> last item
-                    if (currentIndex > len) {
-                        currentIndex = 1;
-                        slideDirection = 'left';
-                    }
-
-                    if (slideDirection === 'right') {
-                        $list.css('left', '-100%');
-                    }
-
-                    $item.eq(currentIndex).show();
-
-                    // 使用CSS3 Transition进行动画过渡
-                    // 相对于jQuery的animate执行的动画，可以大幅度提升流畅度
-                    if (isSupportTransition) {
-                        setTimeout(function() {
-                            $list.animating = true;
-                            $list.css('left', slideDirection === 'left' ? '-100%' : 0)
-                            .addClass('transition-' + options.speed);
-
-                            setTimeout(animation.slideComplete, options.speed - 20);
-                        }, 20);
-                    } else {
-                        $list.animating = true;
-                        $list.animate({
-                            left: slideDirection === 'left' ? '-100%' : 0
-                        }, {
-                            duration: options.speed,
-                            complete: animation.slideComplete
-                        })
-                    }
-
-                    this.active();
-
-                    imgPreLoader(currentIndex);
-                },
-
-                fadeComplete: function() {
-                    $list.animating = false;
-                    $item.eq(currentIndex).siblings().css('opacity', 0);
-                    if (options.autoPlay && !$list.hovered) { setPlayTimer(); }
-                },
-                
-                slideComplete: function() {
-                    if (currentIndex === len) {
-                        $item.first().show().siblings().hide();
-                        currentIndex = 0;
-                    }
-
-                    $list.animating = false;
-                    $list.css('left', 0).removeClass();
-                    $list.data('lastIndex', currentIndex);
-
-                    $item.eq(currentIndex).show().siblings().hide();
-
-                    if (options.autoPlay && !$list.hovered) { setPlayTimer(); }
-                }
-            };
+                propArr.forEach(function (v, i, a) {
+                    E[a[i]] = valueArr[i];
+                });
+            }
 
             /**
              * 轮播切换
              */
             function play() {
-                animation[options.animation]();
+                updateObject();
+
+                E.loadScript('module-animation.js', function() {
+                    E.animation[options.animation]();
+                });
+
+                // 防止当前文件中的currentIndex溢出，导致其它组件中的E.currentIndex判定错误
+                if (currentIndex >= len || currentIndex <= 0) {
+                    currentIndex = E.activeIndex;
+                }
             }
 
             /**
@@ -597,11 +482,14 @@
                 }, options.interval);
             }
 
+            /**
+             * 根据配置参数启动对应的方法
+             */
             (function() {
                 imageConvert();
                 init();
-                bannerHoverHandler();
-                
+                bannerHandler();
+
                 if (len <= 1) { return; }
                 if (options.arrowBtn) { addArrowBtn(); }
                 if (options.serialBtn === true) { addSerialBtn(); }
