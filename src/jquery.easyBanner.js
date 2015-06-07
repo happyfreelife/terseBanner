@@ -28,9 +28,9 @@
      */
     E.loadScript = function(src, callback) {
         // 需要的脚本已存在就直接调用回调函数
-        if ($('[src="' + E.scriptPath + src + '"]').length) {
-            callback();
-        } else {
+        // if ($('[src="' + E.scriptPath + src + '"]').length) {
+        //     callback();
+        // } else {
             var script = document.createElement('script');
             script.type = 'text/javascript';
             script.src = E.scriptPath + src;
@@ -46,7 +46,7 @@
             }
 
             document.getElementsByTagName('head')[0].appendChild(script);
-        }
+        // }
     }
 
     /**
@@ -285,6 +285,7 @@
                 });
 
                 arrowBtnHandler();
+                updateObject();
             }
 
             /**
@@ -330,6 +331,7 @@
                 }).children(':first').addClass('active');
 
                 serialHandler.call($serialBtn);
+                updateObject();
             }
 
             /**
@@ -384,6 +386,7 @@
                 }).children(':first').addClass('active');
 
                 serialHandler.call($thumb);
+                updateObject();
             }
 
             /**
@@ -441,34 +444,52 @@
              * (将其它组件需要的属性封装到对象中，在其它组件中重新取出这些属性)
              */
             function updateObject() {
-                var propArr = [
-                        'options', 'isSupportTransition', 'len', 'currentIndex', 'activeIndex', 'setPlayTimer',
-                        '$list', '$item', '$arrowBtn', '$serialBtn', '$thumbList', '$thumb', 'imgPreLoader'
-                    ],
-                    valueArr = [
-                        options, isSupportTransition, len, currentIndex, activeIndex, setPlayTimer,
-                        $list, $item, $arrowBtn, $serialBtn, $thumbList, $thumb, imgPreLoader
-                    ];
+                // var propArr = [
+                //         'options', 'isSupportTransition', 'len', 'currentIndex', 'activeIndex', 'setPlayTimer',
+                //         '$list', '$item', '$arrowBtn', '$serialBtn', '$thumbList', '$thumb', 'imgPreLoader'
+                //     ],
+                //     valueArr = [
+                //         options, isSupportTransition, len, currentIndex, activeIndex, setPlayTimer,
+                //         $list, $item, $arrowBtn, $serialBtn, $thumbList, $thumb, imgPreLoader
+                //     ];
 
-                propArr.forEach(function (v, i, a) {
-                    E[a[i]] = valueArr[i];
-                });
+                // propArr.forEach(function (v, i, a) {
+                //     $this[a[i]] = valueArr[i];
+                // });
             }
+
+
 
             /**
              * 轮播切换
              */
             function play() {
-                updateObject();
-
                 E.loadScript('module-animation.js', function() {
-                    E.animation[options.animation]();
-                });
+                    // console.log(E);
+                    // $this.animation = {};
+                    var prop = [
+                            'options', 'isSupportTransition', 'len', 'currentIndex', 'activeIndex', 'setPlayTimer',
+                            '$list', '$item', '$arrowBtn', '$serialBtn', '$thumbList', '$thumb', 'imgPreLoader'
+                        ],
+                        value = [
+                            options, isSupportTransition, len, currentIndex, activeIndex, setPlayTimer,
+                            $list, $item, $arrowBtn, $serialBtn, $thumbList, $thumb, imgPreLoader
+                        ];
 
-                // 防止当前文件中的currentIndex溢出，导致其它组件中的E.currentIndex判定错误
-                if (currentIndex >= len || currentIndex <= 0) {
-                    currentIndex = E.activeIndex;
-                }
+                    for (var i = 0, len = prop.length; i < len; i++) {
+                        $this[prop[i]] = value[i];
+                    }
+
+                    E.setAnimation($this);
+
+                    $this[options.animation]();
+
+                    // 防止当前文件中的currentIndex溢出，导致其它组件中的E.currentIndex判定错误
+                    if (currentIndex >= len || currentIndex <= 0) {
+                        currentIndex = $this.activeIndex;
+                    }
+                });
+                
             }
 
             /**
