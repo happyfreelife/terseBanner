@@ -1,7 +1,7 @@
 /**
  * jquery.easyBanner.js
  * @author    HappyFreeLife
- * @version   1.2.1
+ * @version   1.2.2
  * @url       https://github.com/happyfreelife/easyBanner/
  */
 
@@ -103,7 +103,7 @@
 
 
             // 判断浏览器是否支持CSS3动画
-            var isSupportTransition = 'transition' in document.documentElement.style;
+            window.isSupportTransition = 'transition' in document.documentElement.style;
 
             /**
              * 图片转换为背景图片
@@ -193,6 +193,27 @@
                 $(window).resize(function() {
                     $list.children().css('width', $this.width() + 'px');
                 });
+            }
+
+            /**
+             * 给列表附加属性
+             */
+            function attachProp() {
+                var prop = [
+                        'options', 'len', '$list',
+                        '$item', '$arrowBtn', '$serialBtn', '$thumbList', '$thumb',
+                        'imgPreLoader', 'setPlayTimer'
+                    ],
+                    value = [
+                        options, len, $list,
+                        $item, $arrowBtn, $serialBtn, $thumbList, $thumb,
+                        imgPreLoader, setPlayTimer
+                    ];
+                console.log(len);
+
+                for (var i = 0, propLen = prop.length; i < propLen; i++) {
+                    $this[prop[i]] = value[i];
+                }
             }
 
             /**
@@ -444,18 +465,7 @@
              * (将其它组件需要的属性封装到对象中，在其它组件中重新取出这些属性)
              */
             function updateObject() {
-                // var propArr = [
-                //         'options', 'isSupportTransition', 'len', 'currentIndex', 'activeIndex', 'setPlayTimer',
-                //         '$list', '$item', '$arrowBtn', '$serialBtn', '$thumbList', '$thumb', 'imgPreLoader'
-                //     ],
-                //     valueArr = [
-                //         options, isSupportTransition, len, currentIndex, activeIndex, setPlayTimer,
-                //         $list, $item, $arrowBtn, $serialBtn, $thumbList, $thumb, imgPreLoader
-                //     ];
-
-                // propArr.forEach(function (v, i, a) {
-                //     $this[a[i]] = valueArr[i];
-                // });
+                
             }
 
 
@@ -465,31 +475,18 @@
              */
             function play() {
                 E.loadScript('module-animation.js', function() {
-                    // console.log(E);
-                    // $this.animation = {};
-                    var prop = [
-                            'options', 'isSupportTransition', 'len', 'currentIndex', 'activeIndex', 'setPlayTimer',
-                            '$list', '$item', '$arrowBtn', '$serialBtn', '$thumbList', '$thumb', 'imgPreLoader'
-                        ],
-                        value = [
-                            options, isSupportTransition, len, currentIndex, activeIndex, setPlayTimer,
-                            $list, $item, $arrowBtn, $serialBtn, $thumbList, $thumb, imgPreLoader
-                        ];
-
-                    for (var i = 0, len = prop.length; i < len; i++) {
-                        $this[prop[i]] = value[i];
-                    }
+                    $this.currentIndex = currentIndex;
+                    $this.activeIndex = activeIndex;
 
                     E.setAnimation($this);
 
                     $this[options.animation]();
 
-                    // 防止当前文件中的currentIndex溢出，导致其它组件中的E.currentIndex判定错误
+                    // 防止当前上下文中的currentIndex溢出导致animation组件中的T.currentIndex溢出
                     if (currentIndex >= len || currentIndex <= 0) {
                         currentIndex = $this.activeIndex;
                     }
                 });
-                
             }
 
             /**
@@ -516,6 +513,8 @@
                 if (options.serialBtn === true) { addSerialBtn(); }
                 if (options.serialBtn === 'thumb') { addThumb(); }
                 if (options.autoPlay) { setPlayTimer(); }
+
+                attachProp();
 
                 $('head').append('<style type="text/css">' + embeddedStyle + '</style>');
             }());

@@ -3,11 +3,12 @@
  * Require jquery.easyBanner.js
  */
 
+	var ani = 'hello ani';
 $(function() {
 	var E = $.easyBanner;
 
-	E.setAnimation = function($obj) {
-		var T = $obj;
+	E.setAnimation = function($this) {
+		var T = $this;
 
 		/**
 		 * 判定当前显示项的索引是否溢出
@@ -59,7 +60,7 @@ $(function() {
 
 			T.$item.removeClass().eq(T.currentIndex).addClass('top-item').css('opacity', 0);
 
-			if (T.isSupportTransition) {
+			if (window.isSupportTransition) {
 				T.$item.eq(T.currentIndex).addClass('transition-' + T.options.speed).css('opacity', 1);
 				setTimeout(T.fadeComplete, T.options.speed);
 			} else {
@@ -91,6 +92,8 @@ $(function() {
 
 			clearInterval(self.playTimer);
 
+			// 滑动动画在执行之前需要将第1个item克隆一份,
+			// 还需要判定此次动画的方向，所以不能使用普通的索引判定方法
 			if (T.currentIndex < lastIndex) {
 				slideDirection = 'right';
 			}
@@ -111,14 +114,13 @@ $(function() {
 			if (slideDirection === 'right') {
 				T.$list.css('left', '-100%');
 			}
-			// consolT.log(T.currentIndex);
 
 			T.$item.eq(T.currentIndex).show();
 
 
 			// 使用CSS3 Transition进行动画过渡
 			// 相对于jQuery的animate执行的动画，可以大幅度提升流畅度
-			if (T.isSupportTransition) {
+			if (window.isSupportTransition) {
 				setTimeout(function() {
 					T.$list.animating = true;
 					T.$list.css('left', slideDirection === 'left' ? '-100%' : 0)

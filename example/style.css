@@ -17,6 +17,7 @@ input[type="radio"], input[type="checkbox"]{border: none;}
 .clearfix{*zoom: 1;}
 .clearfix:after{display: block;content: "";clear: both;}
 
+.banner{height: 400px;}
 .banner .btn-arrow a{display: none;}
 .banner:hover .btn-arrow a{display: block;}
 
@@ -25,6 +26,10 @@ input[type="radio"], input[type="checkbox"]{border: none;}
 
 /* basic-fade */
 .banner.fade{height: 450px;width: 1200px;margin: 0 auto;}
+
+/* banner-multi */
+h2{font: 30px/50px "Helvetica";color: #000;text-align: center;}
+
 
 /* new-preload */
 .banner.preload{height: 500px;background: #f3f3f3;}
@@ -35,3 +40,6 @@ input[type="radio"], input[type="checkbox"]{border: none;}
 .banner.thumb .wrap-thumb ul li{width: 160px;height: 80px;opacity: .5;margin: 0 5px;}
 .banner.thumb .wrap-thumb ul li.active{opacity: 1;}
 .banner.thumb .wrap-thumb ul li.active img{box-sizing: border-box;border: 2px solid #fff;}
+
+
+
