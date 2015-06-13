@@ -1,13 +1,16 @@
 /**
  * jquery.easyBanner.js
  * @author    HappyFreeLife
- * @version   1.2.2
+ * @version   1.2.3
  * @url       https://github.com/happyfreelife/easyBanner/
  */
 
 ;(function ($, window, document, undefined) {
     // easyBanner对象的简写变量
     var E = $.easyBanner = {};
+
+    // 判断浏览器是否支持CSS3动画
+    window.isSupportTransition = 'transition' in document.documentElement.style;
 
     // easyBanner文件的路径
     E.scriptPath = (function (scripts, i, self) {
@@ -29,7 +32,7 @@
     E.loadScript = function(src, callback) {
         // 需要的脚本已存在就直接调用回调函数
         // if ($('[src="' + E.scriptPath + src + '"]').length) {
-        //     callback();
+            // callback();
         // } else {
             var script = document.createElement('script');
             script.type = 'text/javascript';
@@ -101,9 +104,7 @@
                 activeIndex = 0,
                 embeddedStyle = '';
 
-
-            // 判断浏览器是否支持CSS3动画
-            window.isSupportTransition = 'transition' in document.documentElement.style;
+            E.banner = $this;
 
             /**
              * 图片转换为背景图片
@@ -159,9 +160,9 @@
                     'background-position': 'center top'
                 });
                 
-                if ($this.cssDetector('position', 'static')) {
-                    $this.css('position', 'relative')
-                }
+                E.loadScript('module-automatic.js', function() {
+                    E.automatic.containerPosition.call($this);
+                });
 
                 switch(options.animation) {
                     case 'fade':
@@ -190,29 +191,32 @@
                         break;
                 }
 
+                // 改变浏览器视口大小时自动调整背景图片的位置
                 $(window).resize(function() {
                     $list.children().css('width', $this.width() + 'px');
                 });
             }
 
             /**
-             * 给列表附加属性
+             * 给容器附加属性
              */
             function attachProp() {
-                var prop = [
-                        'options', 'len', '$list',
-                        '$item', '$arrowBtn', '$serialBtn', '$thumbList', '$thumb',
+                var name = [
+                        'options', 'len',
+                        '$this', '$list', '$item', '$arrowBtnWrap', '$arrowBtn', '$serialBtn', '$thumbList', '$thumb',
                         'imgPreLoader', 'setPlayTimer'
                     ],
-                    value = [
-                        options, len, $list,
-                        $item, $arrowBtn, $serialBtn, $thumbList, $thumb,
+                    val = [
+                        options, len,
+                        $this, $list, $item, $arrowBtnWrap, $arrowBtn, $serialBtn, $thumbList, $thumb,
                         imgPreLoader, setPlayTimer
                     ];
-                console.log(len);
 
-                for (var i = 0, propLen = prop.length; i < propLen; i++) {
-                    $this[prop[i]] = value[i];
+                for (var i = 0, leng = name.length; i < leng; i++) {
+                    $this[name[i]] = val[i];
+
+                    // 把容器附加到全局变量E上面
+                    // E.banner = $this;
                 }
             }
 
@@ -270,43 +274,22 @@
                 $arrowBtnWrap = $('.btn-arrow', $this);
                 $arrowBtn = $arrowBtnWrap.children();
 
-                if ($arrowBtnWrap.width() === $this.width()) {
-                    $arrowBtnWrap.css('width', '96%')
-                }
+                // 自动化样式
+                E.loadScript('module-automatic.js', function() {
+                    E.automatic.arrowBtnWrapWidth.call($arrowBtnWrap);
+                    // arrowBtnWrapWidth();
+                    // $arrowBtnWrap.arrowBtnWrapWidth();
+                    // $arrowBtnWrap.arrowBtnWrapPosition();
+                    // $arrowBtn.arrowBtnBackground();
 
-                if ($arrowBtnWrap.cssDetector('top', 'auto') && $arrowBtnWrap.cssDetector('bottom', 'auto')) {
-                    $arrowBtnWrap.css({
-                                top : '50%',
-                        'margin-top': -$arrowBtn.height() / 2
+                    $arrowBtnWrap.appendTo($this).css({
+                        position :'absolute',
+                        'z-index': 20,
+                        height   : 0
                     });
-                }
-                if ($arrowBtnWrap.cssDetector('left', 'auto') && $arrowBtnWrap.cssDetector('right', 'auto')) {
-                    $arrowBtnWrap.css('margin-left', ($this.width() - $arrowBtnWrap.width()) / $this.width() / 2 * 100 + '%');
-                }
-
-                if ($arrowBtn.cssDetector('background-image', 'none')) {
-                    $('.prev', $arrowBtnWrap).html('&lt;');
-                    $('.next', $arrowBtnWrap).html('&gt;');
-
-                    $arrowBtn.css({
-                        'line-height': $arrowBtn.height() + 'px',
-                        'font-size'  : $this.height() * 0.133 + 'px',
-                        'font-family': 'SimHei',
-                        'text-align' : 'center',
-                        'user-select': 'none',
-                               cursor: 'pointer',
-                                color: '#fff'
-                    });
-                }
-
-                $arrowBtnWrap.appendTo($this).css({
-                    position :'absolute',
-                    'z-index': 20,
-                    height   : 0
                 });
-
+                
                 arrowBtnHandler();
-                updateObject();
             }
 
             /**
@@ -352,7 +335,6 @@
                 }).children(':first').addClass('active');
 
                 serialHandler.call($serialBtn);
-                updateObject();
             }
 
             /**
@@ -407,7 +389,6 @@
                 }).children(':first').addClass('active');
 
                 serialHandler.call($thumb);
-                updateObject();
             }
 
             /**
@@ -461,16 +442,6 @@
             }
 
             /**
-             * 更新全局的easyBanner对象
-             * (将其它组件需要的属性封装到对象中，在其它组件中重新取出这些属性)
-             */
-            function updateObject() {
-                
-            }
-
-
-
-            /**
              * 轮播切换
              */
             function play() {
@@ -478,7 +449,7 @@
                     $this.currentIndex = currentIndex;
                     $this.activeIndex = activeIndex;
 
-                    E.setAnimation($this);
+                    // E.setAnimation($this);
 
                     $this[options.animation]();
 

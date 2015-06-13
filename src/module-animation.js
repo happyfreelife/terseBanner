@@ -1,177 +1,172 @@
 /**
- * easyBanner Module -  Animation
- * Require jquery.easyBanner.js
+ * easyBanner module - Animation
+ * @require jquery.easyBanner.js
  */
 
-	var ani = 'hello ani';
-$(function() {
-	var E = $.easyBanner;
+;(function ($, window, document, undefined) {
+	var E = $.easyBanner,
+		B = E.banner;
 
-	E.setAnimation = function($this) {
-		var T = $this;
+	/**
+	 * 判定当前显示项的索引是否溢出
+	 */
+	B.determineIndex = function() {
+		B.activeIndex =
+		B.currentIndex =
+		B.currentIndex === B.len ? 0 : B.currentIndex === -1 ? B.len - 1 : B.currentIndex;
+	};
 
-		/**
-		 * 判定当前显示项的索引是否溢出
-		 */
-		T.determineIndex = function() {
-			T.activeIndex =
-			T.currentIndex =
-			T.currentIndex === T.len ? 0 : T.currentIndex === -1 ? T.len - 1 : T.currentIndex;
-		};
+	/**
+	 * 序列按钮和缩略图当前项高亮
+	 */
+	B.active = function() {
+		B.determineIndex();
 
-		/**
-		 * 序列按钮和缩略图当前项高亮
-		 */
-		T.active = function() {
-			T.determineIndex();
+		if (B.options.serialBtn === true) {
+			B.$serialBtn.eq(B.activeIndex).addClass('active').siblings().removeClass('active');
+		}
 
-			if (T.options.serialBtn === true) {
-				T.$serialBtn.eq(T.activeIndex).addClass('active').siblings().removeClass('active');
-			}
-
-			if (T.options.serialBtn === 'thumb') {
-				T.$thumb.eq(T.activeIndex).addClass('active').siblings().removeClass('active');
-			}
-		};
-
-		/**
-		 * 缩略图的宽度超过容器的宽度时滚动
-		 */
-		T.thumbScroll = function() {
-
-	;},
-
-		/**
-		 * 动画效果 - 无
-		 */
-		T.none = function() {
-			T.determineIndex();
-			T.$item.eq(T.currentIndex).show().siblings().hide();
-			T.active();
-		};
-
-		/**
-		 * 动画效果 - 淡入淡出
-		 */
-		T.fade = function() {
-			T.determineIndex();
-
-			T.$list.animating = true;
-
-			T.$item.removeClass().eq(T.currentIndex).addClass('top-item').css('opacity', 0);
-
-			if (window.isSupportTransition) {
-				T.$item.eq(T.currentIndex).addClass('transition-' + T.options.speed).css('opacity', 1);
-				setTimeout(T.fadeComplete, T.options.speed);
-			} else {
-				T.$item.eq(T.currentIndex).animate({
-					opacity: 1
-				}, {
-					duration: T.options.speed,
-					complete: T.fadeComplete
-				})
-			}
-
-			T.active();
-
-			T.imgPreLoader(T.currentIndex);
-		};
-
-		/**
-		 * 动画效果 - 滑动
-		 */
-		T.slide = function() {
-
-			T.$item = T.$list.children();
-			var lastIndex = T.$list.data('lastIndex'),
-				slideDirection = 'left';
-
-			if (T.currentIndex === lastIndex) {
-				return;
-			}
-
-			clearInterval(self.playTimer);
-
-			// 滑动动画在执行之前需要将第1个item克隆一份,
-			// 还需要判定此次动画的方向，所以不能使用普通的索引判定方法
-			if (T.currentIndex < lastIndex) {
-				slideDirection = 'right';
-			}
-
-			// first item >> last item
-			if (T.currentIndex < 0) {
-				T.currentIndex = T.len - 1;
-				T.$item.eq(T.len).show().siblings().hide();
-				slideDirection = 'right';
-			}
-
-			// first item >> last item
-			if (T.currentIndex > T.len) {
-				T.currentIndex = 1;
-				slideDirection = 'left';
-			}
-
-			if (slideDirection === 'right') {
-				T.$list.css('left', '-100%');
-			}
-
-			T.$item.eq(T.currentIndex).show();
-
-
-			// 使用CSS3 Transition进行动画过渡
-			// 相对于jQuery的animate执行的动画，可以大幅度提升流畅度
-			if (window.isSupportTransition) {
-				setTimeout(function() {
-					T.$list.animating = true;
-					T.$list.css('left', slideDirection === 'left' ? '-100%' : 0)
-						.addClass('transition-' + T.options.speed);
-
-					setTimeout(T.slideComplete, T.options.speed - 20);
-				}, 20);
-			} else {
-				T.$list.animating = true;
-				T.$list.animate({
-					left: slideDirection === 'left' ? '-100%' : 0
-				}, {
-					duration: T.options.speed,
-					complete: T.slideComplete
-				})
-			}
-
-			T.active();
-
-			T.imgPreLoader(T.currentIndex);
-		};
-
-		/**
-		 * fade动画的回调函数
-		 */
-		T.fadeComplete = function() {
-			T.$list.animating = false;
-			T.$item.eq(T.currentIndex).siblings().css('opacity', 0);
-			if (T.options.autoPlay && !T.$list.hovered) {
-				T.setPlayTimer();
-			}
-		};
-
-		/**
-		 * slide动画的回调函数 
-		 */
-		T.slideComplete = function() {
-			if (T.currentIndex === T.len) {
-				T.$item.first().show().siblings().hide();
-				T.currentIndex = 0;
-			}
-
-			T.$list.animating = false;
-			T.$list.css('left', 0).removeClass();
-			T.$list.data('lastIndex', T.currentIndex);
-
-			T.$item.eq(T.currentIndex).show().siblings().hide();
-
-			if (T.options.autoPlay && !T.$list.hovered) {
-				T.setPlayTimer();
-			}
+		if (B.options.serialBtn === 'thumb') {
+			B.$thumb.eq(B.activeIndex).addClass('active').siblings().removeClass('active');
 		}
 	};
-});
+
+	/**
+	 * 缩略图的宽度超过容器的宽度时滚动
+	 */
+	B.thumbScroll = function() {
+
+	},
+
+	/**
+	 * 动画效果 - 无
+	 */
+	B.none = function() {
+		B.determineIndex();
+		B.$item.eq(B.currentIndex).show().siblings().hide();
+		B.active();
+	};
+
+	/**
+	 * 动画效果 - 淡入淡出
+	 */
+	B.fade = function() {
+		B.determineIndex();
+
+		B.$list.animating = true;
+
+		B.$item.removeClass().eq(B.currentIndex).addClass('top-item').css('opacity', 0);
+
+		if (window.isSupportTransition) {
+			B.$item.eq(B.currentIndex).addClass('transition-' + B.options.speed).css('opacity', 1);
+			setTimeout(B.fadeComplete, B.options.speed);
+		} else {
+			B.$item.eq(B.currentIndex).animate({
+				opacity: 1
+			}, {
+				duration: B.options.speed,
+				complete: B.fadeComplete
+			})
+		}
+
+		B.active();
+
+		B.imgPreLoader(B.currentIndex);
+	};
+
+	/**
+	 * 动画效果 - 滑动
+	 */
+	B.slide = function() {
+		B.$item = B.$list.children();
+		var lastIndex = B.$list.data('lastIndex'),
+			slideDirection = 'left';
+
+		if (B.currentIndex === lastIndex) {
+			return;
+		}
+
+		clearInterval(self.playTimer);
+
+		// 滑动动画在执行之前需要将第1个item克隆一份,
+		// 还需要判定此次动画的方向，所以不能使用普通的索引判定方法
+		if (B.currentIndex < lastIndex) {
+			slideDirection = 'right';
+		}
+
+		// first item >> last item
+		if (B.currentIndex < 0) {
+			B.currentIndex = B.len - 1;
+			B.$item.eq(B.len).show().siblings().hide();
+			slideDirection = 'right';
+		}
+
+		// first item >> last item
+		if (B.currentIndex > B.len) {
+			B.currentIndex = 1;
+			slideDirection = 'left';
+		}
+
+		if (slideDirection === 'right') {
+			B.$list.css('left', '-100%');
+		}
+
+		B.$item.eq(B.currentIndex).show();
+
+
+		// 使用CSS3 Transition进行动画过渡
+		// 相对于jQuery的animate执行的动画，可以大幅度提升流畅度
+		if (window.isSupportTransition) {
+			setTimeout(function() {
+				B.$list.animating = true;
+				B.$list.css('left', slideDirection === 'left' ? '-100%' : 0)
+					.addClass('transition-' + B.options.speed);
+
+				setTimeout(B.slideComplete, B.options.speed - 20);
+			}, 20);
+		} else {
+			B.$list.animating = true;
+			B.$list.animate({
+				left: slideDirection === 'left' ? '-100%' : 0
+			}, {
+				duration: B.options.speed,
+				complete: B.slideComplete
+			})
+		}
+
+		B.active();
+
+		B.imgPreLoader(B.currentIndex);
+	};
+
+	/**
+	 * fade动画的回调函数
+	 */
+	B.fadeComplete = function() {
+		B.$list.animating = false;
+		B.$item.eq(B.currentIndex).siblings().css('opacity', 0);
+		if (B.options.autoPlay && !B.$list.hovered) {
+			B.setPlayTimer();
+		}
+	};
+
+	/**
+	 * slide动画的回调函数 
+	 */
+	B.slideComplete = function() {
+		if (B.currentIndex === B.len) {
+			B.$item.first().show().siblings().hide();
+			B.currentIndex = 0;
+		}
+
+		B.$list.animating = false;
+		B.$list.css('left', 0).removeClass();
+		B.$list.data('lastIndex', B.currentIndex);
+
+		B.$item.eq(B.currentIndex).show().siblings().hide();
+
+		if (B.options.autoPlay && !B.$list.hovered) {
+			B.setPlayTimer();
+		}
+	}
+})(jQuery, window, document);
