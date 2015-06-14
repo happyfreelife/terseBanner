@@ -5,53 +5,13 @@
  * @url       https://github.com/happyfreelife/easyBanner/
  */
 
+ // 判断浏览器是否支持CSS3动画
+ window.isSupportTransition = 'transition' in document.documentElement.style;
+
+/****************************************
+ ***** module - automatic *****
+ ****************************************/
 ;(function ($, window, document, undefined) {
-    // easyBanner对象的简写变量
-    var E = $.easyBanner = {};
-
-    // 判断浏览器是否支持CSS3动画
-    window.isSupportTransition = 'transition' in document.documentElement.style;
-
-    // easyBanner文件的路径
-    E.scriptPath = (function (scripts, i, self) {
-        // 使用脚本加载器加载本文件，则调用下面的方法查找文件自身
-        for (var i in scripts) {
-            if (scripts[i].src && scripts[i].src.indexOf('jquery.easyBanner') > -1) {
-                self = scripts[i];
-                break;
-            }
-        }
-        return self.src.substring(0, self.src.lastIndexOf('/') + 1);
-    }(document.scripts));
-
-    /**
-     * 脚本加载器
-     * @param  {String}   src      外部脚本路径
-     * @param  {Function} callback 脚本加载完成后执行的函数
-     */
-    E.loadScript = function(src, callback) {
-        // 需要的脚本已存在就直接调用回调函数
-        // if ($('[src="' + E.scriptPath + src + '"]').length) {
-            // callback();
-        // } else {
-            var script = document.createElement('script');
-            script.type = 'text/javascript';
-            script.src = E.scriptPath + src;
-
-            if (/msie (6.0|7.0|8.0)/i.test(navigator.userAgent)) {
-                script.onreadystatechange = function() {
-                    if (script.readyState === 'loaded' || script.readyState === 'complete') {
-                        callback();
-                    }
-                };
-            } else {
-                script.onload = callback;
-            }
-
-            document.getElementsByTagName('head')[0].appendChild(script);
-        // }
-    }
-
     /**
      * 样式检测器
      * @param  {String} prop css属性名
@@ -71,6 +31,379 @@
     };
 
     /**
+     * 主容器定位
+     */
+    $.fn.containerPosition = function() {
+        if ($(this).cssDetector('position', 'static')) {
+            $(this).css('position', 'relative');
+        }
+    };
+
+    /**
+     * 箭头按钮盒模型
+     */
+    $.fn.arrowBtnWrapperBox = function ($container) {
+        if ($(this).width() === $container.width()) {
+            $(this).css('width', '96%');
+        }
+    };
+
+    /**
+     * 箭头按钮定位
+     */
+    $.fn.arrowBtnWrapperPosition = function($container) {
+        if ($(this).cssDetector('top', 'auto') && $(this).cssDetector('bottom', 'auto')) {
+            $(this).css({
+                top : '50%',
+                'margin-top': -$(this).height() / 2
+            });
+        }
+
+        if ($(this).cssDetector('left', 'auto') && $(this).cssDetector('right', 'auto')) {
+            $(this).css('margin-left', ($container.width() - $(this).width()) / $container.width() / 2 * 100 + '%');
+        }
+    };
+
+    /**
+     * 箭头按钮背景
+     */
+    $.fn.arrowBtnBackground = function($container, $arrowBtnWrapper) {
+        if ($(this).cssDetector('background-image', 'none')) {
+            $('.prev', $arrowBtnWrapper).html('&lt;');
+            $('.next', $arrowBtnWrapper).html('&gt;');
+
+            $(this).css({
+                'line-height': $(this).height() + 'px',
+                'font-size'  : $container.height() * 0.133 + 'px',
+                'font-family': 'SimHei',
+                'text-align' : 'center',
+                'user-select': 'none',
+                cursor       : 'pointer',
+                color        : '#fff'
+            });
+        }
+    };
+
+    /**
+     * 序列按钮盒模型
+     */
+    $.fn.serialBtnBox = function(param) {
+        if (param === 'equal') {
+            var len = $(this).length;
+
+            if ($(this).cssDetector('border-right-width', ['0px', 'medium'])) {
+                $(this).css('border-right-width', '1px');
+            }
+
+            if ($(this).cssDetector('border-right-color', ['#666', 'rgb(102, 102, 102)'])) {
+                $(this).css('border-right-color', '#fff');
+            }
+
+            if ($(this).cssDetector('border-right-style', 'none')) {
+                $(this).css('border-right-style', 'solid');
+            }
+
+            if ($(this).cssDetector('height', '0px')) {
+                $(this).css('height', '10px');
+            }
+
+            $(this).css({
+                width: $(this).parent().width() / len - parseInt($(this).css('border-right-width')),
+                'border-left': 'none',
+                'border-radius': '0'
+            });
+
+            $(this).eq(len- 1).css({
+                width: $(this).width() + parseInt($(this).css('border-right-width')),
+                'border-right-width': '0'
+            });
+
+        } else {
+            if ($(this).cssDetector('width', '0px') && $(this).cssDetector('height', '0px')) {
+                $(this).css({
+                    width: '10px',
+                    height: '10px'
+                });
+            }
+
+            if ($(this).cssDetector('margin', ['0px', ''])) {
+                $(this).css('margin', '0 5px');
+            }
+        }
+    };
+    
+    /**
+     * 序列按钮背景
+     * return [String]    内嵌样式-序列按钮
+     */
+    $.fn.serialBtnBackground = function() {
+        if ($(this).cssDetector('background-color', ['rgba(0, 0, 0, 0)', 'transparent']) &&
+            $(this).cssDetector('background-image', 'none')) {
+            return '.btn-serial > *{background-color: #fff;border-radius: 50%;}\n' +
+            '.btn-serial > .active{background-color: #ffa500;}\n';
+        }
+    };
+    
+    /**
+     * 序列按钮列表定位
+     */
+    $.fn.serialBtnListPosition = function($serialBtn, $container, param) {
+        if (param === 'equal') {
+
+        } else {
+            if ($(this).cssDetector('top', 'auto') && $(this).cssDetector('bottom', 'auto')) {
+                $(this).css('bottom', $container.height() * 0.04);
+            }
+    
+            if ($(this).cssDetector('left', 'auto') && $(this).cssDetector('right', 'auto')) {
+                $(this).css({
+                    left: '50%',
+                    'margin-left': -$serialBtn.outerWidth(true) * $serialBtn.length / 2
+                });
+            }
+        }
+    };
+
+    /**
+     * 缩略图盒模型
+     */
+    $.fn.thumbImgBox = function($thumb) {
+        if (!$thumb.cssDetector('height', '0px')) {
+            $(this).height($thumb.height());
+        } else {
+            $(this).height($this.height() * 0.125);
+        }
+
+        if (!$thumb.cssDetector('width', '0px')) {
+            $(this).css({
+                position     : 'relative',
+                left         : '50%',
+                'margin-left': -$(this).outerWidth() / 2
+            });
+        }
+    };
+
+    /**
+     * 缩略图列表定位
+     */
+    $.fn.thumbListPosition = function($container, $thumb) {
+        if ($(this).cssDetector('top', 'auto') && $(this).cssDetector('bottom', 'auto')) {
+            $(this).css('bottom', $container.height() / 25);
+        }
+
+        if ($(this).cssDetector('left', 'auto') && $(this).cssDetector('right', 'auto')) {
+            $(this).css({
+                left: '50%',
+                'margin-left': -$thumb.outerWidth(true) * $thumb.length / 2
+            });
+        }
+    };
+})(jQuery, window, document);
+
+
+
+
+/****************************************
+ ***** module - animation *****
+ ****************************************/
+;(function ($, window, document, undefined) {
+    $.fn.animation = function($this, pram) {
+        var T = $this;
+
+        if (!T.hasAnimateMethod) {
+            T.hasAnimateMethod = true;
+
+            T.animate = {
+                /**
+                 * 判定当前显示项的索引是否溢出
+                 */
+                determineIndex: function() {
+                    T.activeIndex =
+                    T.currentIndex =
+                    T.currentIndex === T.len ? 0 : T.currentIndex === -1 ? T.len - 1 : T.currentIndex;
+                },
+
+                /**
+                 * 序列按钮和缩略图当前项高亮
+                 */
+                active: function() {
+                    this.determineIndex();
+
+                    if (T.options.serialBtn === true || T.options.serialBtn === 'equal') {
+                        T.$serialBtn.eq(T.activeIndex).addClass('active').siblings().removeClass('active');
+                    }
+
+                    if (T.options.serialBtn === 'thumb') {
+                        T.$thumb.eq(T.activeIndex).addClass('active').siblings().removeClass('active');
+                    }
+                },
+
+                /**
+                 * 缩略图的宽度超过容器的宽度时滚动
+                 */
+                thumb: function() {
+
+                },
+
+                /**
+                 * 动画效果 - 无
+                 */
+                none: function() {
+                    this.determineIndex();
+                    T.$item.eq(T.currentIndex).show().siblings().hide();
+                    this.active();
+                },
+
+                /**
+                 * 动画效果 - 淡入淡出
+                 */
+                fade: function() {
+                    this.determineIndex();
+
+                    T.$list.animating = true;
+
+                    T.$item.removeClass().eq(T.currentIndex).addClass('top-item').css('opacity', 0);
+
+                    if (window.isSupportTransition) {
+                        T.$item.eq(T.currentIndex).addClass('transition-' + T.options.speed).css('opacity', 1);
+                        setTimeout(T.animate.fadeComplete, T.options.speed);
+                    } else {
+                        T.$item.eq(T.currentIndex).animate({
+                            opacity: 1
+                        }, {
+                            duration: T.options.speed,
+                            complete: T.animate.fadeComplete
+                        })
+                    }
+
+                    this.active();
+
+                    T.imgPreLoader(T.currentIndex);
+                },
+
+                /**
+                 * 动画效果 - 滑动
+                 */
+                slide: function() {
+                    T.$item = T.$list.children();
+
+                    var lastIndex = T.$list.data('lastIndex'),
+                        slideDirection = 'left';
+
+                    if (T.currentIndex === lastIndex) {
+                        return;
+                    }
+
+                    clearInterval(T.playTimer);
+
+                    // 滑动动画在执行之前需要将第1个item克隆一份,
+                    // 还需要判定此次动画的方向，所以不能使用普通的索引判定方法
+                    if (T.currentIndex < lastIndex) {
+                        slideDirection = 'right';
+                    }
+
+                    // first item >> last item
+                    if (T.currentIndex < 0) {
+                        T.currentIndex = T.len - 1;
+                        T.$item.eq(T.len).show().siblings().hide();
+                        slideDirection = 'right';
+                    }
+
+                    // first item >> last item
+                    if (T.currentIndex > T.len) {
+                        T.currentIndex = 1;
+                        slideDirection = 'left';
+                    }
+
+                    if (slideDirection === 'right') {
+                        T.$list.css('left', '-100%');
+                    }
+
+                    T.$item.eq(T.currentIndex).show();
+
+
+                    // 使用CSS3 Transition进行动画过渡
+                    // 相对于jQuery的animate执行的动画，可以大幅度提升流畅度
+                    if (window.isSupportTransition) {
+                        setTimeout(function() {
+                            T.$list.animating = true;
+                            T.$list.css('left', slideDirection === 'left' ? '-100%' : 0)
+                                .addClass('transition-' + T.options.speed);
+
+                            setTimeout(T.animate.slideComplete, T.options.speed - 20);
+                        }, 20);
+                    } else {
+                        T.$list.animating = true;
+                        T.$list.animate({
+                            left: slideDirection === 'left' ? '-100%' : 0
+                        }, {
+                            duration: T.options.speed,
+                            complete: T.animate.slideComplete
+                        })
+                    }
+
+                    this.active();
+
+                    T.imgPreLoader(T.currentIndex);
+                },
+
+                /**
+                 * fade动画的回调函数
+                 */
+                fadeComplete: function() {
+                    T.$list.animating = false;
+                    T.$item.eq(T.currentIndex).siblings().css('opacity', 0);
+                    if (T.options.autoPlay && !T.$list.hovered) {
+                        T.setPlayTimer();
+                    }
+                },
+
+                /**
+                 * slide动画的回调函数 
+                 */
+                slideComplete: function() {
+                    if (T.currentIndex === T.len) {
+                        T.$item.first().show().siblings().hide();
+                        T.currentIndex = 0;
+                    }
+
+                    T.$list.animating = false;
+                    T.$list.css('left', 0).removeClass();
+                    T.$list.data('lastIndex', T.currentIndex);
+
+                    T.$item.eq(T.currentIndex).show().siblings().hide();
+
+                    if (T.options.autoPlay && !T.$list.hovered) {
+                        T.setPlayTimer();
+                    }
+                }
+            };
+        }
+
+        T.animate[T.options.animation]();
+    };
+})(jQuery, window, document);
+
+
+
+
+/****************************************
+ ***** module - preload *****
+ ****************************************/
+;(function ($, window, document, undefined) {
+    $.fn.preload = function() {
+        
+    };
+})(jQuery, window, document);
+
+
+
+
+/****************************************
+ ***** main method *****
+ ****************************************/
+;(function ($, window, document, undefined) {
+    /**
      * 插件主方法
      * @param  {Object} option    自定义参数
      * @return {HTMLElement}      调用该方法的元素集合中的每个元素
@@ -85,7 +418,7 @@
             speed    : 800,        // 动画速度
             interval : 5000        // 自动轮播间隔
         },
-        options = $.extend(defaults, option || {});
+        options = $.extend(defaults, option);
 
         return this.each(function() {
             var self  = this,
@@ -93,7 +426,7 @@
                 $list = $this.children(),
                 $item = $list.children(),
                 len   = $item.length,
-                $arrowBtnWrap,
+                $arrowBtnWrapper,
                 $arrowBtn,
                 $serialBtnList,
                 $serialBtn,
@@ -103,8 +436,6 @@
                 currentIndex = 0,
                 activeIndex = 0,
                 embeddedStyle = '';
-
-            E.banner = $this;
 
             /**
              * 图片转换为背景图片
@@ -129,7 +460,7 @@
              * 轮播列表初始化
              */
             function init() {
-                if (isSupportTransition) {
+                if (window.isSupportTransition) {
                     embeddedStyle +=
                         '.transition-' + options.speed + '{'
                     +        'transition: all ' + options.speed + 'ms ease;'
@@ -139,7 +470,7 @@
 
                 $list.hovered = false;
 
-                $list.wrap('<div class="wrap-list">').parent().css({
+                $list.wrap('<div class="wrapper-list">').parent().css({
                     position: 'relative',
                     width   : '100%',
                     height  : '100%',
@@ -160,9 +491,7 @@
                     'background-position': 'center top'
                 });
                 
-                E.loadScript('module-automatic.js', function() {
-                    E.automatic.containerPosition.call($this);
-                });
+                $this.containerPosition();
 
                 switch(options.animation) {
                     case 'fade':
@@ -201,22 +530,19 @@
              * 给容器附加属性
              */
             function attachProp() {
-                var name = [
+                var prop = [
                         'options', 'len',
-                        '$this', '$list', '$item', '$arrowBtnWrap', '$arrowBtn', '$serialBtn', '$thumbList', '$thumb',
+                        '$this', '$list', '$item', '$arrowBtnWrapper', '$arrowBtn', '$serialBtn', '$thumbList', '$thumb',
                         'imgPreLoader', 'setPlayTimer'
                     ],
                     val = [
                         options, len,
-                        $this, $list, $item, $arrowBtnWrap, $arrowBtn, $serialBtn, $thumbList, $thumb,
+                        $this, $list, $item, $arrowBtnWrapper, $arrowBtn, $serialBtn, $thumbList, $thumb,
                         imgPreLoader, setPlayTimer
                     ];
 
-                for (var i = 0, leng = name.length; i < leng; i++) {
-                    $this[name[i]] = val[i];
-
-                    // 把容器附加到全局变量E上面
-                    // E.banner = $this;
+                for (var i = 0, leng = prop.length; i < leng; i++) {
+                    $this[prop[i]] = val[i];
                 }
             }
 
@@ -271,22 +597,18 @@
                 +   '</div>'
                 );
 
-                $arrowBtnWrap = $('.btn-arrow', $this);
-                $arrowBtn = $arrowBtnWrap.children();
+                $arrowBtnWrapper = $('.btn-arrow', $this);
+                $arrowBtn = $arrowBtnWrapper.children();
 
                 // 自动化样式
-                E.loadScript('module-automatic.js', function() {
-                    E.automatic.arrowBtnWrapWidth.call($arrowBtnWrap);
-                    // arrowBtnWrapWidth();
-                    // $arrowBtnWrap.arrowBtnWrapWidth();
-                    // $arrowBtnWrap.arrowBtnWrapPosition();
-                    // $arrowBtn.arrowBtnBackground();
+                $arrowBtnWrapper.arrowBtnWrapperBox($this);
+                $arrowBtnWrapper.arrowBtnWrapperPosition($this);
+                $arrowBtn.arrowBtnBackground($this, $arrowBtnWrapper);
 
-                    $arrowBtnWrap.appendTo($this).css({
-                        position :'absolute',
-                        'z-index': 20,
-                        height   : 0
-                    });
+                $arrowBtnWrapper.appendTo($this).css({
+                    position :'absolute',
+                    'z-index': 20,
+                    height   : 0
                 });
                 
                 arrowBtnHandler();
@@ -304,30 +626,12 @@
                 $serialBtn = $serialBtnList.children();
 
                 $serialBtn.css('float', 'left');
-                if ($serialBtn.cssDetector('width', '0px') && $serialBtn.cssDetector('height', '0px')) {
-                    $serialBtn.css({width: '10px', height: '10px'});
-                }
-
-                if ($serialBtn.cssDetector('margin', ['0px', ''])) {
-                    $serialBtn.css('margin', '0 5px');
-                }
-
-                if ($serialBtn.cssDetector('background-color', ['rgba(0, 0, 0, 0)', 'transparent']) &&
-                    $serialBtn.cssDetector('background-image', 'none')) {
-                    embeddedStyle += '.btn-serial > *{background-color: #fff;border-radius: 50%;}\n' +
-                                '.btn-serial > .active{background-color: #ff8000;}\n';
-                }
-
-                if ($serialBtnList.cssDetector('top', 'auto') && $serialBtnList.cssDetector('bottom', 'auto')) {
-                    $serialBtnList.css('bottom', $this.height() * 0.04);
-                }
-
-                if ($serialBtnList.cssDetector('left', 'auto') && $serialBtnList.cssDetector('right', 'auto')) {
-                    $serialBtnList.css({
-                        left: '50%',
-                        'margin-left': -$serialBtn.outerWidth(true) * len / 2
-                    });
-                }
+                
+                // 自动化样式
+                var equal = options.serialBtn === 'equal' ? 'equal' : null;
+                $serialBtn.serialBtnBox(equal);
+                embeddedStyle += $serialBtn.serialBtnBackground();
+                $serialBtnList.serialBtnListPosition($serialBtn, $this, equal);
 
                 $serialBtnList.appendTo($this).css({
                     position :'absolute',
@@ -357,31 +661,10 @@
                 });
 
                 $thumbImg.hide();
-                if (!$thumb.cssDetector('height', '0px')) {
-                    $thumbImg.height($thumb.height());
-                } else {
-                    $thumbImg.height($this.height() * 0.125);
-                }
-
-                if (!$thumb.cssDetector('width', '0px')) {
-                    $thumbImg.css({
-                        position     : 'relative',
-                        left         : '50%',
-                        'margin-left': -$thumbImg.outerWidth() / 2
-                    });
-                }
+                $thumbImg.thumbImgBox($thumb);
                 $thumbImg.show();
 
-                if ($thumbList.cssDetector('top', 'auto') && $thumbList.cssDetector('bottom', 'auto')) {
-                    $thumbList.css('bottom', $this.height() / 25);
-                }
-
-                if ($thumbList.cssDetector('left', 'auto') && $thumbList.cssDetector('right', 'auto')) {
-                    $thumbList.css({
-                        left: '50%',
-                        'margin-left': -$thumb.outerWidth(true) * len / 2
-                    });
-                }
+                $thumbList.thumbListPosition($this, $thumb);
 
                 $thumbList.css({
                     position :'absolute',
@@ -397,7 +680,7 @@
             function bannerHandler() {
                 $this.hover(function() {
                     $list.hovered = true;
-                    clearInterval(self.playTimer);
+                    clearInterval($this.playTimer);
                 }, function() {
                     $list.hovered = false;
                     if (!$list.animating) { setPlayTimer(); }
@@ -408,6 +691,7 @@
              * 箭头按钮事件处理器
              */
             function arrowBtnHandler() {
+
                 $arrowBtn.on({
                     click: function() {
                         if ($list.animating) { return; }
@@ -445,27 +729,23 @@
              * 轮播切换
              */
             function play() {
-                E.loadScript('module-animation.js', function() {
-                    $this.currentIndex = currentIndex;
-                    $this.activeIndex = activeIndex;
+                $this.currentIndex = currentIndex;
+                $this.activeIndex = activeIndex;
 
-                    // E.setAnimation($this);
+                $this.animation($this);
 
-                    $this[options.animation]();
-
-                    // 防止当前上下文中的currentIndex溢出导致animation组件中的T.currentIndex溢出
-                    if (currentIndex >= len || currentIndex <= 0) {
-                        currentIndex = $this.activeIndex;
-                    }
-                });
+                // 防止当前上下文中的currentIndex溢出导致animation组件中的T.currentIndex溢出
+                if (currentIndex >= len || currentIndex <= 0) {
+                    currentIndex = $this.activeIndex;
+                }
             }
 
             /**
              * 设置自动播放的定时器
              */
             function setPlayTimer() {
-                clearInterval(self.playTimer);
-                self.playTimer = setInterval(function() {
+                clearInterval($this.playTimer);
+                $this.playTimer = setInterval(function() {
                     currentIndex++;
                     play();
                 }, options.interval);
@@ -481,7 +761,7 @@
 
                 if (len <= 1) { return; }
                 if (options.arrowBtn) { addArrowBtn(); }
-                if (options.serialBtn === true) { addSerialBtn(); }
+                if (options.serialBtn === true || options.serialBtn === 'equal') { addSerialBtn(); }
                 if (options.serialBtn === 'thumb') { addThumb(); }
                 if (options.autoPlay) { setPlayTimer(); }
 

@@ -16,11 +16,25 @@
 				<li><img src="img/1920-5.jpg"></li>
 			</ul>
 		</div>
+
+		<div class="banner equal">
+			<ul>
+				<li><img src="img/1000-1.jpg"></li>
+				<li><img src="img/1000-2.jpg"></li>
+				<li><img src="img/1000-3.jpg"></li>
+				<li><img src="img/1000-4.jpg"></li>
+			</ul>
+		</div>
 	</div>
 </body>
 <script type="text/javascript" src="../lib/jquery-1.11.3.min.js"></script>
 <script type="text/javascript" src="../src/jquery.easyBanner.js"></script>
 <script type="text/javascript">
 	$('.slide').easyBanner();
+
+	$('.equal').easyBanner({
+		serialBtn: 'equal'
+	});
+
 </script>
 </html>

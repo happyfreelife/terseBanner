@@ -34,7 +34,7 @@
 	/**
 	 * 缩略图的宽度超过容器的宽度时滚动
 	 */
-	B.thumbScroll = function() {
+	B.thumb = function() {
 
 	},
 
