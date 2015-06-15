@@ -28,13 +28,11 @@ input[type="radio"], input[type="checkbox"]{border: none;}
 .equal .btn-serial li{background: #9acd32;}
 .equal .btn-serial li.active{background: #ffa500;}
 
-
 /* basic-fade */
 .banner.fade{height: 450px;width: 1200px;margin: 0 auto;}
 
 /* banner-multi */
 h2{font: 30px/50px "Helvetica";color: #000;text-align: center;}
-
 
 /* new-preload */
 .preload{height: 500px;background: #f3f3f3;}
@@ -42,9 +40,6 @@ h2{font: 30px/50px "Helvetica";color: #000;text-align: center;}
 
 /* new-thumb */
 .thumb{width: 1000px;height: 600px;margin: 0 auto;}
-.thumb .wrap-thumb ul li{width: 160px;height: 80px;opacity: .5;margin: 0 5px;}
-.thumb .wrap-thumb ul li.active{opacity: 1;}
-.thumb .wrap-thumb ul li.active img{box-sizing: border-box;border: 2px solid #fff;}
-
-
-
+.thumb .wrapper-thumb{bottom: 50px;width: 80%;}
+.thumb .wrapper-thumb ul li{height: 100px;opacity: .6;margin-right: 10px;border: 2px solid transparent;}
+.thumb .wrapper-thumb ul li.active{opacity: 1;border-color: #fff;}

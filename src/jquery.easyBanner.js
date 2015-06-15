@@ -1,7 +1,7 @@
 /**
  * jquery.easyBanner.js
  * @author    HappyFreeLife
- * @version   1.2.3
+ * @version   1.2.5
  * @url       https://github.com/happyfreelife/easyBanner/
  */
 
@@ -165,7 +165,7 @@
     };
 
     /**
-     * 缩略图盒模型
+     * 缩略图图片盒模型
      */
     $.fn.thumbImgBox = function($thumb) {
         if (!$thumb.cssDetector('height', '0px')) {
@@ -184,19 +184,42 @@
     };
 
     /**
-     * 缩略图列表定位
+     * 缩略图列表容器盒模型
      */
-    $.fn.thumbListPosition = function($container, $thumb) {
+    $.fn.thumbListBox = function($thumb) {
+        console.log($thumb.outerWidth(true));
+        $(this).css({
+            width: $thumb.outerWidth(true) * $thumb.length/* - parseInt($thumb.css('margin-right'))*/,
+            height: $thumb.outerHeight(true)
+        })
+    };
+
+    /**
+     * 缩略图容器定位
+     */
+    $.fn.thumbWrapperPosition = function($container, $thumb) {
         if ($(this).cssDetector('top', 'auto') && $(this).cssDetector('bottom', 'auto')) {
             $(this).css('bottom', $container.height() / 25);
         }
 
-        if ($(this).cssDetector('left', 'auto') && $(this).cssDetector('right', 'auto')) {
+        if ($(this).width() <= $container.width()) {
+            $(this).css('left', (1 - $(this).width() / $container.width()) / 2 * 100 + '%');
+        } else {
             $(this).css({
-                left: '50%',
-                'margin-left': -$thumb.outerWidth(true) * $thumb.length / 2
+                width: '100%',
+                left: '0px'
             });
+
+            // 添加缩略图列表滚动按钮
+            $(this).addThumbScrollBtn($thumb);
         }
+    };
+
+    /**
+     * 添加缩略图列表滚动按钮
+     */
+    $.fn.addThumbScrollBtn = function($thumb) {
+
     };
 })(jQuery, window, document);
 
@@ -239,7 +262,7 @@
                 },
 
                 /**
-                 * 缩略图的宽度超过容器的宽度时滚动
+                 * 缩略图列表的宽度超过容器的宽度时滚动
                  */
                 thumb: function() {
 
@@ -541,7 +564,7 @@
                         imgPreLoader, setPlayTimer
                     ];
 
-                for (var i = 0, leng = prop.length; i < leng; i++) {
+                for (var i = 0, l = prop.length; i < l; i++) {
                     $this[prop[i]] = val[i];
                 }
             }
@@ -648,11 +671,20 @@
                 for (var i = 0, item = ''; i < len; i++) {
                     item += '<li>' + '<img src="' + $item.eq(i).data('url') + '">' + '</li>';
                 }
-                $this.append('<div class="wrap-thumb"><ul>' + item + '</ul></div>');
+                $this.append('<div class="wrapper-thumb"><ul>' + item + '</ul></div>');
 
-                $thumbList = $('.wrap-thumb ul', $this);
+                $thumbWrapper = $('.wrapper-thumb', $this);
+                $thumbList = $thumbWrapper.children();
                 $thumb = $thumbList.children();
                 $thumbImg = $thumb.children();
+
+
+                $thumbWrapper.css({
+                    position :'absolute',
+                    'z-index': 20,
+                    overflow: 'hidden',
+                    height: $thumb.outerHeight(true)
+                });
 
                 $thumb.css({
                     float : 'left',
@@ -660,16 +692,15 @@
                     cursor: 'pointer'
                 });
 
+                // 自动化样式
                 $thumbImg.hide();
                 $thumbImg.thumbImgBox($thumb);
                 $thumbImg.show();
+                
+                $thumbList.thumbListBox($thumb);
+                $thumbWrapper.thumbWrapperPosition($this, $thumb);
 
-                $thumbList.thumbListPosition($this, $thumb);
-
-                $thumbList.css({
-                    position :'absolute',
-                    'z-index': 20
-                }).children(':first').addClass('active');
+                $thumb.first().addClass('active');
 
                 serialHandler.call($thumb);
             }
