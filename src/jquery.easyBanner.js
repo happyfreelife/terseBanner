@@ -1,7 +1,7 @@
 /**
  * jquery.easyBanner.js
  * @author    HappyFreeLife
- * @version   1.2.5
+ * @version   1.2.6
  * @url       https://github.com/happyfreelife/easyBanner/
  */
 
@@ -167,11 +167,13 @@
     /**
      * 缩略图图片盒模型
      */
-    $.fn.thumbImgBox = function($thumb) {
+    $.fn.thumbImgBox = function($thumb, $container) {
         if (!$thumb.cssDetector('height', '0px')) {
             $(this).height($thumb.height());
         } else {
-            $(this).height($this.height() * 0.125);
+            var h = $container.height() * 0.125;
+            $(this).height(h);
+            $thumb.height(h);
         }
 
         if (!$thumb.cssDetector('width', '0px')) {
@@ -181,17 +183,6 @@
                 'margin-left': -$(this).outerWidth() / 2
             });
         }
-    };
-
-    /**
-     * 缩略图列表容器盒模型
-     */
-    $.fn.thumbListBox = function($thumb) {
-        console.log($thumb.outerWidth(true));
-        $(this).css({
-            width: $thumb.outerWidth(true) * $thumb.length/* - parseInt($thumb.css('margin-right'))*/,
-            height: $thumb.outerHeight(true)
-        })
     };
 
     /**
@@ -210,16 +201,19 @@
                 left: '0px'
             });
 
-            // 添加缩略图列表滚动按钮
-            $(this).addThumbScrollBtn($thumb);
         }
     };
 
     /**
      * 添加缩略图列表滚动按钮
      */
-    $.fn.addThumbScrollBtn = function($thumb) {
-
+    $.fn.addThumbScrollBtn = function() {
+        if ($(this).children().width() > $(this).width()) {
+            var $thumbList = $(this).children();
+            $thumbList.before('<a class="prev"></a>')
+            $thumbList.after('<a class="next"></a>')
+            $thumbBtn = $('a', $thumbList);
+        }
     };
 })(jQuery, window, document);
 
@@ -285,7 +279,7 @@
 
                     T.$list.animating = true;
 
-                    T.$item.removeClass().eq(T.currentIndex).addClass('top-item').css('opacity', 0);
+                    T.$item.removeClass().eq(T.currentIndex).addClass('top-item')/*.css('opacity', 0)*/;
 
                     if (window.isSupportTransition) {
                         T.$item.eq(T.currentIndex).addClass('transition-' + T.options.speed).css('opacity', 1);
@@ -518,14 +512,15 @@
 
                 switch(options.animation) {
                     case 'fade':
-                        embeddedStyle += '.top-item{z-index: 10;}\n';
+                        embeddedStyle += '.top-item{z-index: 0 !important;}\n';
 
                         $item.css({
                             position: 'absolute',
                             left    : 0,
-                            top     : 0
+                            top     : 0,
+                            'z-index': -10
                         });
-                        $item.first().siblings().css('opacity', 0);
+                        $item.first().addClass('top-item').siblings().css('opacity', 0);
                         break;
 
                     case 'slide':
@@ -652,6 +647,7 @@
                 
                 // 自动化样式
                 var equal = options.serialBtn === 'equal' ? 'equal' : null;
+
                 $serialBtn.serialBtnBox(equal);
                 embeddedStyle += $serialBtn.serialBtnBackground();
                 $serialBtnList.serialBtnListPosition($serialBtn, $this, equal);
@@ -678,6 +674,21 @@
                 $thumb = $thumbList.children();
                 $thumbImg = $thumb.children();
 
+                $thumb.css({
+                    float: 'left',
+                    overflow: 'hidden',
+                    cursor: 'pointer'
+                });
+
+                // 自动化样式
+                $thumbImg.hide();
+                $thumbImg.thumbImgBox($thumb, $this);
+                $thumbImg.show();
+
+                $thumbList.css({
+                    width: $thumb.outerWidth(true) * $thumb.length/* - parseInt($thumb.css('margin-right'))*/,
+                    height: $thumb.outerHeight(true)
+                })
 
                 $thumbWrapper.css({
                     position :'absolute',
@@ -685,20 +696,8 @@
                     overflow: 'hidden',
                     height: $thumb.outerHeight(true)
                 });
-
-                $thumb.css({
-                    float : 'left',
-                    overflow: 'hidden',
-                    cursor: 'pointer'
-                });
-
-                // 自动化样式
-                $thumbImg.hide();
-                $thumbImg.thumbImgBox($thumb);
-                $thumbImg.show();
-                
-                $thumbList.thumbListBox($thumb);
                 $thumbWrapper.thumbWrapperPosition($this, $thumb);
+                $thumbWrapper.addThumbScrollBtn();
 
                 $thumb.first().addClass('active');
 
@@ -722,7 +721,6 @@
              * 箭头按钮事件处理器
              */
             function arrowBtnHandler() {
-
                 $arrowBtn.on({
                     click: function() {
                         if ($list.animating) { return; }
@@ -739,21 +737,14 @@
              * 序列按钮和缩略图事件处理器
              */
             function serialHandler() {
-                if (options.trigger === 'click') {
-                    $(this).on('click', function() {
+                $(this).on(
+                    options.trigger === 'click' ? 'click' : 'mouseenter',
+                    function() {
                         if ($list.animating) { return; }
                         currentIndex = $(this).index();
                         play();
-                    });
-                }
-
-                if (options.trigger === 'hover') {
-                    $(this).on('mouseenter', function() {
-                        if ($list.animating) { return; }
-                        currentIndex = $(this).index();
-                        play();
-                    });
-                }
+                    }
+                );
             }
 
             /**

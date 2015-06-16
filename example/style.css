@@ -1,21 +1,62 @@
 @charset "utf-8";
 
-body,  h1, h2, h3, h4, h5, h6, hr, p, blockquote, ul, ol, li, dl, dd, input, button, textarea, fieldset, legend, figure, menu, th, td, pre{margin:0;padding:0;}
+body,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+hr,
+p,
+blockquote,
+ul,
+ol,
+li,
+dl,
+dd,
+input,
+button,
+textarea,
+fieldset,
+legend,
+figure,
+menu,
+th,
+td,
+pre{margin: 0;padding: 0;}
 body{font: 12px/1 Helvetica, Arial, sans-serif, "Microsoft YaHei";color: #666;}
-h1, h2, h3, h4, h5, h6{font-weight: normal;font-size: inherit;}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6{font-weight: normal;font-size: inherit;}
 a{color: #999;text-decoration: none;outline: none;}
 img{border: none;}
-ul, ol{list-style: none;}
-i, em{font-style: normal;}
+ul,
+ol{list-style: none;}
+i,
+em{font-style: normal;}
 table{border-collapse: collapse;}
-input, button, select, textarea, optgroup{font: inherit;color: inherit;outline:none;}
-input[type="text"], input[type="password"], button, textarea{border: 1px solid #ccc;}
-input[type="button"], input[type="submit"], button{border: none;}
-input[type="radio"], input[type="checkbox"]{border: none;}
+input,
+button,
+select,
+textarea,
+optgroup{font: inherit;color: inherit;outline: none;}
+input[type="text"],
+input[type="password"],
+button,
+textarea{border: 1px solid #ccc;}
+input[type="button"],
+input[type="submit"],
+button{border: none;}
+input[type="radio"],
+input[type="checkbox"]{border: none;}
 .fl{float: left;}
 .fr{float: right;}
 .clearfix{*zoom: 1;}
-.clearfix:after{display: block;content: "";clear: both;}
+.clearfix:after{content: "";display: block;clear: both;}
 
 .banner{height: 400px;}
 .banner .btn-arrow a{display: none;}
@@ -29,7 +70,7 @@ input[type="radio"], input[type="checkbox"]{border: none;}
 .equal .btn-serial li.active{background: #ffa500;}
 
 /* basic-fade */
-.banner.fade{height: 450px;width: 1200px;margin: 0 auto;}
+.banner.fade{width: 1200px;height: 450px;margin: 0 auto;}
 
 /* banner-multi */
 h2{font: 30px/50px "Helvetica";color: #000;text-align: center;}
@@ -40,6 +81,6 @@ h2{font: 30px/50px "Helvetica";color: #000;text-align: center;}
 
 /* new-thumb */
 .thumb{width: 1000px;height: 600px;margin: 0 auto;}
-.thumb .wrapper-thumb{bottom: 50px;width: 80%;}
-.thumb .wrapper-thumb ul li{height: 100px;opacity: .6;margin-right: 10px;border: 2px solid transparent;}
-.thumb .wrapper-thumb ul li.active{opacity: 1;border-color: #fff;}
+.thumb .wrapper-thumb{width: 80%;}
+.thumb .wrapper-thumb ul li{height: 100px;margin-right: 10px;border: 2px solid transparent;opacity: .6;}
+.thumb .wrapper-thumb ul li.active{border-color: #fff;opacity: 1;}
