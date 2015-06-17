@@ -138,7 +138,8 @@
      */
     $.fn.serialBtnBackground = function() {
         if ($(this).cssDetector('background-color', ['rgba(0, 0, 0, 0)', 'transparent']) &&
-            $(this).cssDetector('background-image', 'none')) {
+            $(this).cssDetector('background-image', 'none')
+        ) {
             return '.btn-serial > *{background-color: #fff;border-radius: 50%;}\n' +
             '.btn-serial > .active{background-color: #ffa500;}\n';
         }
@@ -186,7 +187,7 @@
     };
 
     /**
-     * 缩略图容器定位
+     * 缩略图外部容器定位
      */
     $.fn.thumbWrapperPosition = function($container, $thumb) {
         if ($(this).cssDetector('top', 'auto') && $(this).cssDetector('bottom', 'auto')) {
@@ -207,14 +208,91 @@
     /**
      * 添加缩略图列表滚动按钮
      */
-    $.fn.addThumbScrollBtn = function() {
+    $.fn.addThumbBtn = function() {
         if ($(this).children().width() > $(this).width()) {
-            var $thumbList = $(this).children();
-            $thumbList.before('<a class="prev"></a>')
-            $thumbList.after('<a class="next"></a>')
-            $thumbBtn = $('a', $thumbList);
+            $(this).prepend('<a class="prev"></a>')
+            $(this).append('<a class="next"></a>')
+            var $thumbBtn = $('a', $(this)),
+                $thumbList = $(this).children('ul');
+        }
+
+        $thumbBtn.thumbBtnBox($thumbList);
+        $thumbBtn.thumbBtnBackground();
+
+        return $thumbBtn;
+    };
+
+    /**
+     * 缩略图列表滚动按钮盒模型
+     */
+    $.fn.thumbBtnBox = function($thumbList) {
+        $(this).css({
+            position: 'relative',
+            float: 'left',
+            cursor: 'pointer'
+        });
+
+        if ($(this).cssDetector('width', '0px')) {
+            $(this).css('width', $(this).parent().width() * 0.025);
+        }
+        if ($(this).cssDetector('height', '0px')) {
+            $(this).css('height', $(this).parent().height());
+        }
+
+        $(this).first().css('margin', '0 ' + $thumbList.children().css('margin-right') + ' 0 0');
+        $(this).last().css('margin', '0 0 0 ' + $thumbList.children().css('margin-right'));
+
+        // 滚动按钮内部箭头
+        $(this).append('<i>');
+        var $thumbBtnArrow = $('i', $(this));
+
+        $thumbBtnArrow.css({
+            position: 'absolute',
+            border: '5px solid transparent',
+        }).css({
+            top: ($(this).outerHeight() - $thumbBtnArrow.outerHeight()) / 2
+        });
+
+        $(this).first().children('i').css({
+            left: $(this).outerWidth() / 2 - $thumbBtnArrow.outerHeight() * 3 / 4,
+            'border-right-color': '#fff'
+        });
+
+        $(this).last().children('i').css({
+            right: $(this).outerWidth() / 2 - $thumbBtnArrow.outerHeight() * 3 / 4,
+            'border-left-color': '#fff'
+        });
+
+        var $thumbList = $(this).siblings('ul');
+        $thumbList.thumbListBox();
+    };
+
+    /**
+     * 缩略图列表滚动按钮背景
+     */
+    $.fn.thumbBtnBackground = function() {
+        if ($(this).cssDetector('background-color', ['rgba(0, 0, 0, 0)', 'transparent']) &&
+            $(this).cssDetector('background-image', 'none')
+        ) {
+            $(this).css('background', '#666');
+            $(this).first().css('border-radius', '3px 0 0 3px')
+            $(this).last().css('border-radius', '0 3px 3px 0')
         }
     };
+
+    /**
+     * 缩略图列表内部容器盒模型
+     */
+    $.fn.thumbListBox = function() {
+        var w = $(this).parent().width() - $(this).siblings('a').outerWidth(true) * 2;
+
+        $(this).wrap('<div>').parent().css({
+            float: 'left',
+            width: w,
+            height: $(this).height(),
+            overflow: 'hidden'
+        });
+    }
 })(jQuery, window, document);
 
 
@@ -447,9 +525,11 @@
                 $arrowBtn,
                 $serialBtnList,
                 $serialBtn,
+                $thumbWrapper,
                 $thumbList,
                 $thumb,
                 $thumbImg,
+                $thumbBtn,
                 currentIndex = 0,
                 activeIndex = 0,
                 embeddedStyle = '';
@@ -697,7 +777,7 @@
                     height: $thumb.outerHeight(true)
                 });
                 $thumbWrapper.thumbWrapperPosition($this, $thumb);
-                $thumbWrapper.addThumbScrollBtn();
+                $thumbBtn = $thumbWrapper.addThumbBtn();
 
                 $thumb.first().addClass('active');
 

@@ -81,6 +81,7 @@ h2{font: 30px/50px "Helvetica";color: #000;text-align: center;}
 
 /* new-thumb */
 .thumb{width: 1000px;height: 600px;margin: 0 auto;}
-.thumb .wrapper-thumb{width: 80%;}
-.thumb .wrapper-thumb ul li{height: 100px;margin-right: 10px;border: 2px solid transparent;opacity: .6;}
-.thumb .wrapper-thumb ul li.active{border-color: #fff;opacity: 1;}
+.thumb .wrapper-thumb{width: 828px;}
+.thumb .wrapper-thumb ul li{height: 80px;margin-right: 0px;opacity: .5;}
+.thumb .wrapper-thumb ul li.active{opacity: 1;}
+.thumb .wrapper-thumb a{width: 30px;height: 80px;}
