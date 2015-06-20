@@ -1,7 +1,7 @@
 /**
  * jquery.easyBanner.js
  * @author    HappyFreeLife
- * @version   1.2.7
+ * @version   1.2.8
  * @url       https://github.com/happyfreelife/easyBanner/
  */
 
@@ -212,7 +212,7 @@
      */
     $.fn.addThumbBtn = function() {
         if ($(this).children().width() > $(this).width()) {
-            $(this).prepend('<a class="prev"></a>')
+            $(this).prepend('<a class="prev disabled"></a>')
             $(this).append('<a class="next"></a>')
             var $thumbBtn = $('a', $(this)),
                 $thumbList = $(this).children('ul');
@@ -292,7 +292,8 @@
             float: 'left',
             width: w,
             height: $(this).height(),
-            overflow: 'hidden'
+            overflow: 'hidden',
+            'user-select': 'none'
         });
     }
 })(jQuery, window, document);
@@ -329,32 +330,40 @@
                 if (T.options.serialBtn === 'thumb') {
                     T.$thumb.eq(T.activeIndex).addClass('active').siblings().removeClass('active');
 
+                    // 判定当前图片对应的缩略图是否在缩略图列表的可见范围内
+                    var currentItemThumbLeft = T.currentIndex * T.$thumb.outerWidth(true),
+                        currentThumbListLeft = Math.abs(parseInt(T.$thumbList.css('left'))),
+                        thumbListWrapperWidth = T.$thumbList.parent().width();
+
+                    // 如果不在列表的可见范围内，滑动到当前图片对应的缩略图的位置
+                    if (
+                        currentItemThumbLeft < currentThumbListLeft ||
+                        currentItemThumbLeft > (currentThumbListLeft + thumbListWrapperWidth)
+                    ) {
+                        var left = -parseInt(currentItemThumbLeft / thumbListWrapperWidth) * thumbListWrapperWidth;
+                        this.thumbSlide(left);
+                    }
                 }
             },
 
             /**
              * 缩略图列表滑动
              */
-            thumbListSlide: function(left) {
-                T.$thumbList.on('selectstart', function() {
-                    return false;
-                });
+            thumbSlide: function(left) {
+               
 
                 if (T.$thumbList.animating) { return false; }
 
                 if (window.isSupportTransition) {
-                    setTimeout(function() {
-                        T.$thumbList.animating = true;
-                        T.$thumbList.css('left', left).addClass('transition-' + T.options.speed);
+                    T.$thumbList.animating = true;
+                    T.$thumbList.css('left', left).addClass('transition-' + T.options.speed);
 
-                        setTimeout(function() {
-                            T.$thumbList.animating = false;
-                        }, T.options.speed);
-                    });
+                    setTimeout(T.animation.thumbSlideComplete, T.options.speed + 20);
                 } else {
                     T.$thumbList.animating = true;
-                    T.$thumbList.animate({ left: left }, T.options.speed, function() {
-                        T.$thumbList.animating = false;
+                    T.$thumbList.animate({ left: left }, {
+                        duration: T.options.speed,
+                        complete: T.animation.thumbSlideComplete
                     });
                 }
             },
@@ -488,6 +497,26 @@
 
                 if (T.options.autoPlay && !T.$list.hovered) {
                     T.setPlayTimer();
+                }
+            },
+
+            /*
+             * thumbSlide动画的回调函数
+             * 设置滚动按钮的禁用样式
+             */
+            thumbSlideComplete: function() {
+                T.$thumbList.animating = false;
+
+                var left = parseInt(T.$thumbList.css('left')),
+                    $prev = T.$thumbList.parent().prev(),
+                    $next = T.$thumbList.parent().next();
+
+                left ? $prev.removeClass('disabled') : $prev.addClass('disabled');
+
+                if (T.$thumbList.parent().width() - T.$thumbList.width() !== left) {
+                    $next.removeClass('disabled');
+                } else {
+                    $next.addClass('disabled');
                 }
             }
         };
@@ -642,14 +671,14 @@
              */
             function attachProp() {
                 var prop = [
-                        'options', 'len',
+                        'options', 'len', 'currentIndex',
                         '$this', '$list',
                         '$arrowBtnWrapper', '$arrowBtn',
                         '$serialBtn', '$thumbList', '$thumb',
                         'imgPreLoader', 'setPlayTimer'
                     ];
                 var val = [
-                        options, len,
+                        options, len, currentIndex,
                         $this, $list,
                         $arrowBtnWrapper, $arrowBtn,
                         $serialBtn, $thumbList, $thumb,
@@ -788,9 +817,8 @@
                     position: 'relative',
                     left: '0px',
                     width: $thumb.outerWidth(true) * $thumb.length - parseInt($thumb.css('margin-right')),
-                    height: $thumb.outerHeight(true),
-                    'user-select': 'none'
-                })
+                    height: $thumb.outerHeight(true)
+                });
 
                 $thumbWrapper.thumbWrapperPosition($this, $thumb);
                 $thumbWrapper.css({
@@ -826,12 +854,7 @@
                 $arrowBtn.on({
                     click: function() {
                         if ($list.animating) { return; }
-
-                        switch (this.className) {
-                            case 'prev': currentIndex--; break;
-                            case 'next': currentIndex++; break;
-                        }
-
+                        $(this).hasClass('prev') ? currentIndex-- : currentIndex++;
                         play();
                     },
 
@@ -867,25 +890,21 @@
                         thumbListRightOverWidth = $thumbList.width() - $thumbListWrapper.width() -  // 缩略图列表溢出容器的右侧宽度
                         Math.abs(parseInt($thumbList.css('left')));
 
-                    switch (this.className) {
-                        case 'prev':
-                            // 比较列表溢出的宽度和容器的宽度来设置列表滑动的距离
-                            if (!thumbListLeftOverWidth) { return; }
+                    if ($(this).hasClass('prev')) {
+                        // 比较列表溢出的宽度和容器的宽度来设置列表滑动的距离
+                        if (!thumbListLeftOverWidth) { return; }
 
-                            left = thumbListLeftOverWidth < $thumbListWrapper.width() ? 0 : left + $thumbListWrapper.width();
-
-                            break;
-
-                        case 'next':
-                            if (!thumbListRightOverWidth) { return; }
-
-                            left = thumbListRightOverWidth < $thumbListWrapper.width() ? left - thumbListRightOverWidth :
-                            left - $thumbListWrapper.width();
-
-                            break;
+                        left = thumbListLeftOverWidth < $thumbListWrapper.width() ? 0 : left + $thumbListWrapper.width();
                     }
 
-                    $this.animation.thumbListSlide(left);
+                    if ($(this).hasClass('next')) {
+                        if (!thumbListRightOverWidth) { return; }
+
+                        left = thumbListRightOverWidth < $thumbListWrapper.width() ? left - thumbListRightOverWidth :
+                        left - $thumbListWrapper.width();
+                    }
+
+                    $this.animation.thumbSlide(left);
                 });
             }
 
