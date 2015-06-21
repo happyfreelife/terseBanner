@@ -1,7 +1,7 @@
 /**
  * jquery.easyBanner.js
  * @author    HappyFreeLife
- * @version   1.2.8
+ * @version   1.2.9
  * @url       https://github.com/happyfreelife/easyBanner/
  */
 
@@ -196,14 +196,12 @@
             $(this).css('bottom', $container.height() / 25);
         }
 
-        if ($(this).width() <= $container.width()) {
-            $(this).css('left', (1 - $(this).width() / $container.width()) / 2 * 100 + '%');
-        } else {
-            $(this).css({
-                width: '100%',
-                left: '0px'
-            });
+        var w = $(this).children().width() < $(this).width() ? $(this).children().width() : $(this).width();
 
+        if (w <= $container.width()) {
+            $(this).css('left', (1 - w / $container.width()) / 2 * 100 + '%');
+        } else {
+            $(this).width('100%');
         }
     };
 
@@ -216,12 +214,11 @@
             $(this).append('<a class="next"></a>')
             var $thumbBtn = $('a', $(this)),
                 $thumbList = $(this).children('ul');
+            $thumbBtn.thumbBtnBox($thumbList);
+            $thumbBtn.thumbBtnBackground();
+
+            return $thumbBtn;
         }
-
-        $thumbBtn.thumbBtnBox($thumbList);
-        $thumbBtn.thumbBtnBackground();
-
-        return $thumbBtn;
     };
 
     /**
@@ -350,8 +347,6 @@
              * 缩略图列表滑动
              */
             thumbSlide: function(left) {
-               
-
                 if (T.$thumbList.animating) { return false; }
 
                 if (window.isSupportTransition) {
@@ -375,6 +370,7 @@
                 this.determineIndex();
                 T.$item.eq(T.currentIndex).show().siblings().hide();
                 this.serialActive();
+                T.$item.preload(T.currentIndex, T.currentIndex);
             },
 
             /**
@@ -401,7 +397,7 @@
 
                 this.serialActive();
 
-                T.imgPreLoader(T.currentIndex);
+                // T.$item.preload(T.currentIndex, T.currentIndex);
             },
 
             /**
@@ -466,7 +462,7 @@
 
                 this.serialActive();
 
-                T.imgPreLoader(T.currentIndex);
+                T.$item.preload(T.currentIndex, T.currentIndex);
             },
 
             /**
@@ -529,8 +525,54 @@
  ***** module - preload *****
  ****************************************/
 ;(function ($, window, document) {
-    $.fn.preload = function() {
-        
+    /**
+     * 图片预加载
+     * @param  {Number} loadingIndex 当前加载项的索引
+     * @param  {Number} currentIndex 当前显示项的索引
+     */
+    $.fn.preload = function(loadingIndex, currentIndex) {
+        var $item = $(this);
+
+        // 只能预加载一张图片
+        if (loadingIndex - currentIndex > 1) { return; }
+
+        var img = new Image(),
+            $loadingItem = $item.eq(loadingIndex),
+            loadingItemSrc = $loadingItem.data('src');
+
+            console.log(loadingIndex, currentIndex);
+            console.log(loadingItemSrc);
+
+        if (loadingItemSrc) {
+            $loadingItem.removeAttr('data-src');
+
+            // 不对第1张图片设置loading动画
+            if (!loadingIndex) {
+                $loadingItem.css('background-image', 'url(' + loadingItemSrc + ')');
+            } else {
+                $loadingItem.addClass('loading');
+            }
+
+            img.src = loadingItemSrc;
+
+            img.complete ? showLoadingItem() : img.onload = showLoadingItem;
+        }
+
+        function showLoadingItem() {
+            $loadingItem.removeClass('loading');
+
+            if (loadingIndex) {
+                $loadingItem.css({
+                    display: 'none',
+                    'background-image': 'url(' + loadingItemSrc + ')'
+                });
+            }
+            if (loadingIndex === currentIndex) {
+                $loadingItem.fadeIn();
+            }
+
+            $item.preload(++loadingIndex, currentIndex);
+        }
     };
 })(jQuery, window, document);
 
@@ -580,13 +622,25 @@
              * 图片转换为背景图片
              */
             function imageConvert() {
+                // 获取手动设置的缩略图的地址
+                var thumbUrlArr = [],
+                    regExp = new RegExp('\\?thumb=(.*\\.(jpg|jpeg|gif|png))$');
+
+                $item.find('img').each(function() {
+                    var url = $(this).attr('src') || $(this).attr('data-src');
+                    if (url.match(regExp)) {
+                        thumbUrlArr.push(url.match(regExp)[1]);
+                    }
+                    $this.thumbUrlArr = thumbUrlArr;
+                });
+
                 // 根据data-src自动开启Preload
                 if ($item.find('img[data-src]').length === len) {
                     $item.each(function() {
                         var url = $(this).find('img').data('src');
                         $(this).attr('data-src', url).data('url', url).children('img').remove();
                     });
-                    imgPreLoader(currentIndex);
+                    $item.preload(currentIndex,  currentIndex);
                 } else {
                     $item.each(function() {
                         var url = $(this).find('img').attr('src');
@@ -672,61 +726,21 @@
             function attachProp() {
                 var prop = [
                         'options', 'len', 'currentIndex',
-                        '$this', '$list',
+                        '$this', '$list', '$item',
                         '$arrowBtnWrapper', '$arrowBtn',
                         '$serialBtn', '$thumbList', '$thumb',
-                        'imgPreLoader', 'setPlayTimer'
+                        'setPlayTimer'
                     ];
                 var val = [
                         options, len, currentIndex,
-                        $this, $list,
+                        $this, $list, $item,
                         $arrowBtnWrapper, $arrowBtn,
                         $serialBtn, $thumbList, $thumb,
-                        imgPreLoader, setPlayTimer
+                         setPlayTimer
                     ];
 
                 for (var i = 0, l = prop.length; i < l; i++) {
                     $this[prop[i]] = val[i];
-                }
-            }
-
-            /**
-             * 图片预加载器(延迟加载)
-             * @param  {Number} loadingIndex 当前正在加载的图片序号
-             */
-            function imgPreLoader(loadingIndex) {
-                // 只能预加载一张图片
-                if (loadingIndex - currentIndex > 1) { return; }
-
-                function preload() {
-                    $loadingItem.removeClass();
-
-                    if (loadingIndex) {
-                        $loadingItem.css({
-                            display: 'none',
-                            'background-image': 'url(' + loadingItemSrc + ')'
-                        }).fadeIn(300);
-                    }
-
-                    imgPreLoader(loadingIndex++);
-                }
-
-                var img = new Image(),
-                    $loadingItem = $item.eq(loadingIndex),
-                    loadingItemSrc = $loadingItem.attr('data-src');
-
-                if (loadingItemSrc) {
-                    $loadingItem.removeAttr('data-src');
-
-                    // 不对第1张图片设置loading动画
-                    if (!loadingIndex) {
-                        $loadingItem.css('background-image', 'url(' + loadingItemSrc + ')');
-                    } else {
-                        $loadingItem.addClass('loading');
-                    }
-
-                    img.src = loadingItemSrc;
-                    img.complete ? preload() : img.onload = preload;
                 }
             }
 
@@ -790,8 +804,9 @@
              * 添加缩略图
              */
             function addThumb() {
-                for (var i = 0, item = ''; i < len; i++) {
-                    item += '<li>' + '<img src="' + $item.eq(i).data('url') + '">' + '</li>';
+                for (var i = 0, item = '', src = ''; i < len; i++) {
+                    src = $this.thumbUrlArr[i] || $item.eq(i).data('url');
+                    item += '<li><img src="' + src + '"></li>';
                 }
                 $this.append('<div class="wrapper-thumb"><ul>' + item + '</ul></div>');
 
@@ -813,25 +828,34 @@
                 $thumbImg.thumbImgBox($thumb, $this);
                 $thumbImg.show();
 
-                $thumbList.css({
-                    position: 'relative',
-                    left: '0px',
-                    width: $thumb.outerWidth(true) * $thumb.length - parseInt($thumb.css('margin-right')),
-                    height: $thumb.outerHeight(true)
-                });
+                // 必须在缩略图加载完成之后才能对它进行自动化处理和事件绑定
+                $thumbImg[0].complete ? automatic() : $thumbImg[0].onload = automatic;
 
-                $thumbWrapper.thumbWrapperPosition($this, $thumb);
-                $thumbWrapper.css({
-                    position :'absolute',
-                    'z-index': 20,
-                    overflow: 'hidden',
-                    height: $thumb.outerHeight(true)
-                });
-                
-                $thumbBtn = $thumbWrapper.addThumbBtn();
+                function automatic() {
+                    $thumbList.css({
+                        position: 'relative',
+                        left: '0px',
+                        width: $thumb.outerWidth(true) * $thumb.length - parseInt($thumb.css('margin-right')),
+                        height: $thumb.outerHeight(true)
+                    });
 
-                thumbBtnHandler.call($thumbBtn);
-                serialHandler.call($thumb);
+                    // if ($thumbList.cssDetector('left', ['0px', 'auto'])) {
+
+                    // }
+
+                    $thumbWrapper.thumbWrapperPosition($this, $thumb);
+                    $thumbWrapper.css({
+                        position :'absolute',
+                        'z-index': 20,
+                        overflow: 'hidden',
+                        height: $thumb.outerHeight(true)
+                    });
+                    
+                    $thumbBtn = $thumbWrapper.addThumbBtn();
+
+                    thumbBtnHandler.call($thumbBtn);
+                    serialHandler.call($thumb);
+                }
             }
 
             /**
@@ -935,7 +959,7 @@
             }
 
             /**
-             * 根据配置参数启动对应的方法
+             * 
              */
             (function() {
                 imageConvert();

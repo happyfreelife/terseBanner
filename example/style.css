@@ -76,7 +76,7 @@ input[type="checkbox"]{border: none;}
 h2{font: 30px/50px "Helvetica";color: #000;text-align: center;}
 
 /* new-preload */
-.preload{height: 500px;background: #f3f3f3;}
+.preload{height: 500px;/*background: #f3f3f3;*/}
 .preload ul li.loading{background: url(img/loading.gif) no-repeat center center;}
 
 /* new-thumb */

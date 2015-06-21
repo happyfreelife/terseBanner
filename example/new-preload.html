@@ -1,25 +1,28 @@
-<!DOCTYPE HTML>
+<!DOCTYPE html>
 <html>
 <head>
 	<title>new-preload - easyBanner</title>
 	<meta charset="utf-8">
 	<link rel="stylesheet" type="text/css" href="style.css">
 </head>
-
 <body>
-	<div class="banner preload">
-		<ul>
-			<li><img data-src="http://b.zol-img.com.cn/desk/bizhi/image/6/1440x900/1423735222902.jpg"></li>
-			<li><img data-src="http://b.zol-img.com.cn/desk/bizhi/image/6/1440x900/1423795888230.jpg"></li>
-			<li><img data-src="http://b.zol-img.com.cn/desk/bizhi/image/6/1440x900/1423795914950.jpg"></li>
-			<li><img data-src="http://b.zol-img.com.cn/desk/bizhi/image/6/1440x900/1423795944706.jpg"></li>
-			<li><img data-src="http://b.zol-img.com.cn/desk/bizhi/image/6/1440x900/1423795978406.jpg"></li>
-		</ul>
+	<div class="container">
+		<div class="banner preload">
+			<ul>
+				<li><img data-src="http://b.zol-img.com.cn/desk/bizhi/image/6/1440x900/1434700192793.jpg?index=0"></li>
+				<li><img data-src="http://b.zol-img.com.cn/desk/bizhi/image/6/1440x900/1434700259918.jpg?index=1"></li>
+				<li><img data-src="http://b.zol-img.com.cn/desk/bizhi/image/6/1440x900/1434700333451.jpg?index=2"></li>
+				<li><img data-src="http://b.zol-img.com.cn/desk/bizhi/image/6/1440x900/1434701616276.jpg?index=3"></li>
+				<li><img data-src="http://b.zol-img.com.cn/desk/bizhi/image/6/1440x900/1434701831802.jpg?index=4"></li>
+			</ul>
+		</div>
 	</div>
 </body>
 <script type="text/javascript" src="../lib/jquery-1.11.3.min.js"></script>
 <script type="text/javascript" src="../src/jquery.easyBanner.js"></script>
 <script type="text/javascript">
-	$('.banner').easyBanner();
+	$('.preload').easyBanner({
+		// animation: 'fade'
+	});
 </script>
 </html>
