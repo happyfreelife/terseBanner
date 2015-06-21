@@ -1,7 +1,7 @@
 /**
  * jquery.easyBanner.js
  * @author    HappyFreeLife
- * @version   1.2.9
+ * @version   1.3.0
  * @url       https://github.com/happyfreelife/easyBanner/
  */
 
@@ -378,13 +378,16 @@
              */
             fade: function() {
                 this.determineIndex();
+                    console.log(T.currentIndex, T.$item.eq(T.currentIndex).attr('class'));
 
                 T.$list.animating = true;
-
                 T.$item.removeClass().eq(T.currentIndex).addClass('top-item');
 
                 if (window.isSupportTransition) {
+                    // console.log(T.currentIndex, T.$item.eq(T.currentIndex).attr('class'));
+
                     T.$item.eq(T.currentIndex).addClass('transition-' + T.options.speed).css('opacity', 1);
+
                     setTimeout(T.animation.fadeComplete, T.options.speed);
                 } else {
                     T.$item.eq(T.currentIndex).animate({
@@ -397,7 +400,7 @@
 
                 this.serialActive();
 
-                // T.$item.preload(T.currentIndex, T.currentIndex);
+                T.$item.preload(T.currentIndex, T.currentIndex);
             },
 
             /**
@@ -540,10 +543,7 @@
             $loadingItem = $item.eq(loadingIndex),
             loadingItemSrc = $loadingItem.data('src');
 
-            console.log(loadingIndex, currentIndex);
-            console.log(loadingItemSrc);
-
-        if (loadingItemSrc) {
+        if (!$loadingItem.attr('preloaded')) {
             $loadingItem.removeAttr('data-src');
 
             // 不对第1张图片设置loading动画
@@ -559,17 +559,24 @@
         }
 
         function showLoadingItem() {
-            $loadingItem.removeClass('loading');
+            $loadingItem.attr('preloaded', '');
 
             if (loadingIndex) {
-                $loadingItem.css({
-                    display: 'none',
-                    'background-image': 'url(' + loadingItemSrc + ')'
-                });
+                $loadingItem.css('background-image', 'url(' + loadingItemSrc + ')');
+
+                // 动画模式不是fade，就要把加载之后的item隐藏
+                if ($loadingItem.cssDetector('z-index', 'auto')) {
+                    $loadingItem.hide();
+                }
             }
+
             if (loadingIndex === currentIndex) {
-                $loadingItem.fadeIn();
+                $loadingItem.hasClass('loading') ? $loadingItem.fadeIn() : $loadingItem.show();
             }
+
+
+
+            $loadingItem.removeClass('loading');
 
             $item.preload(++loadingIndex, currentIndex);
         }
@@ -640,7 +647,7 @@
                         var url = $(this).find('img').data('src');
                         $(this).attr('data-src', url).data('url', url).children('img').remove();
                     });
-                    $item.preload(currentIndex,  currentIndex);
+                    $item.preload(currentIndex, currentIndex);
                 } else {
                     $item.each(function() {
                         var url = $(this).find('img').attr('src');
@@ -959,7 +966,7 @@
             }
 
             /**
-             * 
+             * 根据配置参数启动对应的方法
              */
             (function() {
                 imageConvert();
