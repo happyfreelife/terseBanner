@@ -1,7 +1,7 @@
 /**
  * jquery.easyBanner.js
  * @author    HappyFreeLife
- * @version   1.3.0
+ * @version   1.3.1
  * @url       https://github.com/happyfreelife/easyBanner/
  */
 
@@ -351,7 +351,7 @@
 
                 if (window.isSupportTransition) {
                     T.$thumbList.animating = true;
-                    T.$thumbList.css('left', left).addClass('transition-' + T.options.speed);
+                    T.$thumbList.css('left', left).addClass('transition-left-' + T.options.speed);
 
                     setTimeout(T.animation.thumbSlideComplete, T.options.speed + 20);
                 } else {
@@ -378,15 +378,12 @@
              */
             fade: function() {
                 this.determineIndex();
-                    console.log(T.currentIndex, T.$item.eq(T.currentIndex).attr('class'));
 
                 T.$list.animating = true;
                 T.$item.removeClass().eq(T.currentIndex).addClass('top-item');
 
                 if (window.isSupportTransition) {
-                    // console.log(T.currentIndex, T.$item.eq(T.currentIndex).attr('class'));
-
-                    T.$item.eq(T.currentIndex).addClass('transition-' + T.options.speed).css('opacity', 1);
+                    T.$item.eq(T.currentIndex).addClass('transition-fade-' + T.options.speed).css('opacity', 1);
 
                     setTimeout(T.animation.fadeComplete, T.options.speed);
                 } else {
@@ -449,7 +446,7 @@
                     setTimeout(function() {
                         T.$list.animating = true;
                         T.$list.css('left', slideDirection === 'left' ? '-100%' : 0)
-                            .addClass('transition-' + T.options.speed);
+                            .addClass('transition-left-' + T.options.speed);
 
                         setTimeout(T.animation.slideComplete, T.options.speed - 20);
                     }, 20);
@@ -534,6 +531,8 @@
      * @param  {Number} currentIndex 当前显示项的索引
      */
     $.fn.preload = function(loadingIndex, currentIndex) {
+        console.log(loadingIndex);
+
         var $item = $(this);
 
         // 只能预加载一张图片
@@ -543,7 +542,7 @@
             $loadingItem = $item.eq(loadingIndex),
             loadingItemSrc = $loadingItem.data('src');
 
-        if (!$loadingItem.attr('preloaded')) {
+        if ($loadingItem.attr('data-src')) {
             $loadingItem.removeAttr('data-src');
 
             // 不对第1张图片设置loading动画
@@ -556,28 +555,37 @@
             img.src = loadingItemSrc;
 
             img.complete ? showLoadingItem() : img.onload = showLoadingItem;
+        } else {
+            // 当前项没有data-src属性说明已加载过，直接加载下一张
+            $item.preload(++loadingIndex, currentIndex);
         }
 
         function showLoadingItem() {
-            $loadingItem.attr('preloaded', '');
-
             if (loadingIndex) {
                 $loadingItem.css('background-image', 'url(' + loadingItemSrc + ')');
 
-                // 动画模式不是fade，就要把加载之后的item隐藏
-                if ($loadingItem.cssDetector('z-index', 'auto')) {
-                    $loadingItem.hide();
+                if (loadingIndex === currentIndex) {
+                    if ($loadingItem.hasClass('loading')) {
+                        // 当前显示图片正在加载
+                        $loadingItem.hide().fadeIn();
+                    } else {
+                        // 当前显示图片加载完成
+                        $loadingItem.show();
+                    }
                 }
+
+                // 当前显示图片加载完成并且下一图片也加载完成
+                if (loadingIndex !== currentIndex) {
+                    // 动画模式不是fade，就预加载完成的item隐藏
+                    if ($loadingItem.cssDetector('z-index', 'auto')) {
+                        $loadingItem.hide();
+                    }
+                }
+
+                $loadingItem.removeClass('loading');
             }
 
-            if (loadingIndex === currentIndex) {
-                $loadingItem.hasClass('loading') ? $loadingItem.fadeIn() : $loadingItem.show();
-            }
-
-
-
-            $loadingItem.removeClass('loading');
-
+            // 预加载下一张图片
             $item.preload(++loadingIndex, currentIndex);
         }
     };
@@ -660,14 +668,6 @@
              * 轮播列表初始化
              */
             function init() {
-                if (window.isSupportTransition) {
-                    embeddedStyle +=
-                        '.transition-' + options.speed + '{'
-                    +        'transition: all ' + options.speed + 'ms ease;'
-                    +        '-webkit-transition: all ' + options.speed + 'ms ease;'
-                    +    '}\n';
-                }
-
                 $list.hovered = false;
 
                 $list.wrap('<div class="wrapper-list">').parent().css({
@@ -695,6 +695,13 @@
 
                 switch(options.animation) {
                     case 'fade':
+                        if (window.isSupportTransition) {
+                            embeddedStyle +=
+                                '.transition-fade-' + options.speed + '{'
+                            +        'transition: opacity ' + options.speed + 'ms ease;'
+                            +        '-webkit-transition: opacity ' + options.speed + 'ms ease;'
+                            +    '}\n';
+                        }
                         embeddedStyle += '.top-item{z-index: 0 !important;}\n';
 
                         $item.css({
@@ -707,6 +714,14 @@
                         break;
 
                     case 'slide':
+                        if (window.isSupportTransition) {
+                            embeddedStyle +=
+                                '.transition-left-' + options.speed + '{'
+                            +        'transition: left ' + options.speed + 'ms ease;'
+                            +        '-webkit-transition: left ' + options.speed + 'ms ease;'
+                            +    '}\n';
+                        }
+
                         $list.css({
                             left : 0,
                             width: (len + 1) * 100 + '%'
