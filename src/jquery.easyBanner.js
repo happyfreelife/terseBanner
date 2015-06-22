@@ -1,7 +1,7 @@
 /**
  * jquery.easyBanner.js
  * @author    HappyFreeLife
- * @version   1.3.1
+ * @version   1.3.2
  * @url       https://github.com/happyfreelife/easyBanner/
  */
 
@@ -32,28 +32,22 @@
         return $(this).css(prop) === val;
     };
 
-    /**
-     * 主容器定位
-     */
+    // 主容器定位
     $.fn.containerPosition = function() {
         if ($(this).cssDetector('position', 'static')) {
             $(this).css('position', 'relative');
         }
     };
 
-    /**
-     * 箭头按钮盒模型
-     */
-    $.fn.arrowBtnWrapperBox = function ($container) {
+    // 箭头按钮盒模型
+    $.fn.arrowWrapBox = function ($container) {
         if ($(this).width() === $container.width()) {
             $(this).css('width', '96%');
         }
     };
 
-    /**
-     * 箭头按钮定位
-     */
-    $.fn.arrowBtnWrapperPosition = function($container) {
+    // 箭头按钮定位
+    $.fn.arrowWrapPosition = function($container) {
         if ($(this).cssDetector('top', 'auto') && $(this).cssDetector('bottom', 'auto')) {
             $(this).css({
                 top : '50%',
@@ -66,13 +60,11 @@
         }
     };
 
-    /**
-     * 箭头按钮背景
-     */
-    $.fn.arrowBtnBackground = function($container, $arrowBtnWrapper) {
+    // 箭头按钮背景
+    $.fn.arrowBackground = function($container, $arrowWrap) {
         if ($(this).cssDetector('background-image', 'none')) {
-            $('.prev', $arrowBtnWrapper).html('&lt;');
-            $('.next', $arrowBtnWrapper).html('&gt;');
+            $('.prev', $arrowWrap).html('&lt;');
+            $('.next', $arrowWrap).html('&gt;');
 
             $(this).css({
                 'line-height': $(this).height() + 'px',
@@ -86,9 +78,7 @@
         }
     };
 
-    /**
-     * 序列按钮盒模型
-     */
+    // 序列按钮盒模型
     $.fn.serialBtnBox = function(param) {
         if (param === 'equal') {
             var len = $(this).length;
@@ -115,8 +105,8 @@
                 'border-radius': '0'
             });
 
-            $(this).eq(len- 1).css({
-                width: $(this).width() + parseInt($(this).css('border-right-width')),
+            $(this).eq(len - 1).css({
+                width: $(this).parent().width() / len,
                 'border-right-width': '0'
             });
 
@@ -142,15 +132,13 @@
         if ($(this).cssDetector('background-color', ['rgba(0, 0, 0, 0)', 'transparent']) &&
             $(this).cssDetector('background-image', 'none')
         ) {
-            return '.btn-serial > *{background-color: #fff;border-radius: 50%;}\n' +
-            '.btn-serial > .active{background-color: #ffa500;}\n';
+            return '.eb-serial > *{background-color: #fff;border-radius: 50%;}\n' +
+            '.eb-serial > .active{background-color: #ffa500;}\n';
         }
     };
     
-    /**
-     * 序列按钮列表定位
-     */
-    $.fn.serialBtnListPosition = function($serialBtn, $container, param) {
+    // 序列按钮列表定位
+    $.fn.serialBtnWrapPosition = function($serialBtn, $container, param) {
         if (param === 'equal') {
 
         } else {
@@ -167,9 +155,7 @@
         }
     };
 
-    /**
-     * 缩略图图片盒模型
-     */
+    // 缩略图图片盒模型
     $.fn.thumbImgBox = function($thumb, $container) {
         if (!$thumb.cssDetector('height', '0px')) {
             $(this).height($thumb.height());
@@ -188,10 +174,8 @@
         }
     };
 
-    /**
-     * 缩略图外部容器定位
-     */
-    $.fn.thumbWrapperPosition = function($container, $thumb) {
+    // 缩略图外部容器定位
+    $.fn.thumbWrapPosition = function($container, $thumb) {
         if ($(this).cssDetector('top', 'auto') && $(this).cssDetector('bottom', 'auto')) {
             $(this).css('bottom', $container.height() / 25);
         }
@@ -205,13 +189,12 @@
         }
     };
 
-    /**
-     * 添加缩略图列表滚动按钮
-     */
-    $.fn.addThumbBtn = function() {
+    // 添加缩略图列表侧边按钮
+    $.fn.createThumbBtn = function() {
         if ($(this).children().width() > $(this).width()) {
             $(this).prepend('<a class="prev disabled"></a>')
             $(this).append('<a class="next"></a>')
+
             var $thumbBtn = $('a', $(this)),
                 $thumbList = $(this).children('ul');
             $thumbBtn.thumbBtnBox($thumbList);
@@ -221,9 +204,7 @@
         }
     };
 
-    /**
-     * 缩略图列表滚动按钮盒模型
-     */
+    // 缩略图列表侧边按钮盒模型
     $.fn.thumbBtnBox = function($thumbList) {
         $(this).css({
             position: 'relative',
@@ -241,7 +222,7 @@
         $(this).first().css('margin', '0 ' + $thumbList.children().css('margin-right') + ' 0 0');
         $(this).last().css('margin', '0 0 0 ' + $thumbList.children().css('margin-right'));
 
-        // 滚动按钮内部箭头
+        // 给侧边按钮添加内部箭头
         $(this).append('<i>');
         var $thumbBtnArrow = $('i', $(this));
 
@@ -263,12 +244,10 @@
         });
 
         var $thumbList = $(this).siblings('ul');
-        $thumbList.thumbListWrapperBox();
+        $thumbList.thumbListWrapBox();
     };
 
-    /**
-     * 缩略图列表滚动按钮背景
-     */
+    // 缩略图列表侧边按钮背景
     $.fn.thumbBtnBackground = function() {
         if ($(this).cssDetector('background-color', ['rgba(0, 0, 0, 0)', 'transparent']) &&
             $(this).cssDetector('background-image', 'none')
@@ -279,10 +258,8 @@
         }
     };
 
-    /**
-     * 缩略图列表内部容器盒模型
-     */
-    $.fn.thumbListWrapperBox = function() {
+    // 缩略图列表内部容器盒模型
+    $.fn.thumbListWrapBox = function() {
         var w = $(this).parent().width() - $(this).siblings('a').outerWidth(true) * 2;
 
         $(this).wrap('<div>').parent().css({
@@ -301,43 +278,43 @@
  ***** module - animation *****
  ****************************************/
 ;(function ($, window, document) {
+    /**
+     * 把列表的动画绑定到主容器上面
+     * @param  {HTMLElement} $this 轮播主容器
+     */
     $.fn.bindAnimation = function($this) {
         var T = $this;
 
         T.animation = {
-            /**
-             * 判定当前显示项的索引是否溢出
-             */
+            // 判定当前显示项的索引是否溢出
             determineIndex: function() {
                 T.activeIndex =
                 T.currentIndex =
                 T.currentIndex === T.len ? 0 : T.currentIndex === -1 ? T.len - 1 : T.currentIndex;
             },
 
-            /**
-             * 序列元素当前项高亮
-             */
+            // 序列元素当前项高亮
             serialActive: function() {
                 this.determineIndex();
 
-                if (T.options.serialBtn === true || T.options.serialBtn === 'equal') {
+                if (T.options.serial === true || T.options.serialBtn === 'equal') {
                     T.$serialBtn.eq(T.activeIndex).addClass('active').siblings().removeClass('active');
                 }
 
-                if (T.options.serialBtn === 'thumb') {
+                if (T.options.serial === 'thumb') {
                     T.$thumb.eq(T.activeIndex).addClass('active').siblings().removeClass('active');
 
                     // 判定当前图片对应的缩略图是否在缩略图列表的可见范围内
                     var currentItemThumbLeft = T.currentIndex * T.$thumb.outerWidth(true),
                         currentThumbListLeft = Math.abs(parseInt(T.$thumbList.css('left'))),
-                        thumbListWrapperWidth = T.$thumbList.parent().width();
+                        thumbListWrapWidth = T.$thumbList.parent().width();
 
                     // 如果不在列表的可见范围内，滑动到当前图片对应的缩略图的位置
                     if (
                         currentItemThumbLeft < currentThumbListLeft ||
-                        currentItemThumbLeft > (currentThumbListLeft + thumbListWrapperWidth)
+                        currentItemThumbLeft > (currentThumbListLeft + thumbListWrapWidth)
                     ) {
-                        var left = -parseInt(currentItemThumbLeft / thumbListWrapperWidth) * thumbListWrapperWidth;
+                        var left = -parseInt(currentItemThumbLeft / thumbListWrapWidth) * thumbListWrapWidth;
                         this.thumbSlide(left);
                     }
                 }
@@ -345,6 +322,7 @@
 
             /**
              * 缩略图列表滑动
+             * @param  {Number} left 缩略图列表滑动终点的定位
              */
             thumbSlide: function(left) {
                 if (T.$thumbList.animating) { return false; }
@@ -363,9 +341,7 @@
                 }
             },
 
-            /**
-             * 动画效果 - 无
-             */
+            // 动画效果 - 无
             none: function() {
                 this.determineIndex();
                 T.$item.eq(T.currentIndex).show().siblings().hide();
@@ -373,9 +349,7 @@
                 T.$item.preload(T.currentIndex, T.currentIndex);
             },
 
-            /**
-             * 动画效果 - 淡入淡出
-             */
+            // 动画效果 - 淡入淡出
             fade: function() {
                 this.determineIndex();
 
@@ -397,12 +371,10 @@
 
                 this.serialActive();
 
-                T.$item.preload(T.currentIndex, T.currentIndex);
+                T.$item.preload(T.currentIndex, T.currentIndex); 
             },
 
-            /**
-             * 动画效果 - 滑动
-             */
+            // 动画效果 - 滑动
             slide: function() {
                 T.$item = T.$list.children();
 
@@ -413,10 +385,10 @@
                     return;
                 }
 
-                clearInterval(T.playTimer);
-
-                // 滑动动画在执行之前需要将第1个item克隆一份,
-                // 还需要判定此次动画的方向，所以不能使用普通的索引判定方法
+                /**
+                 * 滑动动画在执行之前需要将第1个item克隆一份
+                 * 还需要判定此次动画的方向，所以不能使用普通的索引判定方法
+                 */
                 if (T.currentIndex < lastIndex) {
                     slideDirection = 'right';
                 }
@@ -440,13 +412,15 @@
 
                 T.$item.eq(T.currentIndex).show();
 
-                // 使用CSS3 Transition进行动画过渡
-                // 相对于jQuery的animate执行的动画，可以大幅度提升流畅度
+                /**
+                 * 使用CSS3 Transition进行动画过渡
+                 * 相对于jQuery的animate执行的动画，可以大幅度提升流畅度
+                 */
                 if (window.isSupportTransition) {
                     setTimeout(function() {
                         T.$list.animating = true;
                         T.$list.css('left', slideDirection === 'left' ? '-100%' : 0)
-                            .addClass('transition-left-' + T.options.speed);
+                        .addClass('transition-left-' + T.options.speed);
 
                         setTimeout(T.animation.slideComplete, T.options.speed - 20);
                     }, 20);
@@ -462,12 +436,10 @@
 
                 this.serialActive();
 
-                T.$item.preload(T.currentIndex, T.currentIndex);
+                T.$item.preload(T.currentIndex, T.currentIndex); 
             },
 
-            /**
-             * fade动画的回调函数
-             */
+            // 单次fade动画执行完之后调用的函数
             fadeComplete: function() {
                 T.$list.animating = false;
                 T.$item.eq(T.currentIndex).siblings().css('opacity', 0);
@@ -476,9 +448,7 @@
                 }
             },
 
-            /**
-             * slide动画的回调函数 
-             */
+            // 单次slide动画执行完之后调用的函数
             slideComplete: function() {
                 if (T.currentIndex === T.len) {
                     T.$item.first().show().siblings().hide();
@@ -496,10 +466,7 @@
                 }
             },
 
-            /*
-             * thumbSlide动画的回调函数
-             * 设置滚动按钮的禁用样式
-             */
+            // 单次thumbSlide动画执行完之后调用的函数
             thumbSlideComplete: function() {
                 T.$thumbList.animating = false;
 
@@ -507,6 +474,7 @@
                     $prev = T.$thumbList.parent().prev(),
                     $next = T.$thumbList.parent().next();
 
+                // 缩略图列表滑动到左右边界时给对应的按钮添加禁用样式
                 left ? $prev.removeClass('disabled') : $prev.addClass('disabled');
 
                 if (T.$thumbList.parent().width() - T.$thumbList.width() !== left) {
@@ -531,12 +499,9 @@
      * @param  {Number} currentIndex 当前显示项的索引
      */
     $.fn.preload = function(loadingIndex, currentIndex) {
-        console.log(loadingIndex);
-
         var $item = $(this);
 
-        // 只能预加载一张图片
-        if (loadingIndex - currentIndex > 1) { return; }
+        if (loadingIndex >= $item.length) { return; }
 
         var img = new Image(),
             $loadingItem = $item.eq(loadingIndex),
@@ -553,10 +518,9 @@
             }
 
             img.src = loadingItemSrc;
-
             img.complete ? showLoadingItem() : img.onload = showLoadingItem;
         } else {
-            // 当前项没有data-src属性说明已加载过，直接加载下一张
+            // 当前项没有data-src属性说明已加载，直接加载下一张
             $item.preload(++loadingIndex, currentIndex);
         }
 
@@ -566,23 +530,26 @@
 
                 if (loadingIndex === currentIndex) {
                     if ($loadingItem.hasClass('loading')) {
-                        // 当前显示图片正在加载
+                        // 当前显示项正在加载
                         $loadingItem.hide().fadeIn();
                     } else {
-                        // 当前显示图片加载完成
+                        // 当前显示项已加载
                         $loadingItem.show();
                     }
                 }
 
-                // 当前显示图片加载完成并且下一图片也加载完成
+                // 当前显示项已加载并且下一项也加载完了
                 if (loadingIndex !== currentIndex) {
-                    // 动画模式不是fade，就预加载完成的item隐藏
+                    /**
+                     * 动画模式不是fade，把预加载完成的item隐藏
+                     * 动画模式是fade，不可隐藏任何item，因为fade动画仅仅是改变item的opacity和z-index属性
+                     */
                     if ($loadingItem.cssDetector('z-index', 'auto')) {
                         $loadingItem.hide();
                     }
                 }
 
-                $loadingItem.removeClass('loading');
+                $loadingItem.removeClass('loading').addClass('loaded');
             }
 
             // 预加载下一张图片
@@ -606,8 +573,8 @@
         var defaults = {
             animation: 'slide',    // 动画模式: ['slide', 'fade']
             trigger  : 'click',    // 触发动画的事件类型: ['click', 'hover']
-            arrowBtn : true,       // 左右箭头按钮
-            serialBtn: true,       // 序列按钮[true, false, 'equal', 'thumb']
+            arrow    : true,       // 左右箭头按钮
+            serial   : true,       // 序列按钮[true, false, 'equal', 'thumb']
             autoPlay : true,       // 自动轮播
             speed    : 800,        // 动画速度
             interval : 5000        // 自动轮播间隔
@@ -615,62 +582,62 @@
         options = $.extend(defaults, option);
 
         return this.each(function() {
-            var self  = this,
-                $this = $(this),
+            var $this = $(this),
                 $list = $this.children(),
                 $item = $list.children(),
                 len   = $item.length,
-                $arrowBtnWrapper,
-                $arrowBtn,
-                $serialBtnList,
-                $serialBtn,
-                $thumbWrapper,
-                $thumbList,
-                $thumb,
-                $thumbImg,
-                $thumbBtn,
                 currentIndex = 0,
-                activeIndex = 0,
                 embeddedStyle = '';
 
-            /**
-             * 图片转换为背景图片
-             */
-            function imageConvert() {
-                // 获取手动设置的缩略图的地址
-                var thumbUrlArr = [],
-                    regExp = new RegExp('\\?thumb=(.*\\.(jpg|jpeg|gif|png))$');
+            // 提取图片: 将图片转为背景图片;获取手动设置的缩略图地址
+            function extractImage() {
+                var $itemImg = $item.find('img'),
+                    thumbSrcArr = [],
+                    thumbSrcRegExp = new RegExp('\\?thumb=(.*\\.(jpg|jpeg|gif|png))$');
 
-                $item.find('img').each(function() {
-                    var url = $(this).attr('src') || $(this).attr('data-src');
-                    if (url.match(regExp)) {
-                        thumbUrlArr.push(url.match(regExp)[1]);
+                // 获取手动设置的缩略图的地址
+                $itemImg.each(function() {
+                    var src = $(this).attr('src') || $(this).data('src');
+                    if (src.match(thumbSrcRegExp)) {
+                        thumbSrcArr.push(src.match(thumbSrcRegExp)[1]);
                     }
-                    $this.thumbUrlArr = thumbUrlArr;
+                    $this.thumbSrcArr = thumbSrcArr;
                 });
 
-                // 根据data-src自动开启Preload
-                if ($item.find('img[data-src]').length === len) {
-                    $item.each(function() {
-                        var url = $(this).find('img').data('src');
-                        $(this).attr('data-src', url).data('url', url).children('img').remove();
+                if ($itemImg.filter('[data-src]').length === len) {
+                    // 给主容器附加使用preload的标记
+                    $this.data('use-preload', true);
+
+                    // 根据data-src自动开启Preload
+                    $itemImg.each(function() {
+                        var src = $(this).data('src');
+                        $(this).parent().attr('data-src', src).data('url', src);
+                        $(this).remove();
                     });
+
                     $item.preload(currentIndex, currentIndex);
                 } else {
-                    $item.each(function() {
-                        var url = $(this).find('img').attr('src');
-                        $(this).css('background-image', 'url(' + url + ')').data('url', url).children('img').remove();
+                    // 标准模式，将图片转为父级元素的背景图片后删除
+                    $itemImg.each(function() {
+                        var src = $(this).attr('src');
+                        $(this).parent().css('background-image', 'url(' + src + ')').data('url', src);
+                        $(this).remove();
                     });
                 }
             }
 
-            /**
-             * 轮播列表初始化
-             */
+            // 轮播列表初始化
             function init() {
+                // 给主容器绑定属性
+                $this.$list = $list;
+                $this.$item = $item;
+                $this.len = len;
+                $this.options = options;
+                $this.currentIndex = currentIndex;
+
                 $list.hovered = false;
 
-                $list.wrap('<div class="wrapper-list">').parent().css({
+                $list.wrap('<div class="eb-list">').parent().css({
                     position: 'relative',
                     width   : '100%',
                     height  : '100%',
@@ -691,7 +658,7 @@
                     'background-position': 'center top'
                 });
                 
-                $this.containerPosition();
+                $this.addClass('easy-banner').containerPosition();
 
                 switch(options.animation) {
                     case 'fade':
@@ -738,72 +705,44 @@
 
                 // 改变浏览器视口大小时自动调整背景图片的位置
                 $(window).resize(function() {
-                    $list.children().css('width', $this.width() + 'px');
+                    $list.children().width($this.width());
                 });
             }
 
-            /**
-             * 给容器附加属性
-             */
-            function attachProp() {
-                var prop = [
-                        'options', 'len', 'currentIndex',
-                        '$this', '$list', '$item',
-                        '$arrowBtnWrapper', '$arrowBtn',
-                        '$serialBtn', '$thumbList', '$thumb',
-                        'setPlayTimer'
-                    ];
-                var val = [
-                        options, len, currentIndex,
-                        $this, $list, $item,
-                        $arrowBtnWrapper, $arrowBtn,
-                        $serialBtn, $thumbList, $thumb,
-                         setPlayTimer
-                    ];
-
-                for (var i = 0, l = prop.length; i < l; i++) {
-                    $this[prop[i]] = val[i];
-                }
-            }
-
-            /**
-             * 添加箭头按钮
-             */
-            function addArrowBtn() {
+            // 给轮播添加方向箭头
+            function createArrow() {
                 $this.append(
-                    '<div class="btn-arrow">'
+                    '<div class="eb-arrow">'
                 +       '<a class="prev" style="float: left;"></a>'
                 +       '<a class="next" style="float: right;"></a>'
                 +   '</div>'
                 );
 
-                $arrowBtnWrapper = $('.btn-arrow', $this);
-                $arrowBtn = $arrowBtnWrapper.children();
+                var $arrowWrap = $('.eb-arrow', $this),
+                    $arrow = $arrowWrap.children();
 
                 // 自动化样式
-                $arrowBtnWrapper.arrowBtnWrapperBox($this);
-                $arrowBtnWrapper.arrowBtnWrapperPosition($this);
-                $arrowBtn.arrowBtnBackground($this, $arrowBtnWrapper);
+                $arrowWrap.arrowWrapBox($this);
+                $arrowWrap.arrowWrapPosition($this);
+                $arrow.arrowBackground($this, $arrowWrap);
 
-                $arrowBtnWrapper.appendTo($this).css({
+                $arrowWrap.appendTo($this).css({
                     position :'absolute',
                     'z-index': 20,
                     height   : 0
                 });
                 
-                arrowBtnHandler();
+                arrowBindEvent.call($arrow);
             }
 
-            /**
-             * 添加序列按钮
-             */
-            function addSerialBtn() {
+            // 给轮播添加序列按钮
+            function createSerialBtn() {
                 for (var i = 0, item = ''; i < len; i++) {
-                    item += '<li></li>';
+                    item += '<a></a>';
                 }
-                $this.append('<ul class="btn-serial">' + item + '</ul>');
-                $serialBtnList = $('.btn-serial', $this);
-                $serialBtn = $serialBtnList.children();
+                $this.append('<div class="eb-serial">' + item + '</div>');
+                var $serialBtnWrap = $('.eb-serial', $this),
+                    $serialBtn = $serialBtnWrap.children();
 
                 $serialBtn.css('float', 'left');
                 
@@ -812,30 +751,30 @@
 
                 $serialBtn.serialBtnBox(equal);
                 embeddedStyle += $serialBtn.serialBtnBackground();
-                $serialBtnList.serialBtnListPosition($serialBtn, $this, equal);
+                $serialBtnWrap.serialBtnWrapPosition($serialBtn, $this, equal);
 
-                $serialBtnList.appendTo($this).css({
+                $serialBtnWrap.appendTo($this).css({
                     position :'absolute',
                     'z-index': 20
                 }).children(':first').addClass('active');
 
-                serialHandler.call($serialBtn);
+                serialBindEvent.call($serialBtn);
+
+                $this.$serialBtn = $serialBtn;
             }
 
-            /**
-             * 添加缩略图
-             */
-            function addThumb() {
+            // 给轮播添加序列缩略图
+            function createSerialThumb() {
                 for (var i = 0, item = '', src = ''; i < len; i++) {
-                    src = $this.thumbUrlArr[i] || $item.eq(i).data('url');
+                    src = $this.thumbSrcArr[i] || $item.eq(i).data('url');
                     item += '<li><img src="' + src + '"></li>';
                 }
-                $this.append('<div class="wrapper-thumb"><ul>' + item + '</ul></div>');
+                $this.append('<div class="eb-thumb"><ul>' + item + '</ul></div>');
 
-                $thumbWrapper = $('.wrapper-thumb', $this);
-                $thumbList = $thumbWrapper.children();
-                $thumb = $thumbList.children();
-                $thumbImg = $thumb.children();
+                var $thumbWrap = $('.eb-thumb', $this),
+                    $thumbList = $thumbWrap.children(),
+                    $thumb = $thumbList.children(),
+                    $thumbImg = $thumb.children();
 
                 $thumb.css({
                     float: 'left',
@@ -861,43 +800,27 @@
                         height: $thumb.outerHeight(true)
                     });
 
-                    // if ($thumbList.cssDetector('left', ['0px', 'auto'])) {
-
-                    // }
-
-                    $thumbWrapper.thumbWrapperPosition($this, $thumb);
-                    $thumbWrapper.css({
+                    $thumbWrap.thumbWrapPosition($this, $thumb);
+                    $thumbWrap.css({
                         position :'absolute',
                         'z-index': 20,
                         overflow: 'hidden',
                         height: $thumb.outerHeight(true)
                     });
                     
-                    $thumbBtn = $thumbWrapper.addThumbBtn();
+                    var $thumbBtn = $thumbWrap.createThumbBtn();
 
-                    thumbBtnHandler.call($thumbBtn);
-                    serialHandler.call($thumb);
+                    thumbBtnBindEvent.call($thumbBtn);
+                    serialBindEvent.call($thumb);
                 }
+
+                $this.$thumb = $thumb;
+                $this.$thumbList = $thumbList;
             }
 
-            /**
-             * banner容器hover事件处理器
-             */
-            function bannerHandler() {
-                $this.hover(function() {
-                    $list.hovered = true;
-                    clearInterval($this.playTimer);
-                }, function() {
-                    $list.hovered = false;
-                    if (!$list.animating) { setPlayTimer(); }
-                });
-            }
-
-            /**
-             * 箭头的事件处理器
-             */
-            function arrowBtnHandler() {
-                $arrowBtn.on({
+            // 给方向箭头绑定事件
+            function arrowBindEvent() {
+                $(this).on({
                     click: function() {
                         if ($list.animating) { return; }
                         $(this).hasClass('prev') ? currentIndex-- : currentIndex++;
@@ -909,10 +832,8 @@
                 });
             }
 
-            /**
-             * 序列按钮和缩略图的事件处理器
-             */
-            function serialHandler() {
+            // 给序列按钮、缩略图绑定事件
+            function serialBindEvent() {
                 $(this).on(
                     options.trigger === 'click' ? 'click' : 'mouseenter',
                     function() {
@@ -923,43 +844,38 @@
                 );
             }
 
-            /**
-             * 缩略图列表滚动按钮的事件处理器
-             */
-            function thumbBtnHandler() {
+            // 给缩略图侧边按钮绑定事件
+            function thumbBtnBindEvent() {
                 $(this).click(function() {
                     var $thumbList = $this.$thumbList,           // 缩略图列表
-                        $thumbListWrapper = $thumbList.parent(), // 缩略图列表容器
+                        $thumbListWrap = $thumbList.parent(), // 缩略图列表容器
                         left = parseInt($thumbList.css('left')), // 缩略图列表
                     
                         thumbListLeftOverWidth = Math.abs(parseInt($thumbList.css('left'))),        // 缩略图列表溢出容器的左侧宽度
-                        thumbListRightOverWidth = $thumbList.width() - $thumbListWrapper.width() -  // 缩略图列表溢出容器的右侧宽度
+                        thumbListRightOverWidth = $thumbList.width() - $thumbListWrap.width() -  // 缩略图列表溢出容器的右侧宽度
                         Math.abs(parseInt($thumbList.css('left')));
 
                     if ($(this).hasClass('prev')) {
                         // 比较列表溢出的宽度和容器的宽度来设置列表滑动的距离
                         if (!thumbListLeftOverWidth) { return; }
 
-                        left = thumbListLeftOverWidth < $thumbListWrapper.width() ? 0 : left + $thumbListWrapper.width();
+                        left = thumbListLeftOverWidth < $thumbListWrap.width() ? 0 : left + $thumbListWrap.width();
                     }
 
                     if ($(this).hasClass('next')) {
                         if (!thumbListRightOverWidth) { return; }
 
-                        left = thumbListRightOverWidth < $thumbListWrapper.width() ? left - thumbListRightOverWidth :
-                        left - $thumbListWrapper.width();
+                        left = thumbListRightOverWidth < $thumbListWrap.width() ? left - thumbListRightOverWidth :
+                        left - $thumbListWrap.width();
                     }
 
                     $this.animation.thumbSlide(left);
                 });
             }
 
-            /**
-             * 轮播切换
-             */
+            // 播放轮播动画
             function play() {
-                $this.currentIndex = currentIndex;
-                $this.activeIndex = activeIndex;
+                $this.activeIndex = $this.currentIndex = currentIndex;
 
                 $this.animation[$this.options.animation]();
 
@@ -969,38 +885,47 @@
                 }
             }
 
-            /**
-             * 设置自动播放的定时器
-             */
+            // 设置轮播自动播放的定时器
             function setPlayTimer() {
+                /**
+                 * 动画执行完之后，清除原来的自动定时器再重新设置一个
+                 * 这样可以避免动画执行时间对自动播放间隔时间造成的误差
+                 */
                 clearInterval($this.playTimer);
+
                 $this.playTimer = setInterval(function() {
                     currentIndex++;
                     play();
                 }, options.interval);
             }
 
-            /**
-             * 根据配置参数启动对应的方法
-             */
+            // 取消轮播自动播放的定时器
+            function cancelPlayTimer() {
+                $this.hover(function() {
+                    $list.hovered = true;
+                    clearInterval($this.playTimer);
+                }, function() {
+                    $list.hovered = false;
+                    if (!$list.animating) { setPlayTimer(); }
+                });
+            }
+            
+
+            // 根据配置参数自动调用对应的方法
             (function() {
-                imageConvert();
+                extractImage();
                 init();
-                bannerHandler();
 
                 if (len <= 1) { return; }
-                if (options.arrowBtn) { addArrowBtn(); }
-                if (options.serialBtn === true || options.serialBtn === 'equal') { addSerialBtn(); }
-                if (options.serialBtn === 'thumb') { addThumb(); }
-                if (options.autoPlay) { setPlayTimer(); }
+                if (options.arrow) { createArrow(); }
+                if (options.serial === true || options.serial === 'equal') { createSerialBtn(); }
+                if (options.serial === 'thumb') { createSerialThumb(); }
+                if (options.autoPlay) { setPlayTimer(); cancelPlayTimer(); }
 
-                // 附加属性
-                attachProp();
-
-                // 绑定动画
+                $this.setPlayTimer = setPlayTimer;
                 $this.bindAnimation($this);
 
-                $('head').append('<style type="text/css">' + embeddedStyle + '</style>');
+                $('head').append('<style>' + embeddedStyle + '</style>');
             }());
         });
     };

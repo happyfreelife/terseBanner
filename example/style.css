@@ -1,73 +1,31 @@
 @charset "utf-8";
 
-body,
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-hr,
-p,
-blockquote,
-ul,
-ol,
-li,
-dl,
-dd,
-input,
-button,
-textarea,
-fieldset,
-legend,
-figure,
-menu,
-th,
-td,
-pre{margin: 0;padding: 0;}
-body{font: 12px/1 Helvetica, Arial, sans-serif, "Microsoft YaHei";color: #666;}
-h1,
-h2,
-h3,
-h4,
-h5,
-h6{font-weight: normal;font-size: inherit;}
+body, h1, h2, h3, h4, h5, h6, hr, p, blockquote, ul, ol, li, dl, dd, input, button, textarea, fieldset, legend, figure, menu, th, td, pre{margin: 0;padding: 0;} body{font: 12px/1 Helvetica, Arial, sans-serif, "Microsoft YaHei";color: #666;} h1, h2, h3, h4, h5, h6{font-weight: normal;font-size: inherit;}
 a{color: #999;text-decoration: none;outline: none;}
 img{border: none;}
-ul,
-ol{list-style: none;}
-i,
-em{font-style: normal;}
+ul, ol{list-style: none;}
+i, em{font-style: normal;}
 table{border-collapse: collapse;}
-input,
-button,
-select,
-textarea,
-optgroup{font: inherit;color: inherit;outline: none;}
-input[type="text"],
-input[type="password"],
-button,
-textarea{border: 1px solid #ccc;}
-input[type="button"],
-input[type="submit"],
-button{border: none;}
+input, button, select, textarea, optgroup{font: inherit;color: inherit;outline: none;}
+input[type="text"], input[type="password"], button, textarea{border: 1px solid #ccc;}
+input[type="button"], input[type="submit"], button{border: none;}
 input[type="radio"],
 input[type="checkbox"]{border: none;}
+
 .fl{float: left;}
 .fr{float: right;}
 .clearfix{*zoom: 1;}
 .clearfix:after{content: "";display: block;clear: both;}
 
 .banner{height: 400px;}
-.banner .btn-arrow a{display: none;}
-.banner:hover .btn-arrow a{display: block;}
+.banner .eb-arrow a{display: none;}
+.banner:hover .eb-arrow a{display: block;}
 
 /* basic-slide */
 .slide{height: 500px;}
-/* .slide .btn-arrow{width: 90%;} */
 .equal{width: 800px;margin: 30px auto;}
-.equal .btn-serial li{background: #9acd32;}
-.equal .btn-serial li.active{background: #ffa500;}
+.equal .eb-serial a{background: #9acd32;border-right: 1px solid #fff;}
+.equal .eb-serial a.active{background: #ffa500;}
 
 /* basic-fade */
 .banner.fade{width: 1200px;height: 450px;margin: 0 auto;}
@@ -81,7 +39,7 @@ h2{font: 30px/50px "Helvetica";color: #000;text-align: center;}
 
 /* new-thumb */
 .thumb{width: 1000px;height: 600px;margin: 0 auto;}
-.thumb .wrapper-thumb{width: 66%;}
-.thumb .wrapper-thumb ul li{height: 80px;margin-right: 16px;opacity: .5;}
-.thumb .wrapper-thumb ul li.active{opacity: 1;}
-.thumb .wrapper-thumb a{width: 30px;height: 80px;}
+.thumb .eb-thumb{width: 66%;}
+.thumb .eb-thumb ul li{height: 80px;margin-right: 16px;opacity: .5;}
+.thumb .eb-thumb ul li.active{opacity: 1;}
+.thumb .eb-thumb a{width: 30px;height: 80px;}
