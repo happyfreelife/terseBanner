@@ -36,4 +36,5 @@ h2{font: 30px/50px "Helvetica";color: #000;text-align: center;}
 .thumb .eb-thumb{width: 66%;}
 .thumb .eb-thumb ul li{height: 80px;margin-right: 16px;opacity: .5;}
 .thumb .eb-thumb ul li.active{opacity: 1;}
-.thumb .eb-thumb a{width: 30px;height: 80px;}
+.thumb .eb-thumb .prev{left: 20px;}
+.thumb .eb-thumb .next{right: 20px;}

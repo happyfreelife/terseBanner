@@ -1,62 +1,59 @@
 /**
  * jquery.easyBanner.js
- * version   1.3.3
+ * version   1.3.4
  * url       https://github.com/happyfreelife/easyBanner/
  */
 
 (function ($, window, document) {
 
     // 判断浏览器是否支持CSS3的transition属性
-    window.isSupportTransition = 'transition' in document.documentElement.style;
+    isSupportTransition = 'transition' in document.documentElement.style;
 
     // 判断浏览器是否是ie
-    window.isIE = /msie|trident/i.test(navigator.userAgent);
+    isIE = /msie|trident/i.test(navigator.userAgent);
 
-    /**
-     * 样式检测
-     * @param  {String} prop css属性名
-     * @param  {String || Array} val  css属性值
-     * @return {Boolean}
-     */
-    $.fn.cssDetector = function(prop, val) {
-        if ($.isArray(val)) {
-            for (var i in val) {
-                if ($(this).css(prop) === val[i]) {
-                    return true;
+
+    /******************** Automatic ********************/
+    function Automatic($elem) {
+
+        /**
+         * 样式检测
+         * @param  {String} prop css属性名
+         * @param  {String || Array} val  css属性值
+         * @return {Boolean}
+         */
+        function cssDetector($elem, prop, val) {
+            if ($.isArray(val)) {
+                for (var i in val) {
+                    if ($elem.css(prop) === val[i]) {
+                        return true;
+                    }    
                 }
+                return false;
             }
-            return false;
+            return $elem.css(prop) === val;
         }
-        return $(this).css(prop) === val;
-    };
 
-    
-    $.fn.easyBanner = function(option) {
+        var T = $elem;
 
-        /******************** Automatic ********************/
-        var Automatic = {
-            /*
-             * 主容器
-             */
-            containerPos: function($elem) {
-                if ($elem.cssDetector('position', 'static')) {
-                    $elem.css('position', 'relative');
+        T.automatic = {
+            /********** 主容器 **********/
+            containerPos: function() {
+                if (cssDetector(T, 'position', 'static')) {
+                    T.css('position', 'relative');
                 }
             },
 
-            /*
-             * 箭头
-             */
-            arrowBg: function($elem, $container) {
-                if ($elem.cssDetector('background-image', 'none')) {
+            /********** 箭头 **********/
+            arrowBg: function($elem) {
+                if (cssDetector($elem, 'background-image', 'none')) {
                     $elem.filter('.prev').html('&lt;');
                     $elem.filter('.next').html('&gt;');
 
                     $elem.css({
                         lineHeight: $elem.height() + 'px',
-                        fontSize  : $container.height() * 0.133,
-                        fontFamily: 'SimHei',
-                        textAlign : 'center',
+                        fontSize  : T.height() * 0.133,
+                        fontFamily: isIE ? 'SimHei' : 'monospace',
                         userSelect: 'none',
                         cursor    : 'pointer',
                         color     : '#fff'
@@ -64,31 +61,30 @@
                 }
             },
 
-            arrowWrapBox: function ($elem, $container) {
-                if ($elem.width() === $container.width()) {
+            arrowWrapBox: function ($elem) {
+                if ($elem.width() === T.width()) {
                     $elem.css('width', '96%');
                 }
             },
 
-            arrowWrapPos: function($elem, $container) {
-                if ($elem.cssDetector('top', 'auto') && $elem.cssDetector('bottom', 'auto')) {
+            arrowWrapPos: function($elem) {
+                if (cssDetector($elem, 'top', 'auto') && cssDetector($elem, 'bottom', 'auto')) {
                     $elem.css({
-                        top : '50%',
+                        top: '50%',
                         marginTop: -$elem.height() / 2
                     });
                 }
 
-                if ($elem.cssDetector('left', 'auto') && $elem.cssDetector('right', 'auto')) {
-                    $elem.css('marginLeft', (1 - $elem.width() / $container.width()) / 2 * 100 + '%');
+                if (cssDetector($elem, 'left', 'auto') && cssDetector($elem, 'right', 'auto')) {
+                    $elem.css('marginLeft', (1 - $elem.width() / T.width()) / 2 * 100 + '%');
                 }
             },
 
-            /*
-             * 序列按钮
-             */
+            /********** 序列按钮 **********/
             serialBtnBg: function($elem) {
-                if ($elem.cssDetector('background-color', ['rgba(0, 0, 0, 0)', 'transparent']) &&
-                    $elem.cssDetector('background-image', 'none')
+                if (
+                    cssDetector($elem, 'background-color', ['rgba(0, 0, 0, 0)', 'transparent']) &&
+                    cssDetector($elem, 'background-image', 'none')
                 ) {
                     return '.eb-serial > *{background-color: #fff;border-radius: 50%;}\n' +
                     '.eb-serial > .active{background-color: #ffa500;}\n';
@@ -97,27 +93,27 @@
             
             serialBtnBox: function($elem, type) {
                 if (type === 'equal') {
-                    var len = $(this).length;
+                    var len = $elem.length;
 
-                    if ($elem.cssDetector('border-right-width', ['0px', 'medium'])) {
+                    if (cssDetector($elem, 'borderRightWidth', ['0px', 'medium'])) {
                         $elem.css('borderRightWidth', 1);
                     }
 
-                    if ($elem.cssDetector('border-right-color', ['#666', 'rgb(102, 102, 102)'])) {
+                    if (cssDetector($elem, 'borderRightColor', ['#666', 'rgb(102, 102, 102)'])) {
                         $elem.css('borderRightColor', '#fff');
                     }
 
-                    if ($elem.cssDetector('border-right-style', 'none')) {
+                    if (cssDetector($elem, 'borderRightStyle', 'none')) {
                         $elem.css('borderRightStyle', 'solid');
                     }
 
-                    if ($elem.cssDetector('height', '0px')) {
+                    if (cssDetector($elem, 'height', '0px')) {
                         $elem.css('height', 10);
                     }
 
                     $elem.css({
                         width: $elem.parent().width() / len - parseInt($elem.css('border-right-width')),
-                        borderLeft: 'none',
+                        borderLeft  : 'none',
                         borderRadius: 0
                     });
 
@@ -125,49 +121,45 @@
                         width: $elem.parent().width() / len,
                         borderRightWidth: 0
                     });
+                } else {
+                    if (cssDetector($elem, 'width', '0px') && cssDetector($elem, 'height', '0px')) {
+                        $elem.css({
+                            width : 10,
+                            height: 10
+                        });
+                    }
 
-                    return;
-                }
-
-                if ($elem.cssDetector('width', '0px') && $elem.cssDetector('height', '0px')) {
-                    $elem.css({
-                        width: 10,
-                        height: 10
-                    });
-                }
-
-                if ($elem.cssDetector('margin', ['0px', ''])) {
-                    $elem.css('margin', '0 5px');
+                    if (cssDetector($elem, 'margin', ['0px', ''])) {
+                        $elem.css('margin', '0 5px');
+                    }
                 }
             },
 
-            serialBtnWrapPos: function($elem, $container) {
-                var $serialBtn = $elem.children();
-
-                if ($elem.cssDetector('top', 'auto') && $elem.cssDetector('bottom', 'auto')) {
-                    $elem.css('bottom', $container.height() * 0.04);
+            serialBtnWrapPos: function($elem) {
+                if (cssDetector($elem, 'top', 'auto') && cssDetector($elem, 'bottom', 'auto')) {
+                    $elem.css('bottom', T.height() * 0.04);
                 }
         
-                if ($elem.cssDetector('left', 'auto') && $elem.cssDetector('right', 'auto')) {
+                if (cssDetector($elem, 'left', 'auto') && cssDetector($elem, 'right', 'auto')) {
                     $elem.css({
                         left: '50%',
-                        marginLeft: -$serialBtn.outerWidth(true) * $serialBtn.length / 2
+                        marginLeft: -$elem.children().outerWidth(true) * $elem.children().length / 2
                     });
                 }
             },
 
-            /*
-             * 缩略图
-             */
-            thumbImgBox: function($elem, $thumb, $container) {
-                if (!$thumb.cssDetector('height', '0px')) {
-                    $elem.height($thumb.height());
+            /********** 缩略图 **********/
+            thumbImgBox: function($elem) {
+                var $thumbItem = $elem.parent();
+
+                if (!cssDetector($thumbItem, 'height', '0px')) {
+                    $elem.height($thumbItem.height());
                 } else {
-                    $elem.height($container.height() * 0.125);
-                    $thumb.height($elem.height());
+                    $elem.height(T.height() * 0.125);
+                    $thumbItem.height($elem.height());
                 }
 
-                if (!$thumb.cssDetector('width', '0px')) {
+                if (!cssDetector($thumbItem, 'width', '0px')) {
                     $elem.css({
                         position  : 'relative',
                         left      : '50%',
@@ -176,388 +168,337 @@
                 }
             },
 
-            thumbWrapPos: function($elem, $container) {
-                if ($elem.cssDetector('top', 'auto') && $elem.cssDetector('bottom', 'auto')) {
-                    $elem.css('bottom', $container.height() / 25);
+            thumbArrowBg: function($elem) {
+                if (
+                    cssDetector($elem, 'background-color', ['rgba(0, 0, 0, 0)', 'transparent']) &&
+                    cssDetector($elem, 'background-image', 'none')
+                ) {
+                    $elem.filter('.prev').html('&lt;');
+                    $elem.filter('.next').html('&gt;');
+
+                    console.log($elem.height());
+                    $elem.css({
+                        fontSize  :$elem.parent().height() * 0.5,
+                        lineHeight: $elem.height() + 'px',
+                        fontFamily: isIE ? 'SimHei' : 'monospace',
+                        userSelect: 'none',
+                        cursor    : 'pointer',
+                        color     : '#fff'
+                    });
+                }
+            },
+
+            thumbArrowPos: function($elem) {
+                $elem.each(function() {
+                    if (cssDetector($(this), 'marginTop', '0px')) {
+                        $(this).css('marginTop', ($(this).parent().height() - $(this).height()) / 2);
+                    }
+                    
+                });
+            },
+
+            thumbListBox: function($elem) {
+                var thumbListWidth = $elem.parent().width() - $elem.siblings('a').outerWidth(true) * 2;
+
+                $elem.wrap('<div/>').parent().css({
+                    float     : 'left',
+                    width     : thumbListWidth,
+                    height    : $elem.height(),
+                    overflow  : 'hidden',
+                    userSelect: 'none'
+                });
+            },
+
+            thumbListWrapPos: function($elem) {
+                if (cssDetector($elem, 'top', 'auto') && cssDetector($elem, 'bottom', 'auto')) {
+                    $elem.css('bottom', T.height() / 25);
                 }
 
                 var w = $elem.children().width() < $elem.width() ?
                 $elem.children().width() : $elem.width();
 
-                if (w <= $container.width()) {
-                    $elem.css('left', (1 - w / $container.width()) / 2 * 100 + '%');
+                if (w <= T.width()) {
+                    $elem.css('left', (1 - w / T.width()) / 2 * 100 + '%');
                 } else {
                     $elem.width('100%');
                 }
             },
-
-            // 添加缩略图列表侧边按钮
-            createThumbBtn: function($elem) {
-                if ($elem.children().width() > $elem.width()) {
-                    $elem.prepend('<a class="prev disabled"/>');
-                    $elem.append('<a class="next"/>');
-
-                    var $thumbBtn = $('a', $elem),
-                        $thumbList = $elem.children('ul');
-
-                    $thumbBtn.thumbBtnBox($thumbList);
-                    $thumbBtn.thumbBtnBg();
-
-                    return $thumbBtn;
-                }
-            },
-
-            // 缩略图列表侧边按钮盒模型
-            thumbBtnBox: function($elem, $thumbList) {
-                $(this).css({
-                    position: 'relative',
-                    float: 'left',
-                    cursor: 'pointer'
-                });
-
-                if ($elem.cssDetector('width', '0px')) {
-                    $elem.css('width', $elem.parent().width() * 0.025);
-                }
-                if ($elem.cssDetector('height', '0px')) {
-                    $elem.css('height', $elem.parent().height());
-                }
-
-                $elem.first().css('margin', '0 ' + $thumbList.children().css('margin-right') + ' 0 0');
-                $elem.last().css('margin', '0 0 0 ' + $thumbList.children().css('margin-right'));
-
-                // 给侧边按钮添加内部箭头
-                $elem.append('<i/>');
-                var $thumbBtnArrow = $('i', $elem);
-
-                $thumbBtnArrow.css({
-                    position: 'absolute',
-                    border: '5px solid transparent',
-                }).css({
-                    top: ($elem.outerHeight() - $thumbBtnArrow.outerHeight()) / 2
-                });
-
-                $elem.first().children('i').css({
-                    left: $elem.outerWidth() / 2 - $thumbBtnArrow.outerHeight() * 3 / 4,
-                    borderRightColor: '#fff'
-                });
-
-                $elem.last().children('i').css({
-                    right: $(this).outerWidth() / 2 - $thumbBtnArrow.outerHeight() * 3 / 4,
-                    borderLeftColor: '#fff'
-                });
-
-                $thumbList = $(this).siblings('ul');
-                this.thumbListWrapBox($thumbList);
-            },
-
-            // 缩略图列表侧边按钮背景
-            thumbBtnBg: function($elem) {
-                if ($elem.cssDetector('background-color', ['rgba(0, 0, 0, 0)', 'transparent']) &&
-                    $elem.cssDetector('background-image', 'none')
-                ) {
-                    $elem.css('background', '#666');
-                    $elem.first().css('borderRadius', '3px 0 0 3px');
-                    $elem.last().css('borderRadius', '0 3px 3px 0');
-                }
-            },
-
-            // 缩略图列表内部容器盒模型
-            thumbListWrapBox: function($elem) {
-                var w = $elem.parent().width() - $elem.siblings('a').outerWidth(true) * 2;
-
-                $(this).wrap('<div>').parent().css({
-                    float: 'left',
-                    width: w,
-                    height: $elem.height(),
-                    overflow: 'hidden',
-                    userSelect: 'none'
-                });
-            }
         };
+    }
 
 
-        /******************** Animation ********************/
-        var Animation = function($elem) {
-            var T = $elem;
+    /******************** Animation ********************/
+    function Animation($elem) {
+        var T = $elem;
 
-            T.animation = {
-                // 判定当前显示项的索引是否溢出
-                determineIndex: function() {
-                    T.activeIndex =
-                    T.currentIndex =
-                    T.currentIndex === T.len ? 0 : T.currentIndex === -1 ? T.len - 1 : T.currentIndex;
-                },
+        T.animation = {
+            // 判定当前显示项的索引是否溢出
+            determineIndex: function() {
+                T.activeIndex =
+                T.currentIndex =
+                T.currentIndex === T.len ? 0 : T.currentIndex === -1 ? T.len - 1 : T.currentIndex;
+            },
 
-                // 序列元素当前项高亮
-                serialActive: function() {
-                    this.determineIndex();
+            // 序列元素当前项高亮
+            serialActive: function() {
+                this.determineIndex();
 
-                    if (T.options.serial === true || T.options.serialBtn === 'equal') {
-                        T.$serialBtn.eq(T.activeIndex).addClass('active').siblings().removeClass('active');
-                    }
+                if (T.options.serial === true || T.options.serialBtn === 'equal') {
+                    T.$serialBtn.eq(T.activeIndex).addClass('active').siblings().removeClass('active');
+                }
 
-                    if (T.options.serial === 'thumb') {
-                        T.$thumb.eq(T.activeIndex).addClass('active').siblings().removeClass('active');
+                if (T.options.serial === 'thumb') {
+                    T.$thumbItem.eq(T.activeIndex).addClass('active').siblings().removeClass('active');
 
-                        // 判定当前图片对应的缩略图是否在缩略图列表的可见范围内
-                        var currentItemThumbLeft = T.currentIndex * T.$thumb.outerWidth(true),
-                            currentThumbListLeft = Math.abs(parseInt(T.$thumbList.css('left'))),
-                            thumbListWrapWidth = T.$thumbList.parent().width();
+                    // 判定当前图片对应的缩略图是否在缩略图列表的可见范围内
+                    var currentItemThumbLeft = T.currentIndex * T.$thumbItem.outerWidth(true),
+                        currentThumbListLeft = Math.abs(parseInt(T.$thumbList.css('left'))),
+                        thumbListWrapWidth = T.$thumbList.parent().width();
 
-                        // 如果不在列表的可见范围内，滑动到当前图片对应的缩略图的位置
-                        if (
-                            currentItemThumbLeft < currentThumbListLeft ||
-                            currentItemThumbLeft > (currentThumbListLeft + thumbListWrapWidth)
-                        ) {
-                            var left = -parseInt(currentItemThumbLeft / thumbListWrapWidth) * thumbListWrapWidth;
-                            this.thumbSlide(left);
-                        }
-                    }
-                },
-
-                // 缩略图列表滑动
-                thumbSlide: function(left) {
-                    if (T.$thumbList.animating) { return false; }
-
-                    if (window.isSupportTransition) {
-                        T.$thumbList.animating = true;
-                        T.$thumbList.css('left', left).addClass('transition-left-' + T.options.speed);
-
-                        setTimeout(T.animation.thumbSlideComplete, T.options.speed + 20);
-                    } else {
-                        T.$thumbList.animating = true;
-                        T.$thumbList.animate({ left: left }, {
-                            duration: T.options.speed,
-                            complete: T.animation.thumbSlideComplete
-                        });
-                    }
-                },
-
-                // 动画模式 - 无效果
-                none: function() {
-                    this.determineIndex();
-                    T.$item.eq(T.currentIndex).show().siblings().hide();
-                    this.serialActive();
-                    Preload.bindLoadEvent(T.$item, T.currentIndex, T.currentIndex);
-                },
-
-                // 动画模式 - 淡入淡出
-                fade: function() {
-                    this.determineIndex();
-
-                    T.$list.animating = true;
-                    T.$item.removeClass().eq(T.currentIndex).addClass('top-item');
-
-                    if (window.isSupportTransition) {
-                        T.$item.eq(T.currentIndex).addClass('transition-fade-' + T.options.speed).css('opacity', 1);
-
-                        setTimeout(T.animation.fadeComplete, T.options.speed);
-                    } else {
-                        T.$item.eq(T.currentIndex).animate({
-                            opacity: 1
-                        }, {
-                            duration: T.options.speed,
-                            complete: T.animation.fadeComplete
-                        });
-                    }
-
-                    this.serialActive();
-
-                    Preload.bindLoadEvent(T.$item, T.currentIndex, T.currentIndex);
-                },
-
-                // 动画模式 - 滑动
-                slide: function() {
-                    T.$item = T.$list.children();
-
-                    var lastIndex = T.$list.data('lastIndex'),
-                        slideDirection = 'left';
-
-                    if (T.currentIndex === lastIndex) {
-                        return;
-                    }
-
-                    /**
-                     * 滑动动画在执行之前需要将第1个item克隆一份
-                     * 还需要判定此次动画的方向，所以不能使用普通的索引判定方法
-                     */
-                    if (T.currentIndex < lastIndex) {
-                        slideDirection = 'right';
-                    }
-
-                    // first item >> last item
-                    if (T.currentIndex < 0) {
-                        T.currentIndex = T.len - 1;
-                        T.$item.eq(T.len).show().siblings().hide();
-                        slideDirection = 'right';
-                    }
-
-                    // first item >> last item
-                    if (T.currentIndex > T.len) {
-                        T.currentIndex = 1;
-                        slideDirection = 'left';
-                    }
-
-                    if (slideDirection === 'right') {
-                        T.$list.css('left', '-100%');
-                    }
-
-                    T.$item.eq(T.currentIndex).show();
-
-                    // CSS3 transition
-                    if (window.isSupportTransition) {
-                        setTimeout(function() {
-                            T.$list.animating = true;
-                            T.$list.css('left', slideDirection === 'left' ? '-100%' : 0)
-                            .addClass('transition-left-' + T.options.speed);
-
-                            setTimeout(T.animation.slideComplete, T.options.speed - 20);
-                        }, 20);
-                    }
-                    // jQuery animate
-                    if (!window.isSupportTransition) {
-                        T.$list.animating = true;
-                        T.$list.animate({
-                            left: slideDirection === 'left' ? '-100%' : 0
-                        }, {
-                            duration: T.options.speed,
-                            complete: T.animation.slideComplete
-                        });
-                    }
-
-                    this.serialActive();
-
-                    Preload.bindLoadEvent(T.$item, T.currentIndex, T.currentIndex);
-                },
-
-                // 单次fade动画执行完之后调用的函数
-                fadeComplete: function() {
-                    T.$list.animating = false;
-                    T.$item.eq(T.currentIndex).siblings().css('opacity', 0);
-                    if (T.options.autoPlay && !T.$list.hovered) {
-                        T.setPlayTimer();
-                    }
-                },
-
-                // 单次slide动画执行完之后调用的函数
-                slideComplete: function() {
-                    if (T.currentIndex === T.len) {
-                        T.$item.first().show().siblings().hide();
-                        T.currentIndex = 0;
-                    }
-
-                    T.$list.animating = false;
-                    T.$list.css('left', 0).removeClass();
-                    T.$list.data('lastIndex', T.currentIndex);
-
-                    T.$item.eq(T.currentIndex).show().siblings().hide();
-
-                    if (T.options.autoPlay && !T.$list.hovered) {
-                        T.setPlayTimer();
-                    }
-                },
-
-                // 单次thumbSlide动画执行完之后调用的函数
-                thumbSlideComplete: function() {
-                    T.$thumbList.animating = false;
-
-                    var left = parseInt(T.$thumbList.css('left')),
-                        $prev = T.$thumbList.parent().prev(),
-                        $next = T.$thumbList.parent().next();
-
-                    // 缩略图列表滑动到左右边界时给对应的按钮添加禁用样式
-                    left ? $prev.removeClass('disabled') : $prev.addClass('disabled');
-
-                    if (T.$thumbList.parent().width() - T.$thumbList.width() !== left) {
-                        $next.removeClass('disabled');
-                    } else {
-                        $next.addClass('disabled');
+                    // 如果不在列表的可见范围内，滑动到当前图片对应的缩略图的位置
+                    if (
+                        currentItemThumbLeft < currentThumbListLeft ||
+                        currentItemThumbLeft > (currentThumbListLeft + thumbListWrapWidth)
+                    ) {
+                        var left = -parseInt(currentItemThumbLeft / thumbListWrapWidth) * thumbListWrapWidth;
+                        this.thumbSlide(left);
                     }
                 }
-            };
-        };
+            },
 
-        /******************** Preload ********************/
-        
-        var Preload = {
-            /**
-             * 给图片绑定load事件
-             * @param  {HTMLElement} $item   列表项元素
-             * @param  {Number} loadingIndex 当前加载项的索引
-             * @param  {Number} currentIndex 当前显示项的索引
-             */
-            bindLoadEvent: function($item, loadingIndex, currentIndex) {
-                if (loadingIndex >= $item.length) { return; }
+            // 缩略图列表滑动
+            thumbSlide: function(left) {
+                if (T.$thumbList.animating) { return false; }
 
-                var img = new Image(),
-                    $loadingItem = $item.eq(loadingIndex),
-                    loadingItemSrc = $loadingItem.data('src');
+                if (isSupportTransition) {
+                    T.$thumbList.animating = true;
+                    T.$thumbList.css('left', left).addClass('transition-left-' + T.options.speed);
 
-                if ($loadingItem.attr('data-src')) {
-                    $loadingItem.removeAttr('data-src');
-
-                    // 不对第1张图片设置loading动画
-                    if (!loadingIndex) {
-                        $loadingItem.css('background-image', 'url(' + loadingItemSrc + ')');
-                    } else {
-                        $loadingItem.addClass('loading');
-                    }
-
-                    img.src = loadingItemSrc;
-                    if (img.complete) {
-                        this.showLoadingItem($item, $loadingItem, loadingItemSrc, loadingIndex, currentIndex);
-                    } else {
-                        var self = this;
-                        img.onload = function() {
-                            self.showLoadingItem($item, $loadingItem, loadingItemSrc, loadingIndex, currentIndex);
-                        };
-                    }
+                    setTimeout(T.animation.thumbSlideComplete, T.options.speed + 20);
                 } else {
-                    // 当前项没有data-src属性说明已加载，直接加载下一张
-                    this.bindLoadEvent($item, ++loadingIndex, currentIndex);
+                    T.$thumbList.animating = true;
+                    T.$thumbList.animate({ left: left }, {
+                        duration: T.options.speed,
+                        complete: T.animation.thumbSlideComplete
+                    });
                 }
             },
 
-            /**
-             * 显示正在加载的图片
-             * @param  {HTMLElement} $loadingItem  当前加载项
-             * @param  {Number} loadingIndex 当前加载项的索引
-             * @param  {Number} currentIndex 当前显示项的索引
-             */
-            showLoadingItem: function($item, $loadingItem, loadingItemSrc, loadingIndex, currentIndex) {
-                if (loadingIndex) {
-                    $loadingItem.css('background-image', 'url(' + loadingItemSrc + ')');
+            // 动画模式 - 无效果
+            none: function() {
+                this.determineIndex();
+                T.$item.eq(T.currentIndex).show().siblings().hide();
+                this.serialActive();
+                Preload(T.$item, T.currentIndex, T.currentIndex);
+            },
 
-                    if (loadingIndex === currentIndex) {
-                        if ($loadingItem.hasClass('loading')) {
-                            // 当前显示项正在加载
-                            $loadingItem.hide().fadeIn();
-                        } else {
-                            // 当前显示项已加载
-                            $loadingItem.show();
-                        }
-                    }
+            // 动画模式 - 淡入淡出
+            fade: function() {
+                this.determineIndex();
 
-                    // 当前显示项已加载并且下一项也加载完了
-                    if (loadingIndex !== currentIndex) {
-                        /**
-                         * 动画模式不是fade，把预加载完成的item隐藏
-                         * 动画模式是fade，不可隐藏任何item，因为fade动画仅仅是改变item的opacity和z-index属性
-                         */
-                        if ($loadingItem.cssDetector('z-index', 'auto')) {
-                            $loadingItem.hide();
-                        }
-                    }
+                T.$list.animating = true;
+                T.$item.removeClass().eq(T.currentIndex).addClass('top-item');
 
-                    $loadingItem.removeClass('loading').addClass('loaded');
+                if (isSupportTransition) {
+                    T.$item.eq(T.currentIndex).addClass('transition-fade-' + T.options.speed).css('opacity', 1);
+
+                    setTimeout(T.animation.fadeComplete, T.options.speed);
+                } else {
+                    T.$item.eq(T.currentIndex).animate({
+                        opacity: 1
+                    }, {
+                        duration: T.options.speed,
+                        complete: T.animation.fadeComplete
+                    });
                 }
 
-                // 预加载下一张图片
-                this.bindLoadEvent($item, ++loadingIndex, currentIndex);
+                this.serialActive();
+
+                Preload(T.$item, T.currentIndex, T.currentIndex);
+            },
+
+            // 动画模式 - 滑动
+            slide: function() {
+                T.$item = T.$list.children();
+
+                var lastIndex = T.$list.data('lastIndex'),
+                    slideDirection = 'left';
+
+                if (T.currentIndex === lastIndex) {
+                    return;
+                }
+
+                /**
+                 * 滑动动画在执行之前需要将第1个item克隆一份
+                 * 还需要判定此次动画的方向，所以不能使用普通的索引判定方法
+                 */
+                if (T.currentIndex < lastIndex) {
+                    slideDirection = 'right';
+                }
+
+                // first item >> last item
+                if (T.currentIndex < 0) {
+                    T.currentIndex = T.len - 1;
+                    T.$item.eq(T.len).show().siblings().hide();
+                    slideDirection = 'right';
+                }
+
+                // first item >> last item
+                if (T.currentIndex > T.len) {
+                    T.currentIndex = 1;
+                    slideDirection = 'left';
+                }
+
+                if (slideDirection === 'right') {
+                    T.$list.css('left', '-100%');
+                }
+
+                T.$item.eq(T.currentIndex).show();
+
+                // CSS3 transition
+                if (isSupportTransition) {
+                    setTimeout(function() {
+                        T.$list.animating = true;
+                        T.$list.css('left', slideDirection === 'left' ? '-100%' : 0)
+                        .addClass('transition-left-' + T.options.speed);
+
+                        setTimeout(T.animation.slideComplete, T.options.speed - 20);
+                    }, 20);
+                }
+                // jQuery animate
+                if (!isSupportTransition) {
+                    T.$list.animating = true;
+                    T.$list.animate({
+                        left: slideDirection === 'left' ? '-100%' : 0
+                    }, {
+                        duration: T.options.speed,
+                        complete: T.animation.slideComplete
+                    });
+                }
+
+                this.serialActive();
+
+                Preload(T.$item, T.currentIndex, T.currentIndex);
+            },
+
+            // 单次fade动画执行完之后调用的函数
+            fadeComplete: function() {
+                T.$list.animating = false;
+                T.$item.eq(T.currentIndex).siblings().css('opacity', 0);
+                if (T.options.autoPlay && !T.$list.hovered) {
+                    T.setPlayTimer();
+                }
+            },
+
+            // 单次slide动画执行完之后调用的函数
+            slideComplete: function() {
+                if (T.currentIndex === T.len) {
+                    T.$item.first().show().siblings().hide();
+                    T.currentIndex = 0;
+                }
+
+                T.$list.animating = false;
+                T.$list.css('left', 0).removeClass();
+                T.$list.data('lastIndex', T.currentIndex);
+
+                T.$item.eq(T.currentIndex).show().siblings().hide();
+
+                if (T.options.autoPlay && !T.$list.hovered) {
+                    T.setPlayTimer();
+                }
+            },
+
+            // 单次thumbSlide动画执行完之后调用的函数
+            thumbSlideComplete: function() {
+                T.$thumbList.animating = false;
+
+                var left = parseInt(T.$thumbList.css('left')),
+                    $prev = T.$thumbList.parent().prev(),
+                    $next = T.$thumbList.parent().next();
+
+                // 缩略图列表滑动到左右边界时给对应的按钮添加禁用样式
+                left ? $prev.removeClass('disabled') : $prev.addClass('disabled');
+
+                if (T.$thumbList.parent().width() - T.$thumbList.width() !== left) {
+                    $next.removeClass('disabled');
+                } else {
+                    $next.addClass('disabled');
+                }
             }
         };
+    }
 
 
+    /******************** Preload ********************/
+    /**
+     * 图片预加载
+     * @param  {HTMLElement} $item   列表项元素
+     * @param  {Number} loadingIndex 当前加载项的索引
+     * @param  {Number} currentIndex 当前显示项的索引
+     */
+    function Preload($item, loadingIndex, currentIndex) {
+        if (loadingIndex >= $item.length) { return; }
+
+        var img = new Image(),
+            $loadingItem = $item.eq(loadingIndex),
+            loadingItemSrc = $loadingItem.data('src');
+
+        if ($loadingItem.attr('data-src')) {
+            $loadingItem.removeAttr('data-src');
+
+            // 不对第1张图片设置loading动画
+            if (!loadingIndex) {
+                $loadingItem.css('background-image', 'url(' + loadingItemSrc + ')');
+            } else {
+                $loadingItem.addClass('loading');
+            }
+
+            img.src = loadingItemSrc;
+            if (img.complte) {
+                showLoadingItem();
+            } else {
+                img.onload = showLoadingItem;
+            }
+        } else {
+            // 当前项没有data-src属性说明已加载，直接加载下一张
+            Preload($item, ++loadingIndex, currentIndex);
+        }
+
+        function showLoadingItem () {
+            if (loadingIndex) {
+                $loadingItem.css('background-image', 'url(' + loadingItemSrc + ')');
+
+                if (loadingIndex === currentIndex) {
+                    if ($loadingItem.hasClass('loading')) {
+                        // 当前显示项正在加载
+                        $loadingItem.hide().fadeIn();
+                    } else {
+                        // 当前显示项已加载
+                        $loadingItem.show();
+                    }
+                }
+
+                // 当前显示项已加载并且下一项也加载完了
+                if (loadingIndex !== currentIndex) {
+                    /**
+                     * 动画模式不是fade，把预加载完成的item隐藏
+                     * 动画模式是fade，不可隐藏任何item，因为fade动画仅仅是改变item的opacity和z-index属性
+                     */
+                    if ($loadingItem.cssDetector('z-index', 'auto')) {
+                        $loadingItem.hide();
+                    }
+                }
+
+                $loadingItem.removeClass('loading').addClass('loaded');
+            }
+
+            // 预加载下一张图片
+            showLoadingItem($item, ++loadingIndex, currentIndex);
+        }
+    }
+
+    
+    $.fn.easyBanner = function(option) {
         var options = $.extend({
             animation: 'slide',    // 动画模式: ['slide', 'fade']
             trigger  : 'click',    // 触发动画的事件类型: ['click', 'hover']
@@ -598,16 +539,16 @@
                     // 根据data-src自动开启Preload
                     $itemImg.each(function() {
                         var src = $(this).data('src');
-                        $(this).parent().attr('data-src', src).data('url', src);
+                        $(this).parent().attr('data-src', src).data('thumb', src);
                         $(this).remove();
                     });
 
-                    Preload.bindLoadEvent($item, currentIndex, currentIndex);
+                    Preload($item, currentIndex, currentIndex);
                 } else {
                     // 标准模式，将图片转为父级元素的背景图片后删除
                     $itemImg.each(function() {
                         var src = $(this).attr('src');
-                        $(this).parent().css('background-image', 'url(' + src + ')').data('url', src);
+                        $(this).parent().css('background-image', 'url(' + src + ')').data('thumb', src);
                         $(this).remove();
                     });
                 }
@@ -624,7 +565,7 @@
 
                 $list.hovered = false;
 
-                $list.wrap('<div class="eb-list">').parent().css({
+                $list.wrap('<div class="eb-list"/>').parent().css({
                     position: 'relative',
                     width   : '100%',
                     height  : '100%',
@@ -645,16 +586,16 @@
                     backgroundPosition: 'center top'
                 });
                 
-                Automatic.containerPos($this);
+                $this.automatic.containerPos();
 
                 switch(options.animation) {
                     case 'fade':
-                        if (window.isSupportTransition) {
+                        if (isSupportTransition) {
                             embeddedStyle +=
-                                '.transition-fade-' + options.speed + '{' +
-                                    'transition: opacity ' + options.speed + 'ms ease;' +
-                                    '-webkit-transition: opacity ' + options.speed + 'ms ease;' +
-                                '}\n';
+                            '.transition-fade-' + options.speed + '{' +
+                                'transition: opacity ' + options.speed + 'ms ease;' +
+                                '-webkit-transition: opacity ' + options.speed + 'ms ease;' +
+                            '}\n';
                         }
                         embeddedStyle += '.top-item{z-index: 0 !important;}\n';
 
@@ -668,12 +609,12 @@
                         break;
 
                     case 'slide':
-                        if (window.isSupportTransition) {
+                        if (isSupportTransition) {
                             embeddedStyle +=
-                                '.transition-left-' + options.speed + '{' +
-                                    'transition: left ' + options.speed + 'ms ease;' +
-                                    '-webkit-transition: left ' + options.speed + 'ms ease;' +
-                                '}\n';
+                            '.transition-left-' + options.speed + '{' +
+                                'transition: left ' + options.speed + 'ms ease;' +
+                                '-webkit-transition: left ' + options.speed + 'ms ease;' +
+                            '}\n';
                         }
 
                         $list.css({
@@ -709,9 +650,9 @@
                     $arrow = $arrowWrap.children();
 
                 // 自动化样式
-                Automatic.arrowWrapBox($arrowWrap, $this);
-                Automatic.arrowWrapPos($arrowWrap, $this);
-                Automatic.arrowBg($this, $arrowWrap);
+                $this.automatic.arrowWrapBox($arrowWrap);
+                $this.automatic.arrowWrapPos($arrowWrap);
+                $this.automatic.arrowBg($arrow);
 
                 $arrowWrap.appendTo($this).css({
                     position:'absolute',
@@ -728,20 +669,19 @@
                     item += '<a></a>';
                 }
                 $this.append('<div class="eb-serial">' + item + '</div>');
-                var $serialBtnWrap = $('.eb-serial', $this),
-                    $serialBtn = $serialBtnWrap.children(),
-                    equal = options.serialBtn === 'equal' ? 'equal' : null;
 
-                $serialBtn.css('float', 'left');
+                var $serialBtnWrap = $('.eb-serial', $this),
+                    $serialBtn = $serialBtnWrap.children();
                 
                 // 自动化样式
-                Automatic.serialBtnBox($serialBtn, equal);
-                embeddedStyle += Automatic.serialBtnBg($serialBtn);
-                Automatic.serialBtnWrapPos($serialBtnWrap, $this);
+                $serialBtn.css('float', 'left');
+                $this.automatic.serialBtnBox($serialBtn, options.serialBtn);
+                embeddedStyle += $this.automatic.serialBtnBg($serialBtn);
+                $this.automatic.serialBtnWrapPos($serialBtnWrap);
 
                 $serialBtnWrap.appendTo($this).css({
-                    position :'absolute',
-                    zIndex: 20
+                    position:'absolute',
+                    zIndex  : 20
                 }).children(':first').addClass('active');
 
                 serialBindEvent.call($serialBtn);
@@ -752,55 +692,83 @@
             // 给轮播添加序列缩略图
             function createSerialThumb() {
                 for (var i = 0, src = '', item = ''; i < len; i++) {
-                    src = $this.thumbSrcArr[i] || $item.eq(i).data('url');
+                    src = $this.thumbSrcArr[i] || $item.eq(i).data('thumb');
                     item += '<li><img src="' + src + '"></li>';
                 }
                 $this.append('<div class="eb-thumb"><ul>' + item + '</ul></div>');
 
-                var $thumbWrap = $('.eb-thumb', $this),
-                    $thumbList = $thumbWrap.children(),
-                    $thumb = $thumbList.children(),
-                    $thumbImg = $thumb.children();
+                var $thumbListWrap = $('.eb-thumb', $this),     // 缩略图列表容器
+                    $thumbList     = $thumbListWrap.children(), // 缩略图列表
+                    $thumbItem     = $thumbList.children(),     // 缩略图列表项
+                    $thumbImg      = $thumbItem.children(),     // 缩略图列表项中的图片
+                    $thumbArrow;                                // 缩略图的方向箭头
 
-                $thumb.css({
-                    float: 'left',
-                    overflow: 'hidden',
-                    cursor: 'pointer'
+                    // console.log($thumbList);
+                $thumbItem.css({
+                    float     : 'left',
+                    overflow  : 'hidden',
+                    marginLeft: 0,
+                    cursor    : 'pointer'
                 });
-                $thumb.first().addClass('active');
-                $thumb.last().css('margin', 0);
+                $thumbItem.first().addClass('active');
+                $thumbItem.last().css('marginRight', 0);
 
                 // 自动化样式
                 $thumbImg.hide();
-                Automatic.thumbImgBox($thumbImg, $thumb, $this);
+                $this.automatic.thumbImgBox($thumbImg);
                 $thumbImg.show();
 
-                // 必须在缩略图加载完成之后才能对它进行自动化处理和事件绑定
-                $thumbImg[0].complete ? automatic() : $thumbImg[0].onload = automatic;
+                // 必须在获取到缩略图尺寸之后才能进行自动化处理和事件绑定
+                if ($thumbImg[0].complete) {
+                    thumbAutomatic();
+                } else {
+                    $thumbImg[0].onload = thumbAutomatic;
+                }
 
-                function automatic() {
+                function thumbAutomatic() {
+                    // 计算缩略图列表的宽度
+                    $thumbList = $thumbListWrap.children();
                     $thumbList.css({
                         position: 'relative',
-                        left: 0,
-                        width: $thumb.outerWidth(true) * $thumb.length - parseInt($thumb.css('margin-right')),
-                        height: $thumb.outerHeight(true)
+                        left    : 0,
+                        width   : $thumbItem.outerWidth(true) * $thumbItem.length - parseInt($thumbItem.css('margin-right')),
+                        height  : $thumbItem.outerHeight(true)
                     });
 
-                    Automatic.thumbWrapPos($thumbWrap, $this);
-                    $thumbWrap.css({
+                    // 缩略图列表容器定位
+                    $thumbListWrap.css({
                         position:'absolute',
                         zIndex  : 20,
                         overflow: 'hidden',
-                        height  : $thumb.outerHeight(true)
+                        height  : $thumbItem.outerHeight(true)
                     });
-                    
-                    var $thumbBtn = Automatic.createThumbBtn($thumbWrap);
+                    $this.automatic.thumbListWrapPos($thumbListWrap);
 
-                    thumbBtnBindEvent.call($thumbBtn);
-                    serialBindEvent.call($thumb);
+                    // 缩略图列表过长时，自动添加方向箭头并绑定滚动事件
+                    if ($thumbList.width() > $thumbListWrap.width()) {
+                        $thumbListWrap.prepend('<a class="prev disabled"/>');
+                        $thumbListWrap.append('<a class="next"/>');
+
+                        $thumbArrow = $('a', $thumbListWrap);
+                        $thumbArrow.css({
+                            position: 'relative',
+                            zIndex: 20
+                        });
+
+                        $thumbArrow.filter('.prev').css('float', 'left');
+                        $thumbArrow.filter('.next').css('float', 'right');
+
+                        $this.automatic.thumbArrowBg($thumbArrow);
+                        $this.automatic.thumbArrowPos($thumbArrow);
+                    }
+
+                    $this.automatic.thumbListBox($thumbList);
+                    
+                    thumbArrowBindEvent.call($thumbArrow);
+                    serialBindEvent.call($thumbItem);
                 }
 
-                $this.$thumb = $thumb;
+                $this.$thumbItem = $thumbItem;
                 $this.$thumbList = $thumbList;
             }
 
@@ -830,15 +798,15 @@
                 );
             }
 
-            // 给缩略图侧边按钮绑定事件
-            function thumbBtnBindEvent() {
+            // 给缩略图列表按钮绑定事件
+            function thumbArrowBindEvent() {
                 $(this).click(function() {
                     var $thumbList = $this.$thumbList,           // 缩略图列表
-                        $thumbListWrap = $thumbList.parent(), // 缩略图列表容器
-                        left = parseInt($thumbList.css('left')), // 缩略图列表
+                        $thumbListWrap = $thumbList.parent(),    // 缩略图列表容器
+                        left = parseInt($thumbList.css('left')), // 缩略图列表位置
                     
-                        thumbListLeftOverWidth = Math.abs(parseInt($thumbList.css('left'))),        // 缩略图列表溢出列表容器的左侧宽度
-                        thumbListRightOverWidth = $thumbList.width() - $thumbListWrap.width() -     // 缩略图列表溢出列表容器的右侧宽度
+                        thumbListLeftOverWidth = Math.abs(parseInt($thumbList.css('left'))),    // 缩略图列表溢出列表容器的左侧宽度
+                        thumbListRightOverWidth = $thumbList.width() - $thumbListWrap.width() - // 缩略图列表溢出列表容器的右侧宽度
                         Math.abs(parseInt($thumbList.css('left')));
 
                     if ($(this).hasClass('prev')) {
@@ -896,10 +864,9 @@
                 });
             }
             
-
-            // 根据配置参数自动调用对应的方法
             (function() {
                 convertImage();
+                Automatic($this);
                 init();
                 Animation($this);
 
