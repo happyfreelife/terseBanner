@@ -6,3 +6,7 @@
 //     <pre><code>
 //     </cod></pre>
 // </div>
+
+$(function() {
+	$('.index-banner').easyBanner();
+});

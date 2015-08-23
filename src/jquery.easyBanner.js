@@ -1,6 +1,6 @@
 /**
  * jquery.easyBanner.js
- * version   1.3.4
+ * version   1.3.5
  * url       https://github.com/happyfreelife/easyBanner/
  */
 
@@ -129,7 +129,7 @@
                         });
                     }
 
-                    if (cssDetector($elem, 'margin', ['0px', ''])) {
+                    if (cssDetector($elem, 'margin', ['auto', '0px', ''])) {
                         $elem.css('margin', '0 5px');
                     }
                 }
@@ -222,7 +222,7 @@
                 } else {
                     $elem.width('100%');
                 }
-            },
+            }
         };
     }
 
@@ -385,7 +385,7 @@
             fadeComplete: function() {
                 T.$list.animating = false;
                 T.$item.eq(T.currentIndex).siblings().css('opacity', 0);
-                if (T.options.autoPlay && !T.$list.hovered) {
+                if (T.options.autoPlay && !T.$list.hovering) {
                     T.setPlayTimer();
                 }
             },
@@ -403,7 +403,7 @@
 
                 T.$item.eq(T.currentIndex).show().siblings().hide();
 
-                if (T.options.autoPlay && !T.$list.hovered) {
+                if (T.options.autoPlay && !T.$list.hovering) {
                     T.setPlayTimer();
                 }
             },
@@ -563,7 +563,7 @@
                 $this.options = options;
                 $this.currentIndex = currentIndex;
 
-                $list.hovered = false;
+                $list.hovering = false;
 
                 $list.wrap('<div class="eb-list"/>').parent().css({
                     position: 'relative',
@@ -856,10 +856,10 @@
             // 取消轮播自动播放的定时器
             function cancelPlayTimer() {
                 $this.hover(function() {
-                    $list.hovered = true;
+                    $list.hovering = true;
                     clearInterval($this.playTimer);
                 }, function() {
-                    $list.hovered = false;
+                    $list.hovering = false;
                     if (!$list.animating) { setPlayTimer(); }
                 });
             }
