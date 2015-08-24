@@ -1,6 +1,6 @@
 /**
  * jquery.easyBanner.js
- * version   1.3.6
+ * version   1.3.7
  * url       https://github.com/happyfreelife/easyBanner/
  */
 
@@ -441,7 +441,7 @@
 
         var img = new Image(),
             $loadingItem = $item.eq(loadingIndex),
-            loadingItemSrc = $loadingItem.data('src');
+            loadingItemSrc = $loadingItem.attr('data-src');
 
         if ($loadingItem.attr('data-src')) {
             $loadingItem.removeAttr('data-src');
@@ -449,10 +449,9 @@
             // 不对第1张图片设置loading动画
             if (!loadingIndex) {
                 $loadingItem.css('background-image', 'url(' + loadingItemSrc + ')');
-            } else {
-                $loadingItem.addClass('loading');
             }
-
+            $loadingItem.addClass('loading');
+            
             img.src = loadingItemSrc;
             if (img.complte) {
                 showLoadingItem();
@@ -464,36 +463,39 @@
             Preload($item, ++loadingIndex, currentIndex);
         }
 
-        function showLoadingItem () {
-            if (loadingIndex) {
-                $loadingItem.css('background-image', 'url(' + loadingItemSrc + ')');
+        function showLoadingItem() {
+            // 预加载下一张图片
+            Preload($item, loadingIndex + 1, currentIndex);
 
-                if (loadingIndex === currentIndex) {
-                    if ($loadingItem.hasClass('loading')) {
-                        // 当前显示项正在加载
-                        $loadingItem.hide().fadeIn();
-                    } else {
-                        // 当前显示项已加载
-                        $loadingItem.show();
-                    }
+            /**
+             * $loadingItem已缓存，在这里必须更新一次
+             * 否则会导致调用的$loadingItem不是该方法需要的引起异常
+             */
+            $loadingItem = $item.eq(loadingIndex);
+            $loadingItem.css('background-image', 'url(' + loadingItemSrc + ')');
+
+            if (loadingIndex === currentIndex) {
+                if ($loadingItem.hasClass('loading')) {
+                    // 当前显示项正在加载
+                    $loadingItem.hide().fadeIn();
+                } else {
+                    // 当前显示项已加载
+                    $loadingItem.show();
                 }
-
-                // 当前显示项已加载并且下一项也加载完了
-                if (loadingIndex !== currentIndex) {
-                    /**
-                     * 动画模式不是fade，把预加载完成的item隐藏
-                     * 动画模式是fade，不可隐藏任何item，因为fade动画仅仅是改变item的opacity和z-index属性
-                     */
-                    if ($loadingItem.cssDetector('z-index', 'auto')) {
-                        $loadingItem.hide();
-                    }
-                }
-
-                $loadingItem.removeClass('loading').addClass('loaded');
             }
 
-            // 预加载下一张图片
-            showLoadingItem($item, ++loadingIndex, currentIndex);
+            // 当前显示项已加载并且下一项也加载完了
+            if (loadingIndex !== currentIndex) {
+                /**
+                 * 动画模式不是fade，把预加载完成的item隐藏
+                 * 动画模式是fade，不可隐藏任何item，因为fade动画仅仅是改变item的opacity和z-index属性
+                 */
+                if ($loadingItem.css('zIndex') === 'auto') {
+                    $loadingItem.hide();
+                }
+            }
+
+            $loadingItem.removeClass('loading').addClass('loaded');
         }
     }
 
@@ -533,9 +535,6 @@
                 });
 
                 if ($itemImg.filter('[data-src]').length === len) {
-                    // 给主容器附加使用preload的标记
-                    $this.data('use-preload', true);
-
                     // 根据data-src自动开启Preload
                     $itemImg.each(function() {
                         var src = $(this).data('src');

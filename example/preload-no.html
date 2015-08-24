@@ -1,24 +1,24 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Preload - easyBanner</title>
+	<title>Preload - no - easyBanner</title>
 	<meta charset="utf-8">
 	<link rel="stylesheet" type="text/css" href="style.css">
 </head>
 <body>
 	<div class="banner-preload">
 		<ul>
-			<li><img data-src="http://img.bizhi.sogou.com/images/2014/09/15/876564.jpg"></li>
-			<li><img data-src="http://img.bizhi.sogou.com/images/2014/09/19/881411.jpg"></li>
-			<li><img data-src="http://img.bizhi.sogou.com/images/2014/09/15/876561.jpg"></li>
-			<li><img data-src="http://img.bizhi.sogou.com/images/2014/09/15/876559.jpg"></li>
-			<li><img data-src="http://img.bizhi.sogou.com/images/2015/05/29/1184400.jpg"></li>
-
-			<li><img data-src="http://img.bizhi.sogou.com/images/2014/09/15/876564.jpg"></li>
-			<li><img data-src="http://img.bizhi.sogou.com/images/2014/09/19/881411.jpg"></li>
-			<li><img data-src="http://img.bizhi.sogou.com/images/2014/09/15/876561.jpg"></li>
-			<li><img data-src="http://img.bizhi.sogou.com/images/2014/09/15/876559.jpg"></li>
-			<li><img data-src="http://img.bizhi.sogou.com/images/2015/05/29/1184400.jpg"></li>
+			<li><img src="http://img.bizhi.sogou.com/images/2014/09/15/876564.jpg"></li>
+			<li><img src="http://img.bizhi.sogou.com/images/2014/09/19/881411.jpg"></li>
+			<li><img src="http://img.bizhi.sogou.com/images/2014/09/15/876561.jpg"></li>
+			<li><img src="http://img.bizhi.sogou.com/images/2014/09/15/876559.jpg"></li>
+			<li><img src="http://img.bizhi.sogou.com/images/2015/05/29/1184400.jpg"></li>
+			
+			<li><img src="http://img.bizhi.sogou.com/images/2014/09/15/876564.jpg"></li>
+			<li><img src="http://img.bizhi.sogou.com/images/2014/09/19/881411.jpg"></li>
+			<li><img src="http://img.bizhi.sogou.com/images/2014/09/15/876561.jpg"></li>
+			<li><img src="http://img.bizhi.sogou.com/images/2014/09/15/876559.jpg"></li>
+			<li><img src="http://img.bizhi.sogou.com/images/2015/05/29/1184400.jpg"></li>
 		</ul>
 	</div>
 	<div class="console-panle" style="font: 18px/25px Arial;"></div>
@@ -30,10 +30,22 @@
 <script>
 	$(function() {
 		$('.banner-preload ul li').each(function() {
-			var $img = $(this).find('img'),
-				src  = $img.attr('data-src'); 
+			var $this = $(this),
+				$img  = $(this).find('img'),
+				src   = $img.attr('src'),
+				img   = new Image(); 
 
-			$img.attr('data-src', src + '?cache=' + Math.random());
+			$(this).addClass('loading');
+			$img.attr('src', src + '?cache=' + Math.random());
+
+			img.src = $img.attr('src');
+			if (img.complete) {
+				$this.removeClass().addClass('loaded');
+			} else {
+				img.onload = function() {
+					$this.removeClass().addClass('loaded');
+				};
+			}
 		});
 
 		$('.banner-preload').easyBanner();
