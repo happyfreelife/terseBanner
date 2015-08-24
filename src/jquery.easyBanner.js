@@ -1,6 +1,6 @@
 /**
  * jquery.easyBanner.js
- * version   1.3.5
+ * version   1.3.6
  * url       https://github.com/happyfreelife/easyBanner/
  */
 
@@ -99,7 +99,7 @@
                         $elem.css('borderRightWidth', 1);
                     }
 
-                    if (cssDetector($elem, 'borderRightColor', ['#666', 'rgb(102, 102, 102)'])) {
+                    if (cssDetector($elem, 'borderRightColor', ['#999', 'rgb(153, 153, 153)'])) {
                         $elem.css('borderRightColor', '#fff');
                     }
 
@@ -243,7 +243,7 @@
             serialActive: function() {
                 this.determineIndex();
 
-                if (T.options.serial === true || T.options.serialBtn === 'equal') {
+                if (T.options.serial === true || T.options.serial === 'equal') {
                     T.$serialBtn.eq(T.activeIndex).addClass('active').siblings().removeClass('active');
                 }
 
@@ -675,7 +675,7 @@
                 
                 // 自动化样式
                 $serialBtn.css('float', 'left');
-                $this.automatic.serialBtnBox($serialBtn, options.serialBtn);
+                $this.automatic.serialBtnBox($serialBtn, options.serial);
                 embeddedStyle += $this.automatic.serialBtnBg($serialBtn);
                 $this.automatic.serialBtnWrapPos($serialBtnWrap);
 

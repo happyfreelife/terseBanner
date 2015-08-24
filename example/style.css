@@ -2,7 +2,7 @@
 
 /* reset */
 body, h1, h2, h3, h4, h5, h6, hr, p, blockquote, ul, ol, li, dl, dd, input, button, textarea, fieldset, legend, figure, menu, th, td, pre{margin: 0;padding: 0;} body{font: 12px/1 Helvetica, Arial, sans-serif, "Microsoft YaHei";color: #666;} h1, h2, h3, h4, h5, h6{font-weight: normal;font-size: inherit;}
-body{background: #f0f0f0;font: 14px/1 "Edelsans", "Arial";color: #666;}
+body{padding-bottom: 100px;background: #f0f0f0;font: 14px/1 "Edelsans", "Arial";color: #333;}
 a{color: #999;text-decoration: none;outline: none;}
 img{border: none;}
 ul, ol{list-style: none;}
@@ -13,32 +13,74 @@ i, em{font-style: normal;}
 .fr{float: right;}
 .clearfix:after{content: "";display: block;clear: both;}
 .container{width: 1000px;margin: 0 auto;}
-.section{font-size: 26px;line-height: 60px;margin-top: 100px;}
+
+@font-face {
+    font-family: 'Edelsans';
+    src: url('https://happyfreelife.github.io/onlineFont/Edelsans/Edelsans.eot');
+    src: url('https://happyfreelife.github.io/onlineFont/Edelsans/Edelsans.eot?#iefix') format('embedded-opentype'),
+         url('https://happyfreelife.github.io/onlineFont/Edelsans/Edelsans.woff') format('woff'),
+         url('https://happyfreelife.github.io/onlineFont/Edelsans/Edelsans.ttf') format('truetype'),
+         url('https://happyfreelife.github.io/onlineFont/Edelsans/Edelsans.svg#Edelsans') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+h2{font-size: 26px;line-height: 60px;margin-top: 100px;}
+h2 + p{line-height: 30px;margin-bottom: 30px;font-size: 20px;color: #666;}
+div[class^="banner-"]{height: 625px;border: 5px solid #fff;border-radius: 5px;}
+
+.tab{margin-top: 30px;padding: .5em;background: #f8f8f8;border-radius: 5px;}
+.tab ul li{float: left;width: 100px;line-height: 40px;margin-right: 20px;border: 1px solid #aaa;text-align: center;}
+.tab ul li:hover,
+.tab ul li.active{background: #00b579;border-color: #00b579;cursor: pointer;color: #fff;}
+.tab dl dd{display: none;}
+.tab dl dd.show{display: block;}
+
+.header .btn,
+.banner-index .eb-arrow a,
+.list-example ul li a,
+.banner-custom .eb-arrow a,
+.tab ul li{-webkit-transition: all .3s;transition: all .3s;}
+
 
 /* page - index */
 .header{height: 400px;background: #00b579;}
 .header h1{padding-top: 100px;font-size: 80px;color: #fff;}
-.header h2{float: left;line-height: 50px;font-size: 26px;color: #fff;}
+.header span{float: left;line-height: 50px;font-size: 26px;color: #fff;}
 .header a{display: inline-block;margin-left: 10px;color: #fff;}
 .header a.options{line-height: 20px;vertical-align: bottom;font-size: 16px;}
 .header a.options:hover{text-decoration: underline;}
-.header .btn{width: 120px;line-height: 40px;box-sizing: border-box;border: 1px solid #fff;border-radius: 5px;font-size: 18px;color: #fff;text-align: center;-webkit-transition: all .3s;transition: all .3s;}
+.header .btn{width: 120px;line-height: 40px;border: 1px solid #fff;border-radius: 5px;font-size: 18px;color: #fff;text-align: center;-webkit-box-sizing: border-box;box-sizing: border-box;}
 .header .btn:hover{background: #fff;border-color: #fff;color: #00b579;}
 
-.index-banner{height: 625px;border: 5px solid #fff;border-radius: 5px;}
-.index-banner .eb-serial a{width: 12px;height: 12px;background: #fff;border-radius: 50%;box-shadow: inset 0 2px 2px rgba(0, 0, 0, .5);}
-.index-banner .eb-arrow a{opacity: 0;-webkit-transition: all .3s;transition: all .3s;}
-.index-banner:hover .eb-arrow a{opacity: 1;}
-.index-banner .eb-serial a.active{background: #00b579;}
+.banner-index{height: 625px;border: 5px solid #fff;border-radius: 5px;}
+.banner-index .eb-serial a{width: 12px;height: 12px;background: #fff;border-radius: 50%;box-shadow: inset 0 2px 2px rgba(0, 0, 0, .5);}
+.banner-index .eb-arrow a{opacity: 0;}
+.banner-index:hover .eb-arrow a{opacity: 1;}
+.banner-index .eb-serial a.active{background: #00b579;}
 
-.list-example{margin-bottom: 100px;}
 .list-example ul li{float: left;width: 24%;}
 .list-example ul li.center{margin: 0 14%;}
-.list-example ul li a{display: block;line-height: 160px;margin: 0 auto;box-sizing: border-box;border: 2px solid #00b579;border-radius: 3px;font-size: 36px;color: #00b579;text-align: center;font-weight: bold;-webkit-transition: all .3s;transition: all .3s;}
+.list-example ul li a{display: block;line-height: 160px;margin: 0 auto;box-sizing: border-box;border: 2px solid #00b579;border-radius: 3px;font-size: 36px;color: #00b579;text-align: center;font-weight: bold;}
 .list-example ul li a:hover{background: #00b579;color: #fff;}
 
 
 /* page - automatic*/
+.banner-custom .eb-arrow{width: 90%;}
+.banner-custom .eb-arrow a{position: relative;width: 64px;height: 64px;opacity: 0;cursor: pointer;}
+.banner-custom .eb-arrow a.prev{left: -50px;background: url(img/icon-prev.png);}
+.banner-custom .eb-arrow a.next{right: -50px;background: url(img/icon-next.png);}
+
+.banner-custom:hover .eb-arrow a.prev{left: 0;opacity: 1;}
+.banner-custom:hover .eb-arrow a.next{right: 0;opacity: 1;}
+.banner-custom .eb-serial{bottom: 15px;}
+.banner-custom .eb-serial a{width: 8px;height: 8px;background: #eee;border-radius: 5px;}
+.banner-custom .eb-serial a.active{width: 15px;background: #00b579;transition: width .3s;-webkit-transition: width .3s;}
+
+.banner-serial .eb-serial{bottom: 0;}
+.banner-serial .eb-serial a{background: #00b579;}
+.banner-serial .eb-serial a.active{background: #ffa500;}
+
 
 
 /* page - preload */
@@ -64,4 +106,7 @@ i, em{font-style: normal;}
 
 
 /* highlight */
-.hljs{display:block;overflow-x:auto;padding:.5em;font-family:Consolas,"Microsoft YaHei";color:#333;background:#f8f8f8;-webkit-text-size-adjust:none}.diff .hljs-header,.hljs-comment,.hljs-javadoc{color:#998;font-style:italic}.css .rule .hljs-keyword,.hljs-keyword,.hljs-request,.hljs-status,.hljs-subst,.hljs-winutils,.nginx .hljs-title{color:#333;font-weight:700}.hljs-hexcolor,.hljs-number,.ruby .hljs-constant{color:teal}.hljs-dartdoc,.hljs-phpdoc,.hljs-string,.hljs-tag .hljs-value,.tex .hljs-formula{color:#d14}.hljs-id,.hljs-title,.scss .hljs-preprocessor{color:#900;font-weight:700}.hljs-list .hljs-keyword,.hljs-subst{font-weight:400}.hljs-class .hljs-title,.hljs-type,.tex .hljs-command,.vhdl .hljs-literal{color:#458;font-weight:700}.django .hljs-tag .hljs-keyword,.hljs-rules .hljs-property,.hljs-tag,.hljs-tag .hljs-title{color:navy;font-weight:400}.hljs-attribute,.hljs-variable,.lisp .hljs-body{color:teal}.hljs-regexp{color:#009926}.clojure .hljs-keyword,.hljs-prompt,.hljs-symbol,.lisp .hljs-keyword,.ruby .hljs-symbol .hljs-string,.scheme .hljs-keyword,.tex .hljs-special{color:#990073}.hljs-built_in{color:#0086b3}.hljs-cdata,.hljs-doctype,.hljs-pi,.hljs-pragma,.hljs-preprocessor,.hljs-shebang{color:#999;font-weight:700}.hljs-deletion{background:#fdd}.hljs-addition{background:#dfd}.diff .hljs-change{background:#0086b3}.hljs-chunk{color:#aaa}
+.hljs{display:block;overflow-x:auto;font-family:Consolas,"Microsoft YaHei";color:#333;background:#f8f8f8;-webkit-text-size-adjust:none;line-height:22px;font-size:16px;padding:.5em 1.8em;}.diff .hljs-header,.hljs-comment,.hljs-javadoc{color:#998;font-style:italic}.css .rule .hljs-keyword,.hljs-keyword,.hljs-request,.hljs-status,.hljs-subst,.hljs-winutils,.nginx .hljs-title{color:#333;font-weight:700}.hljs-hexcolor,.hljs-number,.ruby .hljs-constant{color:teal}.hljs-dartdoc,.hljs-phpdoc,.hljs-string,.hljs-tag .hljs-value,.tex .hljs-formula{color:#d14}.hljs-id,.hljs-title,.scss .hljs-preprocessor{color:#900;font-weight:700}.hljs-list .hljs-keyword,.hljs-subst{font-weight:400}.hljs-class .hljs-title,.hljs-type,.tex .hljs-command,.vhdl .hljs-literal{color:#458;font-weight:700}.django .hljs-tag .hljs-keyword,.hljs-rules .hljs-property,.hljs-tag,.hljs-tag .hljs-title{color:navy;font-weight:400}.hljs-attribute,.hljs-variable,.lisp .hljs-body{color:teal}.hljs-regexp{color:#009926}.clojure .hljs-keyword,.hljs-prompt,.hljs-symbol,.lisp .hljs-keyword,.ruby .hljs-symbol .hljs-string,.scheme .hljs-keyword,.tex .hljs-special{color:#990073}.hljs-built_in{color:#0086b3}.hljs-cdata,.hljs-doctype,.hljs-pi,.hljs-pragma,.hljs-preprocessor,.hljs-shebang{color:#999;font-weight:700}.hljs-deletion{background:#fdd}.hljs-addition{background:#dfd}.diff .hljs-change{background:#0086b3}.hljs-chunk{color:#aaa}
+pre{position: relative;}
+pre .line-number{position: absolute;left: 0;top: 0.5em;}
+pre .line-number a{display: block;margin-left: 0.5em;font: 16px/22px Consolas,"Microsoft YaHei";}
