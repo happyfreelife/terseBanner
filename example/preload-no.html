@@ -7,19 +7,7 @@
 </head>
 <body>
 	<div class="banner-preload">
-		<ul>
-			<li><img src="http://img.bizhi.sogou.com/images/2014/09/15/876564.jpg"></li>
-			<li><img src="http://img.bizhi.sogou.com/images/2014/09/19/881411.jpg"></li>
-			<li><img src="http://img.bizhi.sogou.com/images/2014/09/15/876561.jpg"></li>
-			<li><img src="http://img.bizhi.sogou.com/images/2014/09/15/876559.jpg"></li>
-			<li><img src="http://img.bizhi.sogou.com/images/2015/05/29/1184400.jpg"></li>
-			
-			<li><img src="http://img.bizhi.sogou.com/images/2014/09/15/876564.jpg"></li>
-			<li><img src="http://img.bizhi.sogou.com/images/2014/09/19/881411.jpg"></li>
-			<li><img src="http://img.bizhi.sogou.com/images/2014/09/15/876561.jpg"></li>
-			<li><img src="http://img.bizhi.sogou.com/images/2014/09/15/876559.jpg"></li>
-			<li><img src="http://img.bizhi.sogou.com/images/2015/05/29/1184400.jpg"></li>
-		</ul>
+		<ul></ul>
 	</div>
 	<div class="console-panle" style="font: 18px/25px Arial;"></div>
 </body>
@@ -29,14 +17,33 @@
 <!-- <script type="text/javascript" src="script.js"></script> -->
 <script>
 	$(function() {
-		$('.banner-preload ul li').each(function() {
+		var srcArr = [
+			"http://img.bizhi.sogou.com/images/2014/09/15/876564.jpg",
+			"http://img.bizhi.sogou.com/images/2014/09/19/881411.jpg",
+			"http://img.bizhi.sogou.com/images/2014/09/15/876561.jpg",
+			"http://img.bizhi.sogou.com/images/2014/09/15/876559.jpg",
+			"http://img.bizhi.sogou.com/images/2015/05/29/1184400.jpg",
+			"http://img.bizhi.sogou.com/images/2014/09/15/876564.jpg",
+			"http://img.bizhi.sogou.com/images/2014/09/19/881411.jpg",
+			"http://img.bizhi.sogou.com/images/2014/09/15/876561.jpg",
+			"http://img.bizhi.sogou.com/images/2014/09/15/876559.jpg",
+			"http://img.bizhi.sogou.com/images/2015/05/29/1184400.jpg",
+		];
+
+		for (var i = 0, len = srcArr.length; i < len; i++) {
+			$('.banner-preload ul').append('<li><img src="' + srcArr[i] + '?cache=' + Math.random() + '"></li>');
+		}
+
+		var log = '';
+		var timeCount = 0;
+		var $item = $('.banner-preload ul li');
+
+		$item.each(function() {
 			var $this = $(this),
 				$img  = $(this).find('img'),
-				src   = $img.attr('src'),
 				img   = new Image(); 
 
 			$(this).addClass('loading');
-			$img.attr('src', src + '?cache=' + Math.random());
 
 			img.src = $img.attr('src');
 			if (img.complete) {
@@ -47,11 +54,8 @@
 				};
 			}
 		});
-
+		
 		$('.banner-preload').easyBanner();
-
-		var timeCount = 0;
-		var $item = $('.banner-preload ul li:not(":last-child")'); // last item is a clone
 
 		timer = setInterval(function() {
 			var log = '';
@@ -65,7 +69,6 @@
 
 				$('.console-panle').html(log);
 			});
-
 
 			timeCount += 10;
 

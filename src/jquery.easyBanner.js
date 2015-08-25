@@ -1,6 +1,6 @@
 /**
  * jquery.easyBanner.js
- * version   1.3.7
+ * version   1.3.8
  * url       https://github.com/happyfreelife/easyBanner/
  */
 
@@ -176,7 +176,6 @@
                     $elem.filter('.prev').html('&lt;');
                     $elem.filter('.next').html('&gt;');
 
-                    console.log($elem.height());
                     $elem.css({
                         fontSize  :$elem.parent().height() * 0.5,
                         lineHeight: $elem.height() + 'px',
@@ -439,7 +438,14 @@
     function Preload($item, loadingIndex, currentIndex) {
         if (loadingIndex >= $item.length) { return; }
 
+        if ($item.filter('.loading').css('backgroundImage') === 'none' &&    // 没有手动设置loading动画
+            !$('#loading-animation').length                                  // 自动化的loading样式还没有添加
+        ){
+            setLoadingStyle();
+        }
+
         var img = new Image(),
+            $loadAnimation = $('<div class="loading-animation"><i></i><span>loading</span></div>'),
             $loadingItem = $item.eq(loadingIndex),
             loadingItemSrc = $loadingItem.attr('data-src');
 
@@ -449,9 +455,12 @@
             // 不对第1张图片设置loading动画
             if (!loadingIndex) {
                 $loadingItem.css('background-image', 'url(' + loadingItemSrc + ')');
+            } else {
+                $loadingItem.addClass('loading');
+                $loadingItem.append($loadAnimation);
             }
-            $loadingItem.addClass('loading');
             
+            // 给图片绑定加载完成事件
             img.src = loadingItemSrc;
             if (img.complte) {
                 showLoadingItem();
@@ -461,6 +470,84 @@
         } else {
             // 当前项没有data-src属性说明已加载，直接加载下一张
             Preload($item, ++loadingIndex, currentIndex);
+        }
+
+        // 设置loading动画的样式
+        function setLoadingStyle() {
+            var style = 
+                '.loading-animation {' +
+                    'position: relative;' +
+                    'width: 100%;' +
+                    'height: 100%;' +
+                    'background: #e5e5e5;' +
+                '}' + '\n' +
+
+                '.loading-animation span {' +
+                    'position: absolute;' +
+                    'width:' + $item.height() / 4 + 'px;' +
+                    'height:' + $item.height() / 4 + 'px;' +
+                    'line-height:' + $item.height() / 4 + 'px;' +
+                    'top: 50%;' +
+                    'left: 50%;' +
+                    'margin-top: -' + $item.height() / 4 / 2 + 'px;' +
+                    'margin-left: -' + $item.height() / 4 / 2 + 'px;' +
+                    'font-size:' + $item.height() / 28 + 'px;' +
+                    'text-align: center;' +
+                    'color: #333;' +
+                '}' + '\n';
+
+            if (isSupportTransition) {
+                style +=
+                    '.loading-animation i {' +
+                        'position: absolute;' + 
+                        'top: 50%;' + 
+                        'left: 50%;' + 
+                        'width:' + $item.height() / 4 + 'px;' + 
+                        'height:' + $item.height() / 4 + 'px;' + 
+                        'line-height:' + $item.height() / 4 + 'px;' + 
+                        'margin-top: -' + $item.height() / 4 / 2 + 'px;' + 
+                        'margin-left: -' + $item.height() / 4 / 2 + 'px;' + 
+                        'background: linear-gradient(to right, #fff 10%, transparent 42%);' + 
+                        'background: -webkit-linear-gradient(left, #fff 10%, transparent 42%);' + 
+                        'border-radius: 50%;' + 
+                        'animation: loading 1.5s infinite linear;' + 
+                        '-webkit-animation: loading 1.5s infinite linear;' + 
+                    '}' + '\n' +
+
+                    '.loading-animation i:before {' +
+                        'position: absolute;' +
+                        'top: 0;' +
+                        'left: 0;' +
+                        'content: "";' +
+                        'width: 50%;' +
+                        'height: 50%;' +
+                        'background: #fff;' +
+                        'border-top-left-radius: 100%;' +
+                    '}' + '\n' +
+
+                    '.loading-animation i:after {' +
+                        'position: absolute;' +
+                        'top: 12.5%;' +
+                        'left: 12.5%;' +
+                        'content: "";' +
+                        'width: 75%;' +
+                        'height: 75%;' +
+                        'background: #e5e5e5;' +
+                        'border-radius: 50%;' +
+                    '}' + '\n' +
+
+                    '@-webkit-keyframes loading {' +
+                        '0% {-webkit-transform: rotate(0deg);}' +
+                        '100% {-webkit-transform: rotate(360deg);}' +
+                    '}' + '\n' +
+
+                    '@keyframes loading {' +
+                        '0% {transform: rotate(0deg);}' +
+                        '100% {transform: rotate(360deg);}' +
+                    '}';
+            }
+
+            $('head').append('<style id="loading-animation">' + style + '</style>');
         }
 
         function showLoadingItem() {
@@ -473,14 +560,14 @@
              */
             $loadingItem = $item.eq(loadingIndex);
             $loadingItem.css('background-image', 'url(' + loadingItemSrc + ')');
+            $loadingItem.children('.loading-animation').remove();
 
             if (loadingIndex === currentIndex) {
-                if ($loadingItem.hasClass('loading')) {
-                    // 当前显示项正在加载
+                if ($loadingItem.hasClass('loading') &&    // 正在加载项有loading样式
+                    $loadingItem.is(':visible') &&         // 正在加载项是可见的(animation: slide)
+                    $loadingItem.css('opacity') === '1'    // 正在加载项是完全不透明的(animation: fade)
+                ) {
                     $loadingItem.hide().fadeIn();
-                } else {
-                    // 当前显示项已加载
-                    $loadingItem.show();
                 }
             }
 
@@ -518,40 +605,6 @@
                 len   = $item.length,
                 currentIndex = 0,
                 embeddedStyle = '';
-
-            // 提取图片: 将图片转为背景图片;获取手动设置的缩略图地址
-            function convertImage() {
-                var $itemImg = $item.find('img'),
-                    thumbSrcArr = [],
-                    thumbSrcRegExp = new RegExp('\\?thumb=(.*\\.(jpg|jpeg|gif|png))$');
-
-                // 获取手动设置的缩略图的地址
-                $itemImg.each(function() {
-                    var src = $(this).attr('src') || $(this).data('src');
-                    if (src.match(thumbSrcRegExp)) {
-                        thumbSrcArr.push(src.match(thumbSrcRegExp)[1]);
-                    }
-                    $this.thumbSrcArr = thumbSrcArr;
-                });
-
-                if ($itemImg.filter('[data-src]').length === len) {
-                    // 根据data-src自动开启Preload
-                    $itemImg.each(function() {
-                        var src = $(this).data('src');
-                        $(this).parent().attr('data-src', src).data('thumb', src);
-                        $(this).remove();
-                    });
-
-                    Preload($item, currentIndex, currentIndex);
-                } else {
-                    // 标准模式，将图片转为父级元素的背景图片后删除
-                    $itemImg.each(function() {
-                        var src = $(this).attr('src');
-                        $(this).parent().css('background-image', 'url(' + src + ')').data('thumb', src);
-                        $(this).remove();
-                    });
-                }
-            }
 
             // 轮播列表初始化
             function init() {
@@ -625,7 +678,7 @@
                             float: 'left',
                             width: $this.css('width')
                         });
-                        $item.first().clone().appendTo($list);
+                        $item.first().clone(true).appendTo($list);
                         $item.first().show().siblings().hide();
                         break;
                 }
@@ -634,6 +687,45 @@
                 $(window).resize(function() {
                     $list.children().width($this.width());
                 });
+            }
+
+            // 提取图片: 将图片转为背景图片;获取手动设置的缩略图地址
+            function convertImage() {
+                var $itemImg = $item.find('img'),
+                    thumbSrcArr = [],
+                    thumbSrcRegExp = new RegExp('\\?thumb=(.*\\.(jpg|jpeg|gif|png))$');
+
+                // 获取手动设置的缩略图的地址
+                $itemImg.each(function() {
+                    var src = $(this).attr('src') || $(this).data('src');
+                    if (src.match(thumbSrcRegExp)) {
+                        thumbSrcArr.push(src.match(thumbSrcRegExp)[1]);
+                    }
+                    $this.thumbSrcArr = thumbSrcArr;
+                });
+
+                if ($itemImg.filter('[data-src]').length === len) {
+                    // 根据data-src自动开启Preload
+                    $itemImg.each(function() {
+                        var src = $(this).data('src');
+                        $(this).parent().attr('data-src', src).data('thumb', src);
+                        $(this).remove();
+                    });
+
+                    /**
+                     * 在这里添加loading样式是为了在Preload方法中选取这个元素
+                     * 然后检测有无手动设置loading的动画样式
+                     */
+                    $item.last().addClass('loading');
+                    Preload($item, currentIndex, currentIndex);
+                } else {
+                    // 标准模式，将图片转为父级元素的背景图片后删除
+                    $itemImg.each(function() {
+                        var src = $(this).attr('src');
+                        $(this).parent().css('background-image', 'url(' + src + ')').data('thumb', src);
+                        $(this).remove();
+                    });
+                }
             }
 
             // 给轮播添加方向箭头
@@ -696,13 +788,12 @@
                 }
                 $this.append('<div class="eb-thumb"><ul>' + item + '</ul></div>');
 
-                var $thumbListWrap = $('.eb-thumb', $this),     // 缩略图列表容器
-                    $thumbList     = $thumbListWrap.children(), // 缩略图列表
-                    $thumbItem     = $thumbList.children(),     // 缩略图列表项
-                    $thumbImg      = $thumbItem.children(),     // 缩略图列表项中的图片
-                    $thumbArrow;                                // 缩略图的方向箭头
+                var $thumbListWrap = $('.eb-thumb', $this),        // 缩略图列表容器
+                    $thumbList     = $thumbListWrap.children(),    // 缩略图列表
+                    $thumbItem     = $thumbList.children(),        // 缩略图列表项
+                    $thumbImg      = $thumbItem.children(),        // 缩略图列表项中的图片
+                    $thumbArrow;                                   // 缩略图的方向箭头
 
-                    // console.log($thumbList);
                 $thumbItem.css({
                     float     : 'left',
                     overflow  : 'hidden',
@@ -864,9 +955,9 @@
             }
             
             (function() {
-                convertImage();
                 Automatic($this);
                 init();
+                convertImage();
                 Animation($this);
 
                 if (len <= 1) { return; }

@@ -42,7 +42,6 @@ div[class^="banner-"]{height: 625px;border: 5px solid #fff;border-radius: 5px;}
 .banner-custom .eb-arrow a,
 .tab ul li{-webkit-transition: all .3s;transition: all .3s;}
 
-
 /* page - index */
 .header{height: 400px;background: #00b579;}
 .header h1{padding-top: 100px;font-size: 80px;color: #fff;}
@@ -64,7 +63,6 @@ div[class^="banner-"]{height: 625px;border: 5px solid #fff;border-radius: 5px;}
 .list-example ul li a{display: block;line-height: 160px;margin: 0 auto;box-sizing: border-box;border: 2px solid #00b579;border-radius: 3px;font-size: 36px;color: #00b579;text-align: center;font-weight: bold;}
 .list-example ul li a:hover{background: #00b579;color: #fff;}
 
-
 /* page - automatic*/
 .banner-custom .eb-arrow{width: 90%;}
 .banner-custom .eb-arrow a{position: relative;width: 64px;height: 64px;opacity: 0;cursor: pointer;}
@@ -81,14 +79,12 @@ div[class^="banner-"]{height: 625px;border: 5px solid #fff;border-radius: 5px;}
 .banner-serial .eb-serial a{background: #00b579;}
 .banner-serial .eb-serial a.active{background: #ffa500;}
 
-
-
 /* page - preload */
+/*.banner-preload ul li.loading{background: url(img/loading.gif) no-repeat center center !important;}*/
+
 
 
 /* page - thumb */
-
-
 
 
 

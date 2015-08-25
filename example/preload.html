@@ -13,12 +13,19 @@
 			<li><img data-src="http://img.bizhi.sogou.com/images/2014/09/15/876561.jpg"></li>
 			<li><img data-src="http://img.bizhi.sogou.com/images/2014/09/15/876559.jpg"></li>
 			<li><img data-src="http://img.bizhi.sogou.com/images/2015/05/29/1184400.jpg"></li>
-
 			<li><img data-src="http://img.bizhi.sogou.com/images/2014/09/15/876564.jpg"></li>
 			<li><img data-src="http://img.bizhi.sogou.com/images/2014/09/19/881411.jpg"></li>
 			<li><img data-src="http://img.bizhi.sogou.com/images/2014/09/15/876561.jpg"></li>
 			<li><img data-src="http://img.bizhi.sogou.com/images/2014/09/15/876559.jpg"></li>
 			<li><img data-src="http://img.bizhi.sogou.com/images/2015/05/29/1184400.jpg"></li>
+
+
+			<!-- <li><img data-src="http://img.bizhi.sogou.com/images/2015/02/03/1071760.jpg"></li>
+			<li><img data-src="http://img.bizhi.sogou.com/images/2015/05/04/1164586.jpg"></li>
+			<li><img data-src="http://img.bizhi.sogou.com/images/2014/11/27/979874.jpg"></li>
+			<li><img data-src="http://img.bizhi.sogou.com/images/2015/02/03/1071760.jpg"></li>
+			<li><img data-src="http://img.bizhi.sogou.com/images/2015/05/04/1164586.jpg"></li>
+			<li><img data-src="http://img.bizhi.sogou.com/images/2014/11/27/979874.jpg"></li> -->
 		</ul>
 	</div>
 	<div class="console-panle" style="font: 18px/25px Arial;"></div>
@@ -29,20 +36,21 @@
 <!-- <script type="text/javascript" src="script.js"></script> -->
 <script>
 	$(function() {
-		$('.banner-preload ul li').each(function() {
+		var log = '';
+		var timeCount = 0;
+		var $item = $('.banner-preload ul li');
+
+		$item.each(function() {
 			var $img = $(this).find('img'),
 				src  = $img.attr('data-src'); 
 
-			$img.attr('data-src', src + '?cache=' + Math.random());
+			$img.attr('data-src', src + '?timeStamp=' + Math.random());
 		});
 
 		$('.banner-preload').easyBanner();
 
-		var timeCount = 0;
-		var $item = $('.banner-preload ul li:not(":last-child")'); // last item is a clone
-
 		timer = setInterval(function() {
-			var log = '';
+			log = '';
 
 			$item.each(function() {
 				if ($(this).hasClass('loaded')) {
@@ -54,10 +62,9 @@
 				$('.console-panle').html(log);
 			});
 
-
 			timeCount += 10;
 
-			if (!$item.filter('[class!="loaded"]').length) {
+			if ($item.filter('[class*="loaded"]').length === $item.length) {
 				log += '<p><b>All of the images have finished loading！Spent ' + timeCount + 'ms</p>';
 
 				$('.console-panle').html(log);

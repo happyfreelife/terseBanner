@@ -44,13 +44,14 @@ $(function() {
     /********** banner-automatic **********/ 
     $('.banner-automatic').easyBanner();
 
-    $('.banner-custom').easyBanner();
-
-    $('.banner-serial').easyBanner({
-        serial: 'equal'
-    });
-
     $('.banner-fade').easyBanner({
         animation: 'fade'
+    });
+
+    $('.banner-custom').easyBanner({});
+
+    $('.banner-serial').easyBanner({
+        arrow: false,
+        serial: 'equal'
     });
 });
