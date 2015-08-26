@@ -26,7 +26,8 @@ i, em{font-style: normal;}
 }
 
 h2{font-size: 26px;line-height: 60px;margin-top: 100px;}
-h2 + p{line-height: 30px;margin-bottom: 30px;font-size: 20px;color: #666;}
+h3{line-height: 30px;margin: 30px 0;font-size: 20px;color: #666;}
+h2 + h3{margin-top: 0;}
 div[class^="banner-"]{height: 625px;border: 5px solid #fff;border-radius: 5px;}
 
 .tab{margin-top: 30px;padding: .5em;background: #f8f8f8;border-radius: 5px;}
@@ -79,10 +80,17 @@ div[class^="banner-"]{height: 625px;border: 5px solid #fff;border-radius: 5px;}
 .banner-serial .eb-serial a{background: #00b579;}
 .banner-serial .eb-serial a.active{background: #ffa500;}
 
-/* page - preload */
-/*.banner-preload ul li.loading{background: url(img/loading.gif) no-repeat center center !important;}*/
+/* page - lazyload */
+.banner-lazyload ul li.loading{background: url(img/loading.gif) no-repeat center center !important;}
 
-
+.overlay{position: relative;background: url(http://b.zol-img.com.cn/desk/bizhi/image/5/1024x768/1417071158368.jpg) no-repeat center top;overflow: hidden;background-size: 99%;}
+.overlay .opacity{position: absolute;top: 5px;left: 5px;content: "";width: 990px;height: 625px;background: #000;opacity: .5;filter: alpha(opacity=50);}
+.overlay .click{position: absolute;top: 50%;left: 50%;z-index: 10;width: 180px;margin-top: -30px;margin-left: -90px;box-sizing: border-box;border: 5px solid #fff;border-radius: 5px;cursor: pointer;font: 20px/60px "Arial";color: #fff;text-align: center;}
+.overlay .retest{top: 50px;left: 50px;width: 100px;line-height: 40px;margin: 0;border: none;background: #00b570;color: #fff;border-radius: 3px;color: #fff;font-size: 16px;}
+.console-log{padding: 10px 5px;}
+.console-log p{font: 14px/24px "Arial";}
+.console-log p.loading{color: #ffac00;}
+.console-log p.loaded{color: #00b579;}
 
 /* page - thumb */
 

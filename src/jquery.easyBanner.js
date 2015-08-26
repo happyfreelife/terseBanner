@@ -1,6 +1,6 @@
 /**
  * jquery.easyBanner.js
- * version   1.3.8
+ * version   1.3.9
  * url       https://github.com/happyfreelife/easyBanner/
  */
 
@@ -288,7 +288,7 @@
                 this.determineIndex();
                 T.$item.eq(T.currentIndex).show().siblings().hide();
                 this.serialActive();
-                Preload(T.$item, T.currentIndex, T.currentIndex);
+                Lazyload(T.$item, T.currentIndex, T.currentIndex);
             },
 
             // 动画模式 - 淡入淡出
@@ -296,7 +296,7 @@
                 this.determineIndex();
 
                 T.$list.animating = true;
-                T.$item.removeClass().eq(T.currentIndex).addClass('top-item');
+                T.$item.removeClass('top-item').eq(T.currentIndex).addClass('top-item');
 
                 if (isSupportTransition) {
                     T.$item.eq(T.currentIndex).addClass('transition-fade-' + T.options.speed).css('opacity', 1);
@@ -313,7 +313,7 @@
 
                 this.serialActive();
 
-                Preload(T.$item, T.currentIndex, T.currentIndex);
+                Lazyload(T.$item, T.currentIndex, T.currentIndex);
             },
 
             // 动画模式 - 滑动
@@ -377,7 +377,7 @@
 
                 this.serialActive();
 
-                Preload(T.$item, T.currentIndex, T.currentIndex);
+                Lazyload(T.$item, T.currentIndex, T.currentIndex);
             },
 
             // 单次fade动画执行完之后调用的函数
@@ -428,24 +428,26 @@
     }
 
 
-    /******************** Preload ********************/
+    /******************** Lazyload ********************/
     /**
-     * 图片预加载
+     * 图片延迟加载
      * @param  {HTMLElement} $item   列表项元素
      * @param  {Number} loadingIndex 当前加载项的索引
      * @param  {Number} currentIndex 当前显示项的索引
      */
-    function Preload($item, loadingIndex, currentIndex) {
-        if (loadingIndex >= $item.length) { return; }
+    function Lazyload($item, loadingIndex, currentIndex) {
+        // 最多只能预加载一张图片
+        if (loadingIndex >= $item.length || loadingIndex - currentIndex > 1) { return; }
 
         if ($item.filter('.loading').css('backgroundImage') === 'none' &&    // 没有手动设置loading动画
             !$('#loading-animation').length                                  // 自动化的loading样式还没有添加
         ){
             setLoadingStyle();
         }
+        $item.removeClass('loading');
 
         var img = new Image(),
-            $loadAnimation = $('<div class="loading-animation"><i></i><span>loading</span></div>'),
+            $loadAnimation = $('<div class="loading-animation"><i></i></div>'),
             $loadingItem = $item.eq(loadingIndex),
             loadingItemSrc = $loadingItem.attr('data-src');
 
@@ -468,8 +470,12 @@
                 img.onload = showLoadingItem;
             }
         } else {
-            // 当前项没有data-src属性说明已加载，直接加载下一张
-            Preload($item, ++loadingIndex, currentIndex);
+           preload();
+        }
+
+        // 预加载下一张图片
+        function preload() {
+            Lazyload($item, loadingIndex + 1, currentIndex);
         }
 
         // 设置loading动画的样式
@@ -480,20 +486,6 @@
                     'width: 100%;' +
                     'height: 100%;' +
                     'background: #e5e5e5;' +
-                '}' + '\n' +
-
-                '.loading-animation span {' +
-                    'position: absolute;' +
-                    'width:' + $item.height() / 4 + 'px;' +
-                    'height:' + $item.height() / 4 + 'px;' +
-                    'line-height:' + $item.height() / 4 + 'px;' +
-                    'top: 50%;' +
-                    'left: 50%;' +
-                    'margin-top: -' + $item.height() / 4 / 2 + 'px;' +
-                    'margin-left: -' + $item.height() / 4 / 2 + 'px;' +
-                    'font-size:' + $item.height() / 28 + 'px;' +
-                    'text-align: center;' +
-                    'color: #333;' +
                 '}' + '\n';
 
             if (isSupportTransition) {
@@ -551,9 +543,6 @@
         }
 
         function showLoadingItem() {
-            // 预加载下一张图片
-            Preload($item, loadingIndex + 1, currentIndex);
-
             /**
              * $loadingItem已缓存，在这里必须更新一次
              * 否则会导致调用的$loadingItem不是该方法需要的引起异常
@@ -562,27 +551,17 @@
             $loadingItem.css('background-image', 'url(' + loadingItemSrc + ')');
             $loadingItem.children('.loading-animation').remove();
 
-            if (loadingIndex === currentIndex) {
-                if ($loadingItem.hasClass('loading') &&    // 正在加载项有loading样式
-                    $loadingItem.is(':visible') &&         // 正在加载项是可见的(animation: slide)
-                    $loadingItem.css('opacity') === '1'    // 正在加载项是完全不透明的(animation: fade)
-                ) {
-                    $loadingItem.hide().fadeIn();
-                }
-            }
-
-            // 当前显示项已加载并且下一项也加载完了
-            if (loadingIndex !== currentIndex) {
-                /**
-                 * 动画模式不是fade，把预加载完成的item隐藏
-                 * 动画模式是fade，不可隐藏任何item，因为fade动画仅仅是改变item的opacity和z-index属性
-                 */
-                if ($loadingItem.css('zIndex') === 'auto') {
-                    $loadingItem.hide();
-                }
+            if ($loadingItem.hasClass('loading') &&    // 正在加载项有loading样式
+                $loadingItem.is(':visible') &&         // 正在加载项是可见的(animation: slide)
+                $loadingItem.css('opacity') === '1'    // 正在加载项是完全不透明的(animation: fade)
+            ) {
+                console.log('fade');
+                $loadingItem.hide().fadeIn();
             }
 
             $loadingItem.removeClass('loading').addClass('loaded');
+
+            preload();
         }
     }
 
@@ -678,7 +657,6 @@
                             float: 'left',
                             width: $this.css('width')
                         });
-                        $item.first().clone(true).appendTo($list);
                         $item.first().show().siblings().hide();
                         break;
                 }
@@ -705,7 +683,7 @@
                 });
 
                 if ($itemImg.filter('[data-src]').length === len) {
-                    // 根据data-src自动开启Preload
+                    // 根据data-src自动开启Lazyload
                     $itemImg.each(function() {
                         var src = $(this).data('src');
                         $(this).parent().attr('data-src', src).data('thumb', src);
@@ -713,11 +691,11 @@
                     });
 
                     /**
-                     * 在这里添加loading样式是为了在Preload方法中选取这个元素
+                     * 在这里添加loading样式是为了在Lazyload方法中选取这个元素
                      * 然后检测有无手动设置loading的动画样式
                      */
                     $item.last().addClass('loading');
-                    Preload($item, currentIndex, currentIndex);
+                    Lazyload($item, currentIndex, currentIndex);
                 } else {
                     // 标准模式，将图片转为父级元素的背景图片后删除
                     $itemImg.each(function() {
@@ -725,6 +703,10 @@
                         $(this).parent().css('background-image', 'url(' + src + ')').data('thumb', src);
                         $(this).remove();
                     });
+                }
+
+                if (options.animation === 'slide') {
+                    $item.first().clone(true).appendTo($list);
                 }
             }
 
