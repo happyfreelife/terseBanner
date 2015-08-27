@@ -2,14 +2,6 @@
 $(function() {
     /********** highlight **********/
     try {
-        Array.prototype.forEach = function(callback, thisArg) {
-            for (var i = 0, len = this.length; i < len; i++) {
-                if (typeof callback === 'function') {
-                    callback.call(thisArg, this[i], i, this);
-                }
-            }
-        };
-        
         hljs.configure({tabReplace: '    '});
         hljs.initHighlightingOnLoad();
         
@@ -35,13 +27,13 @@ $(function() {
     });
 
 
-    /********** banner-index **********/
+    /********** index **********/
     $('.banner-index').easyBanner({
         arrow: false
     });
 
 
-    /********** banner-automatic **********/
+    /********** automatic **********/
     $('.banner-automatic').easyBanner();
 
     $('.banner-fade').easyBanner({
@@ -55,7 +47,7 @@ $(function() {
         serial: 'equal'
     });
 
-    /********** banner-lazyload **********/
+    /********** lazyload **********/
     $('.banner-lazyload').easyBanner();
 
     var srcArr = [
@@ -107,4 +99,24 @@ $(function() {
             }
         }, 50);
     });
+
+    
+    /********** thumbnail **********/
+    $('.banner-thumb-auto').easyBanner({
+        serial: 'thumb'
+    });
+
+    $('.banner-thumb-manual').easyBanner({
+        serial: 'thumb'
+    });
+
+    $('.banner-thumb-list').easyBanner({
+        serial: 'thumb'
+    });
+
+    $('.banner-thumb-custom').easyBanner({
+        animation: 'fade',
+        serial: 'thumb'
+    });
+
 });
