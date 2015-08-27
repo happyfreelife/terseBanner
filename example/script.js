@@ -41,8 +41,11 @@ $(function() {
     $('.banner-custom').easyBanner({});
 
     $('.banner-serial').easyBanner({
-        arrow: false,
-        serial: 'equal'
+        serial: 'equal',
+        after: function($this, currentIndex) {
+            $('.eb-list ul li span', $this).hide();
+            $('.eb-list ul li span', $this).eq(currentIndex).show(function() {});
+        }
     });
 
     /********** lazyload **********/

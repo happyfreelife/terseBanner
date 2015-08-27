@@ -1,6 +1,6 @@
 /**
  * jquery.easyBanner.js
- * version   1.4.0
+ * version   1.4.1
  * url       https://github.com/happyfreelife/easyBanner/
  */
 
@@ -278,8 +278,10 @@
                         currentItemThumbLeft < currentThumbListLeft ||
                         currentItemThumbLeft > (currentThumbListLeft + thumbListWrapWidth)
                     ) {
-                        var left = -parseInt(currentItemThumbLeft / thumbListWrapWidth) * thumbListWrapWidth;
-                        this.thumbSlide(left);
+                        var left = parseInt(currentItemThumbLeft / thumbListWrapWidth) * thumbListWrapWidth;
+                        left = Math.min(left, T.$thumbList.width() - thumbListWrapWidth);
+
+                        this.thumbSlide(-left);
                     }
                 }
             },
@@ -420,6 +422,7 @@
                 T.$list.data('lastIndex', T.currentIndex);
 
                 T.$item.eq(T.currentIndex).show().siblings().hide();
+                T.options.after.call(T, T, T.currentIndex);
 
                 if (T.options.autoPlay && !T.$list.hovering) {
                     T.setPlayTimer();
@@ -574,7 +577,6 @@
                 $loadingItem.is(':visible') &&         // 正在加载项是可见的(animation: slide)
                 $loadingItem.css('opacity') === '1'    // 正在加载项是完全不透明的(animation: fade)
             ) {
-                console.log('fade');
                 $loadingItem.hide().fadeIn();
             }
 
@@ -593,7 +595,9 @@
             serial   : true,       // 序列按钮[true, false, 'equal', 'thumb']
             autoPlay : true,       // 自动轮播
             speed    : 800,        // 动画速度
-            interval : 5000        // 自动轮播间隔
+            interval : 5000,       // 自动轮播间隔
+            during   : $.noop,     // 在动画进行时执行的函数
+            after    : $.noop      // 在动画完成时执行的函数
         }, option);
 
         return this.each(function() {
@@ -727,6 +731,9 @@
                 if (options.animation === 'slide') {
                     $item.first().clone(true).appendTo($list);
                 }
+
+                options.during.call($this, $this, $this.currentIndex);
+                options.after.call($this, $this, $this.currentIndex);
             }
 
             // 给轮播添加方向箭头
@@ -951,13 +958,11 @@
 
                 $this.hover(function(e) {
                     if (!isMouseoverThumb(e)) {
-                        console.log('not on thumb');
                         $list.hovering = true;
                         clearInterval($this.playTimer);
                     }
                 }, function(e) {
                     if (!isMouseoverThumb(e)) {
-                        console.log('not on thumb');
                         $list.hovering = false;
                         if (!$list.animating) { setPlayTimer(); }
                     }

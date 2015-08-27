@@ -25,11 +25,11 @@
         <h3>Add the necessary elements and style automatically, it doesn't matter even less wrote some style.</h3>
         <div class="banner-automatic">
             <ul>
-                <li><img src="img/banner-1.jpg"></li>
-                <li><img src="img/banner-2.jpg"></li>
-                <li><img src="img/banner-3.jpg"></li>
-                <li><img src="img/banner-4.jpg"></li>
-                <li><img src="img/banner-5.jpg"></li>
+                <li><img src="img/banner-6.jpg"></li>
+                <li><img src="img/banner-7.jpg"></li>
+                <li><img src="img/banner-8.jpg"></li>
+                <li><img src="img/banner-9.jpg"></li>
+                <li><img src="img/banner-10.jpg"></li>
             </ul>
         </div>
         <div class="tab">
@@ -72,24 +72,62 @@ $('.banner-automatic').easyBanner();
         <h2>Animation - Fade</h2>
         <h3>easyBanner support three kinds of animation: slide(default), fade, none(no animation)</h3>
         <div class="banner-fade">
+            <div>
+                <a><img src="img/banner-1.jpg"></a>
+                <a><img src="img/banner-2.jpg"></a>
+                <a><img src="img/banner-3.jpg"></a>
+                <a><img src="img/banner-4.jpg"></a>
+                <a><img src="img/banner-5.jpg"></a>
+            </div>
+        </div>
+        <div class="tab">
+            <ul class="clearfix">
+                <li class="active">HTML</li>
+                <li>CSS</li>
+                <li>JAVASCRIPT</li>
+            </ul>
+            <dl>
+                <dd class="show">
+<pre><code>
+&lt;div class=&quot;banner-fade&quot;&gt;
+    &lt;div&gt; // can use any tag here
+        &lt;a&gt;&lt;img src=&quot;img/banner-1.jpg&quot;&gt;&lt;/a&gt;  // you can use any tag as list item
+        &lt;a&gt;&lt;img src=&quot;img/banner-2.jpg&quot;&gt;&lt;/a&gt;
+        &lt;a&gt;&lt;img src=&quot;img/banner-3.jpg&quot;&gt;&lt;/a&gt;
+        &lt;a&gt;&lt;img src=&quot;img/banner-4.jpg&quot;&gt;&lt;/a&gt;
+        &lt;a&gt;&lt;img src=&quot;img/banner-5.jpg&quot;&gt;&lt;/a&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+</code></pre>
+                </dd>
+                <dd>
+<pre><code>
+.banner-fade{
+    height: 625px;
+    border: 5px solid #fff;
+    border-radius: 5px;
+}
+</code></pre>
+                </dd>
+                <dd>
+<pre><code>
+$('.banner-fade').easyBanner({
+    animation: 'fade'
+});
+</code></pre>
+                </dd>
+            </dl>
+        </div>
+
+        <h2>Custom Style</h2>
+        <h3>You can also define you own page style.</h3>
+        <div class="banner-custom">
             <ul>
                 <li><img src="img/banner-6.jpg"></li>
                 <li><img src="img/banner-7.jpg"></li>
                 <li><img src="img/banner-8.jpg"></li>
                 <li><img src="img/banner-9.jpg"></li>
                 <li><img src="img/banner-10.jpg"></li>
-            </ul>
-        </div>
-
-        <h2>Custom Style</h2>
-        <p>You can also define you own page style.</p>
-        <div class="banner-custom">
-            <ul>
-                <li><img src="img/banner-1.jpg"></li>
-                <li><img src="img/banner-2.jpg"></li>
-                <li><img src="img/banner-3.jpg"></li>
-                <li><img src="img/banner-4.jpg"></li>
-                <li><img src="img/banner-5.jpg"></li>
             </ul>
         </div>
         <div class="tab">
@@ -102,7 +140,7 @@ $('.banner-automatic').easyBanner();
                 <dd class="show">
 <pre><code>
 &lt;div class=&quot;banner-custom&quot;&gt;
-    &lt;ul&gt;
+    &lt;ul&gt; // can use any tag here
         &lt;li&gt;&lt;img src=&quot;img/banner-6.jpg&quot;&gt;&lt;/li&gt;
         &lt;li&gt;&lt;img src=&quot;img/banner-7.jpg&quot;&gt;&lt;/li&gt;
         &lt;li&gt;&lt;img src=&quot;img/banner-8.jpg&quot;&gt;&lt;/li&gt;
@@ -137,13 +175,13 @@ $('.banner-custom').easyBanner();
         <h2>Serial - Equal</h2>
         <h3>let the width of the serial buttons equal.</h3>
         <div class="banner-serial">
-            <div>
-                <a><img src="img/banner-6.jpg"></a>
-                <a><img src="img/banner-7.jpg"></a>
-                <a><img src="img/banner-8.jpg"></a>
-                <a><img src="img/banner-9.jpg"></a>
-                <a><img src="img/banner-10.jpg"></a>
-            </div>
+            <ul>
+                <li><img src="img/banner-1.jpg"><span>grape</span></li>
+                <li><img src="img/banner-2.jpg"><span> raspberry</span></li>
+                <li><img src="img/banner-3.jpg"><span>strawberry</span></li>
+                <li><img src="img/banner-4.jpg"><span>blueberry</span></li>
+                <li><img src="img/banner-5.jpg"><span>cherry</span></li>
+            </ul>
         </div>
         <div class="tab">
             <ul class="clearfix">
@@ -154,35 +192,34 @@ $('.banner-custom').easyBanner();
             <dl>
                 <dd class="show">
 <pre><code>
-&lt;div class=&quot;banner-equal&quot;&gt;
-    &lt;div&gt; // can use any tag here
-        &lt;a&gt;&lt;img src=&quot;img/banner-1.jpg&quot;&gt;&lt;/a&gt; // you can use any tag as list item
-        &lt;a&gt;&lt;img src=&quot;img/banner-2.jpg&quot;&gt;&lt;/a&gt;
-        &lt;a&gt;&lt;img src=&quot;img/banner-3.jpg&quot;&gt;&lt;/a&gt;
-        &lt;a&gt;&lt;img src=&quot;img/banner-4.jpg&quot;&gt;&lt;/a&gt;
-        &lt;a&gt;&lt;img src=&quot;img/banner-5.jpg&quot;&gt;&lt;/a&gt;
-    &lt;/div&gt;
+&lt;div class=&quot;banner-serial&quot;&gt;
+    &lt;ul&gt;
+        &lt;li&gt;&lt;img src=&quot;img/banner-1.jpg&quot;&gt;&lt;span&gt;grape&lt;/span&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;img src=&quot;img/banner-2.jpg&quot;&gt;&lt;span&gt; raspberry&lt;/span&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;img src=&quot;img/banner-3.jpg&quot;&gt;&lt;span&gt;strawberry&lt;/span&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;img src=&quot;img/banner-4.jpg&quot;&gt;&lt;span&gt;blueberry&lt;/span&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;img src=&quot;img/banner-5.jpg&quot;&gt;&lt;span&gt;cherry&lt;/span&gt;&lt;/li&gt;
+    &lt;/ul&gt;
 &lt;/div&gt;
 </code></pre>
                 </dd>
                 <dd>
 <pre><code>
-.banner-serial .eb-serial{
-    bottom: 0;
-}
-.banner-serial .eb-serial a{
-    background: #00b579; // default color is #fff
-}
-.banner-serial .eb-serial a.active{
-    background: #ffa500; // default color is #ffa500
-}
+.banner-serial .eb-list ul li{position: relative;}
+.banner-serial .eb-list ul li span{position: absolute;bottom: 10px;left: 0;width: 100%;background: rgba(0, 0, 0, .5);font: 26px/50px "Arial";color: #fff;text-indent: 1em;letter-spacing: 1px;}
+.banner-serial .eb-serial{bottom: 0;}
+.banner-serial .eb-serial a{background: #00b579;} // default color is #fff
+.banner-serial .eb-serial a.active{background: #ffa500;} // default color is #ffa500
 </code></pre>
                 </dd>
                 <dd>
 <pre><code>
 $('.banner-serial').easyBanner({
-    arrow: false,
-    serial: 'equal'
+    serial: 'equal',
+    after: function($this, currentIndex) {
+        $('.eb-list ul li span', $this).hide();
+        $('.eb-list ul li span', $this).eq(currentIndex).show(function() {});
+    }
 });
 </code></pre>
                 </dd>

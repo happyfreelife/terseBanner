@@ -71,7 +71,10 @@ div[class^="banner-"]:hover .eb-arrow a{opacity: 1;}
 .banner-custom:hover .eb-arrow a.next{right: 0;opacity: 1;}
 .banner-custom .eb-serial{bottom: 15px;}
 .banner-custom .eb-serial a{width: 8px;height: 8px;background: #eee;border-radius: 5px;}
-.banner-custom .eb-serial a.active{width: 15px;background: #00b579;transition: width .3s;-webkit-transition: width .3s;}
+.banner-custom .eb-serial a.active{width: 15px;background: #00b579;-webkit-transition: width .3s;transition: width .3s;}
+
+.banner-serial .eb-list ul li{position: relative;}
+.banner-serial .eb-list ul li span{position: absolute;bottom: 10px;left: 0;width: 100%;background: rgba(0, 0, 0, .5);font: 26px/50px "Arial";color: #fff;text-indent: 1em;letter-spacing: 1px;}
 .banner-serial .eb-serial{bottom: 0;}
 .banner-serial .eb-serial a{background: #00b579;}
 .banner-serial .eb-serial a.active{background: #ffa500;}
