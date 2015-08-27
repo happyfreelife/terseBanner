@@ -41,17 +41,37 @@
             <dl>
                 <dd class="show">
 <pre><code>
-
+&lt;div class=&quot;banner-thumb-auto&quot;&gt;
+    &lt;ul&gt;
+        &lt;li&gt;&lt;img src=&quot;img/banner-6.jpg&quot;&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;img src=&quot;img/banner-7.jpg&quot;&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;img src=&quot;img/banner-8.jpg&quot;&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;img src=&quot;img/banner-9.jpg&quot;&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;img src=&quot;img/banner-10.jpg&quot;&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+&lt;/div&gt;
 </code></pre>
                 </dd>
                 <dd>
 <pre><code>
-
+.banner-thumb-auto .eb-thumb ul li{
+    margin-right: 10px;
+    border: 2px solid transparent;
+    opacity: .7;
+    filter: alpha(opactiy=70);
+}
+.banner-thumb-auto .eb-thumb ul li.active{
+    border-color: #00b579;
+    opacity: 1;
+    filter: alpha(opactiy=100);
+}
 </code></pre>
                 </dd>
                 <dd>
 <pre><code>
-
+$('.banner-thumb-auto').easyBanner({
+    serial: 'thumb'
+});
 </code></pre>
                 </dd>
             </dl>
@@ -76,17 +96,38 @@
             <dl>
                 <dd class="show">
 <pre><code>
-
+&lt;div class=&quot;banner-thumb-manual&quot;&gt;
+    &lt;ul&gt;
+        // add "?thumb=['thumbnail url']" after img src
+        &lt;li&gt;&lt;img src=&quot;img/banner-1.jpg?thumb=img/thumb-1.jpg&quot;&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;img src=&quot;img/banner-2.jpg?thumb=img/thumb-2.jpg&quot;&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;img src=&quot;img/banner-3.jpg?thumb=img/thumb-3.jpg&quot;&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;img src=&quot;img/banner-4.jpg?thumb=img/thumb-4.jpg&quot;&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;img src=&quot;img/banner-5.jpg?thumb=img/thumb-5.jpg&quot;&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+&lt;/div&gt;
 </code></pre>
                 </dd>
                 <dd>
 <pre><code>
-
+.banner-thumb-manual .eb-thumb ul li{
+    margin-right: 10px;
+    border: 2px solid transparent;
+    opacity: .7;
+    filter: alpha(opactiy=70);
+}
+.banner-thumb-manual .eb-thumb ul li.active{
+    border-color: #00b579;
+    opacity: 1;
+    filter: alpha(opactiy=100);
+}
 </code></pre>
                 </dd>
                 <dd>
 <pre><code>
-
+$('.banner-thumb-manual').easyBanner({
+    serial: 'thumb'
+});
 </code></pre>
                 </dd>
             </dl>
@@ -109,21 +150,80 @@
         </div>
 
         <h3>Custom style.</h3>
-        <div class="banner-thumb-custom">
-            <ul>
-                <li><img src="img/banner-1.jpg"></li>
-                <li><img src="img/banner-2.jpg"></li>
-                <li><img src="img/banner-3.jpg"></li>
-                <li><img src="img/banner-4.jpg"></li>
-                <li><img src="img/banner-5.jpg"></li>
-                <li><img src="img/banner-6.jpg"></li>
-                <li><img src="img/banner-7.jpg"></li>
-                <li><img src="img/banner-8.jpg"></li>
-                <li><img src="img/banner-9.jpg"></li>
-                <li><img src="img/banner-10.jpg"></li>
-            </ul>
+        <div class="wrap-thumb-custom">
+            <div class="thumb-custom">
+                <ul>
+                    <li><img src="img/banner-1.jpg"></li>
+                    <li><img src="img/banner-2.jpg"></li>
+                    <li><img src="img/banner-3.jpg"></li>
+                    <li><img src="img/banner-4.jpg"></li>
+                    <li><img src="img/banner-5.jpg"></li>
+                    <li><img src="img/banner-6.jpg"></li>
+                    <li><img src="img/banner-7.jpg"></li>
+                    <li><img src="img/banner-8.jpg"></li>
+                    <li><img src="img/banner-9.jpg"></li>
+                    <li><img src="img/banner-10.jpg"></li>
+                </ul>
+            </div>
         </div>
+        <div class="tab">
+            <ul class="clearfix">
+                <li class="active">HTML</li>
+                <li>CSS</li>
+                <li>JAVASCRIPT</li>
+            </ul>
+            <dl>
+                <dd class="show">
+<pre><code>
+&lt;div class=&quot;wrap-custom&quot;&gt;
+    &lt;div class=&quot;thumb-custom&quot;&gt;
+        &lt;ul&gt;
+            &lt;li&gt;&lt;img src=&quot;img/banner-1.jpg&quot;&gt;&lt;/li&gt;
+            &lt;li&gt;&lt;img src=&quot;img/banner-2.jpg&quot;&gt;&lt;/li&gt;
+            &lt;li&gt;&lt;img src=&quot;img/banner-3.jpg&quot;&gt;&lt;/li&gt;
+            &lt;li&gt;&lt;img src=&quot;img/banner-4.jpg&quot;&gt;&lt;/li&gt;
+            &lt;li&gt;&lt;img src=&quot;img/banner-5.jpg&quot;&gt;&lt;/li&gt;
+            &lt;li&gt;&lt;img src=&quot;img/banner-6.jpg&quot;&gt;&lt;/li&gt;
+            &lt;li&gt;&lt;img src=&quot;img/banner-7.jpg&quot;&gt;&lt;/li&gt;
+            &lt;li&gt;&lt;img src=&quot;img/banner-8.jpg&quot;&gt;&lt;/li&gt;
+            &lt;li&gt;&lt;img src=&quot;img/banner-9.jpg&quot;&gt;&lt;/li&gt;
+            &lt;li&gt;&lt;img src=&quot;img/banner-10.jpg&quot;&gt;&lt;/li&gt;
+        &lt;/ul&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+</code></pre>
+                </dd>
+                <dd>
+<pre><code>
+.wrap-thumb-custom{height: 730px;}
 
+.thumb-custom{height: 625px;border: 5px solid #fff;border-radius: 5px;}
+.thumb-custom .eb-thumb{overflow: hidden;border-radius: 3px;}
+.thumb-custom .eb-thumb a{position: relative;width: 25px;height: 100%;background: #555;cursor: pointer;}
+.thumb-custom .eb-thumb a.disabled{background: #aaa;cursor: not-allowed;}
+.thumb-custom .eb-thumb a:after{position: absolute;top: 30px;content: "";border: 6px solid transparent;}
+.thumb-custom .eb-thumb a.prev:after{right: 10px;border-right-color: #fff;}
+.thumb-custom .eb-thumb a.next:after{left: 10px;border-left-color: #fff;}
+
+.thumb-custom .eb-thumb{bottom: -95px;}
+.thumb-custom .eb-thumb ul{background: #fff;}
+.thumb-custom .eb-thumb ul li{height: 75px;margin-right: 2px;opacity: .7;-webkit-transition: all .3s;transition: all .3s;filter: alpha(opactiy=70);}
+.thumb-custom .eb-thumb ul li.active,
+.thumb-custom .eb-thumb ul li:hover{opacity: 1;filter: alpha(opactiy=100);}
+
+</code></pre>
+                </dd>
+                <dd>
+<pre><code>
+$('.thumb-custom').easyBanner({
+    animation: 'fade',
+    arrow: false,
+    serial: 'thumb'
+});
+</code></pre>
+                </dd>
+            </dl>
+        </div>
     </div>
 </body>
 <script type="text/javascript" src="../lib/highlight.min.js"></script>

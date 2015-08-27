@@ -28,9 +28,7 @@ $(function() {
 
 
     /********** index **********/
-    $('.banner-index').easyBanner({
-        arrow: false
-    });
+    $('.banner-index').easyBanner();
 
 
     /********** automatic **********/
@@ -114,9 +112,9 @@ $(function() {
         serial: 'thumb'
     });
 
-    $('.banner-thumb-custom').easyBanner({
+    $('.thumb-custom').easyBanner({
         animation: 'fade',
+        arrow: false,
         serial: 'thumb'
     });
-
 });

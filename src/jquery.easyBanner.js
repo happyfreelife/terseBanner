@@ -1,6 +1,6 @@
 /**
  * jquery.easyBanner.js
- * version   1.3.9
+ * version   1.4.0
  * url       https://github.com/happyfreelife/easyBanner/
  */
 
@@ -152,6 +152,9 @@
             thumbImgBox: function($elem) {
                 var $thumbItem = $elem.parent();
 
+                $elem.hide();
+
+                // $thumbItem已定高
                 if (!cssDetector($thumbItem, 'height', '0px')) {
                     $elem.height($thumbItem.height());
                 } else {
@@ -159,6 +162,9 @@
                     $thumbItem.height($elem.height());
                 }
 
+                $elem.width(T.width() / T.height() * $elem.height());
+
+                // $thumbItem已定宽
                 if (!cssDetector($thumbItem, 'width', '0px')) {
                     $elem.css({
                         position  : 'relative',
@@ -166,6 +172,8 @@
                         marginLeft: -$elem.outerWidth() / 2
                     });
                 }
+
+                $elem.show();
             },
 
             thumbArrowBg: function($elem) {
@@ -189,18 +197,29 @@
 
             thumbArrowPos: function($elem) {
                 $elem.each(function() {
-                    if (cssDetector($(this), 'marginTop', '0px')) {
-                        $(this).css('marginTop', ($(this).parent().height() - $(this).height()) / 2);
+                    if (cssDetector($(this), 'top', 'auto') && cssDetector($(this), 'bottom', 'auto')) {
+                        $(this).css('top', ($(this).parent().height() - $(this).height()) / 2);
                     }
                     
+                    if (cssDetector($(this), 'left', 'auto') && cssDetector($(this), 'right', 'auto')) {
+                        $(this).css($(this).hasClass('prev') ? 'left' : 'right', 0);
+                    }
                 });
             },
 
             thumbListBox: function($elem) {
-                var thumbListWidth = $elem.parent().width() - $elem.siblings('a').outerWidth(true) * 2;
+                var $prevArrow = $elem.siblings('.prev'),
+                    $nextArrow = $elem.siblings('.next'),
+                    thumbWrapWidth = $elem.parent().width(),
+                    thumbListWidth = thumbWrapWidth -
+                    ($prevArrow.outerWidth(true) - parseInt($prevArrow.css('left'))) -
+                    ($nextArrow.outerWidth(true) - parseInt($nextArrow.css('right')));
+
+                thumbListWidth = Math.min(thumbListWidth, thumbWrapWidth);
 
                 $elem.wrap('<div/>').parent().css({
-                    float     : 'left',
+                    position  : 'absolute',
+                    left      : (thumbWrapWidth - thumbListWidth) / 2,
                     width     : thumbListWidth,
                     height    : $elem.height(),
                     overflow  : 'hidden',
@@ -213,11 +232,11 @@
                     $elem.css('bottom', T.height() / 25);
                 }
 
-                var w = $elem.children().width() < $elem.width() ?
-                $elem.children().width() : $elem.width();
-
-                if (w <= T.width()) {
-                    $elem.css('left', (1 - w / T.width()) / 2 * 100 + '%');
+                if ($elem.children().outerWidth() <= T.width()) {
+                    $elem.css({
+                        width: $elem.children().outerWidth(),
+                        left: (1 - $elem.children().outerWidth() / T.width()) / 2 * 100 + '%'
+                    });
                 } else {
                     $elem.width('100%');
                 }
@@ -786,9 +805,7 @@
                 $thumbItem.last().css('marginRight', 0);
 
                 // 自动化样式
-                $thumbImg.hide();
                 $this.automatic.thumbImgBox($thumbImg);
-                $thumbImg.show();
 
                 // 必须在获取到缩略图尺寸之后才能进行自动化处理和事件绑定
                 if ($thumbImg[0].complete) {
@@ -823,12 +840,9 @@
 
                         $thumbArrow = $('a', $thumbListWrap);
                         $thumbArrow.css({
-                            position: 'relative',
+                            position: 'absolute',
                             zIndex: 20
                         });
-
-                        $thumbArrow.filter('.prev').css('float', 'left');
-                        $thumbArrow.filter('.next').css('float', 'right');
 
                         $this.automatic.thumbArrowBg($thumbArrow);
                         $this.automatic.thumbArrowPos($thumbArrow);
@@ -927,12 +941,26 @@
 
             // 取消轮播自动播放的定时器
             function cancelPlayTimer() {
-                $this.hover(function() {
-                    $list.hovering = true;
-                    clearInterval($this.playTimer);
-                }, function() {
-                    $list.hovering = false;
-                    if (!$list.animating) { setPlayTimer(); }
+                // 判定鼠标是否悬浮在容器之外的缩略图上
+                var isMouseoverThumb = function(e) {
+                    if (e.pageY - $this.offset().top > $this.outerHeight()) {
+                        e.stopPropagation();
+                        return true;
+                    }
+                };
+
+                $this.hover(function(e) {
+                    if (!isMouseoverThumb(e)) {
+                        console.log('not on thumb');
+                        $list.hovering = true;
+                        clearInterval($this.playTimer);
+                    }
+                }, function(e) {
+                    if (!isMouseoverThumb(e)) {
+                        console.log('not on thumb');
+                        $list.hovering = false;
+                        if (!$list.animating) { setPlayTimer(); }
+                    }
                 });
             }
             
