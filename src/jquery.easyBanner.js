@@ -589,7 +589,7 @@
     
     $.fn.easyBanner = function(option) {
         var options = $.extend({
-            animation: 'slide',    // 动画模式: ['slide', 'fade']
+            animation: 'slide',    // 动画模式: ['slide', 'fade', 'none']
             trigger  : 'click',    // 触发动画的事件类型: ['click', 'hover']
             arrow    : true,       // 左右箭头按钮
             serial   : true,       // 序列按钮[true, false, 'equal', 'thumb']
@@ -925,6 +925,7 @@
                 $this.activeIndex = $this.currentIndex = currentIndex;
 
                 $this.animation[$this.options.animation]();
+                options.during.call($this, $this, $this.currentIndex);
 
                 // 防止当前上下文中的currentIndex溢出导致animation组件中的T.currentIndex溢出
                 if (currentIndex >= len || currentIndex <= 0) {
