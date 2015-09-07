@@ -2,7 +2,7 @@
 
 /* reset */
 body, h1, h2, h3, h4, h5, h6, hr, p, blockquote, ul, ol, li, dl, dd, input, button, textarea, fieldset, legend, figure, menu, th, td, pre{margin: 0;padding: 0;} body{font: 12px/1 Helvetica, Arial, sans-serif, "Microsoft YaHei";color: #666;} h1, h2, h3, h4, h5, h6{font-weight: normal;font-size: inherit;}
-body{padding-bottom: 100px;background: #f0f0f0;font: 14px/1 "Edelsans", "Microsoft YaHei";color: #333;}
+body{padding-bottom: 100px;background: #f0f0f0;font: 14px/1 "Lato", "Microsoft YaHei";color: #333;}
 a{color: #999;text-decoration: none;outline: none;}
 img{border: none;}
 ul, ol{list-style: none;}
@@ -16,12 +16,12 @@ table{border-collapse: collapse;}
 .container{width: 1000px;margin: 0 auto;}
 
 @font-face {
-    font-family: 'Edelsans';
-    src: url('https://happyfreelife.github.io/onlineFont/Edelsans/Edelsans.eot');
-    src: url('https://happyfreelife.github.io/onlineFont/Edelsans/Edelsans.eot?#iefix') format('embedded-opentype'),
-         url('https://happyfreelife.github.io/onlineFont/Edelsans/Edelsans.woff') format('woff'),
-         url('https://happyfreelife.github.io/onlineFont/Edelsans/Edelsans.ttf') format('truetype'),
-         url('https://happyfreelife.github.io/onlineFont/Edelsans/Edelsans.svg#Edelsans') format('svg');
+    font-family: 'Lato';
+    src: url('https://happyfreelife.github.io/onlineFont/Lato/Lato.eot');
+    src: url('https://happyfreelife.github.io/onlineFont/Lato/Lato.eot?#iefix') format('embedded-opentype'),
+         url('https://happyfreelife.github.io/onlineFont/Lato/Lato.woff') format('woff'),
+         url('https://happyfreelife.github.io/onlineFont/Lato/Lato.ttf') format('truetype'),
+         url('https://happyfreelife.github.io/onlineFont/Lato/Lato.svg#Lato') format('svg');
     font-weight: normal;
     font-style: normal;
 }
@@ -48,9 +48,9 @@ div[class^="banner-"] .eb-arrow a,
 .header h1{padding-top: 100px;font-size: 80px;color: #fff;}
 .header span{float: left;line-height: 50px;font-size: 26px;color: #fff;}
 .header a{display: inline-block;margin-left: 10px;color: #fff;}
-.header a.options{line-height: 20px;vertical-align: bottom;font-size: 16px;}
-.header a.options:hover{text-decoration: underline;}
-.header .btn{width: 120px;line-height: 40px;border: 1px solid #fff;border-radius: 5px;font-size: 18px;color: #fff;text-align: center;-webkit-box-sizing: border-box;box-sizing: border-box;}
+.header a.opt{line-height: 20px;vertical-align: bottom;font-size: 16px;}
+.header a.opt:hover{text-decoration: underline;}
+.header .btn{width: 120px;line-height: 40px;border: 1px solid #fff;border-radius: 3px;font-size: 18px;color: #fff;text-align: center;-webkit-box-sizing: border-box;box-sizing: border-box;}
 .header .btn:hover{background: #fff;border-color: #fff;color: #00b579;}
 
 /* page - index */

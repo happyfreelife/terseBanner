@@ -732,8 +732,8 @@
                     $item.first().clone(true).appendTo($list);
                 }
 
-                options.during.call($this, $this, $this.currentIndex);
-                options.after.call($this, $this, $this.currentIndex);
+                options.during.call($this[0], $this, $this.currentIndex);
+                options.after.call($this[0], $this, $this.currentIndex);
             }
 
             // 给轮播添加方向箭头
@@ -925,7 +925,7 @@
                 $this.activeIndex = $this.currentIndex = currentIndex;
 
                 $this.animation[$this.options.animation]();
-                options.during.call($this, $this, $this.currentIndex);
+                options.during.call($this[0], $this, $this.currentIndex);
 
                 // 防止当前上下文中的currentIndex溢出导致animation组件中的T.currentIndex溢出
                 if (currentIndex >= len || currentIndex <= 0) {
