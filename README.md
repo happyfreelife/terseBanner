@@ -8,7 +8,7 @@
 
 - easy to use, automatic adding style, automatic thumbnail
 
-- smooth, double jquqery animate and CSS transition animation program
+- smooth, double jquqery animate and css3 transition animation program
 
 
 ## How to use
@@ -47,14 +47,23 @@
 ## Options
 
 - *animation*: animation mode["slide", "fade", "none"] 
+
 - *trigger*  : through the sequence  elements to trigger the animation event type["click", "hover"]
+
 - *arrow*    : display the left and right arrows
+
 - *serial*   : sequence  elements[true, false, "equal", "thumb"]
+
 - *autoPlay* : open automatically round
+
 - *speed*    : by the speed of the animation
+
 - *interval* : interval of the auto play animation
+
 - *during*   : in the callback function to perform the animation
-- *after*    : the callback function is executed in the animation when finished.
+
+- *after*    : the callback function is executed in the animation when finished
+
 
 
 ## Compatibility
