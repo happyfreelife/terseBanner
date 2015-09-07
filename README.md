@@ -1,8 +1,6 @@
 # easyBanner
 
-
-[view the online demo][1]
-
+<a href="https://happyfreelife.github.io/easyBanner" target="_blank">view the online demo</a>
 
 ## Feature
 
@@ -61,5 +59,3 @@
 
 ## Compatibility
 supported by modern browsers and IE8+ browsers
-
-[1]: https://happyfreelife.github.io/easyBanner
