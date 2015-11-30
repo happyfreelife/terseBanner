@@ -1,6 +1,6 @@
 /**
  * jquery.easyBanner.js
- * version   1.4.1
+ * version   1.4.2
  * url       https://github.com/happyfreelife/easyBanner/
  */
 
@@ -46,13 +46,17 @@
 
             /********** 箭头 **********/
             arrowBg: function($elem) {
-                if (cssDetector($elem, 'background-image', 'none')) {
+                if (
+                    cssDetector($elem, 'background-color', ['rgba(0, 0, 0, 0)', 'transparent']) &&
+                    cssDetector($elem, 'background-image', 'none')
+                ) {
                     $elem.filter('.prev').html('&lt;');
                     $elem.filter('.next').html('&gt;');
 
                     $elem.css({
-                        lineHeight: $elem.height() + 'px',
-                        fontSize  : T.height() * 0.133,
+                        height: parseInt(T.height() * 0.13),
+                        lineHeight: parseInt(T.height() * 0.13) + 'px',
+                        fontSize  : parseInt(T.height() * 0.13),
                         fontFamily: isIE ? 'SimHei' : 'monospace',
                         userSelect: 'none',
                         cursor    : 'pointer',
@@ -71,12 +75,13 @@
                 if (cssDetector($elem, 'top', 'auto') && cssDetector($elem, 'bottom', 'auto')) {
                     $elem.css({
                         top: '50%',
-                        marginTop: -$elem.height() / 2
+                        marginTop: -$elem.height() / 2,
+                        height: 0
                     });
                 }
 
                 if (cssDetector($elem, 'left', 'auto') && cssDetector($elem, 'right', 'auto')) {
-                    $elem.css('marginLeft', (1 - $elem.width() / T.width()) / 2 * 100 + '%');
+                    $elem.css('marginLeft', parseInt((1 - $elem.width() / T.width()) / 2 * 100) + '%');
                 }
             },
 
@@ -742,22 +747,19 @@
                     '<div class="eb-arrow">' +
                        '<a class="prev" style="float: left;"></a>' +
                        '<a class="next" style="float: right;"></a>' +
+                       '<div style="clear: both;"></div>' +
                    '</div>'
                 );
 
                 var $arrowWrap = $('.eb-arrow', $this),
-                    $arrow = $arrowWrap.children();
+                    $arrow = $('a', $arrowWrap);
 
                 // 自动化样式
+                $this.automatic.arrowBg($arrow);
                 $this.automatic.arrowWrapBox($arrowWrap);
                 $this.automatic.arrowWrapPos($arrowWrap);
-                $this.automatic.arrowBg($arrow);
 
-                $arrowWrap.appendTo($this).css({
-                    position:'absolute',
-                    zIndex  : 20,
-                    height  : 0
-                });
+                $arrowWrap.appendTo($this).css('position', 'absolute');
                 
                 arrowBindEvent.call($arrow);
             }
@@ -773,15 +775,16 @@
                     $serialBtn = $serialBtnWrap.children();
                 
                 // 自动化样式
-                $serialBtn.css('float', 'left');
+                $serialBtn.css({
+                    float: 'left',
+                    cursor: 'pointer'
+                });
                 $this.automatic.serialBtnBox($serialBtn, options.serial);
                 embeddedStyle += $this.automatic.serialBtnBg($serialBtn);
                 $this.automatic.serialBtnWrapPos($serialBtnWrap);
 
-                $serialBtnWrap.appendTo($this).css({
-                    position:'absolute',
-                    zIndex  : 20
-                }).children(':first').addClass('active');
+                $serialBtnWrap.appendTo($this).css('position', 'absolute')
+                .children(':first').addClass('active');
 
                 serialBindEvent.call($serialBtn);
 
@@ -834,7 +837,6 @@
                     // 缩略图列表容器定位
                     $thumbListWrap.css({
                         position:'absolute',
-                        zIndex  : 20,
                         overflow: 'hidden',
                         height  : $thumbItem.outerHeight(true)
                     });
@@ -846,10 +848,7 @@
                         $thumbListWrap.append('<a class="next"/>');
 
                         $thumbArrow = $('a', $thumbListWrap);
-                        $thumbArrow.css({
-                            position: 'absolute',
-                            zIndex: 20
-                        });
+                        $thumbArrow.css('position', 'absolute');
 
                         $this.automatic.thumbArrowBg($thumbArrow);
                         $this.automatic.thumbArrowPos($thumbArrow);
