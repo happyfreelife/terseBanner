@@ -1,6 +1,6 @@
 /**
  * jquery.easyBanner.js
- * version   1.4.2
+ * version   1.4.3
  * url       https://github.com/happyfreelife/easyBanner/
  */
 
@@ -624,23 +624,28 @@
 
                 $list.hovering = false;
 
+                if (options.responsive) {
+                    if ($this.css('maxWidth') === 'none') {
+                        $this.css('maxWidth', $this.width());
+                    }
+
+                    $this.height('auto');
+                }
+
                 $list.wrap('<div class="eb-list"/>').parent().css({
                     position: 'relative',
-                    width   : '100%',
-                    height  : '100%',
                     overflow: 'hidden'
                 });
 
                 $list.css({
                     position: 'relative',
-                    display : 'block',
-                    height  : '100%'
+                    display : 'block'
                 });
 
                 $item.css({
                     display: 'block',
                     width  : $this.width(),
-                    height : $this.height(),
+                    height : (options.responsive ? 'auto' : $this.height()),
                     backgroundRepeat: 'no-repeat',
                     backgroundPosition: 'center top'
                 });
@@ -681,17 +686,22 @@
                             width: (len + 1) * 100 + '%'
                         });
 
-                        $item.css({
-                            float: 'left',
-                            width: $this.css('width')
-                        });
+                        $item.css('float', 'left');
+
                         $item.first().show().siblings().hide();
                         break;
                 }
 
+                /**
+                 * 在给$item设置样式之前和之后，视口的宽度可能不一致
+                 * 所以这里需要更新一下$item的宽度
+                 */
+                $item.css('width', $this.width());
+
                 // 改变浏览器视口大小时自动调整背景图片的位置
                 $(window).resize(function() {
                     $list.children().width($this.width());
+                    $list.height($list.children().height());
                 });
             }
 
@@ -725,12 +735,29 @@
                     $item.last().addClass('loading');
                     Lazyload($item, currentIndex, currentIndex);
                 } else {
-                    // 标准模式，将图片转为父级元素的背景图片后删除
-                    $itemImg.each(function() {
-                        var src = $(this).attr('src');
-                        $(this).parent().css('background-image', 'url(' + src + ')').data('thumb', src);
-                        $(this).remove();
-                    });
+                    // 若使用响应式图片，就不把图片转换为背景图片
+                    if (options.responsive) {
+                        $itemImg.css({
+                            display   : 'block',
+                            width     : '100%',
+                            maxWidth  : '100%',
+                            userSelect: 'none'
+                        });
+
+                        $itemImg.on('dragstart', function() {
+                            return false;
+                        });
+
+                        // 图片会自动调整宽度和高度，所以列表的高度也要更新
+                        $list.height($item.height());
+                    } else {
+                        // 标准模式，将图片转为父级元素的背景图片后删除
+                        $itemImg.each(function() {
+                            var src = $(this).attr('src');
+                            $(this).parent().css('background-image', 'url(' + src + ')').data('thumb', src);
+                            $(this).remove();
+                        });
+                    }
                 }
 
                 if (options.animation === 'slide') {
