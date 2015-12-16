@@ -1,6 +1,6 @@
 /**
  * jquery.easyBanner.js
- * version   1.4.3
+ * version   1.4.5
  * url       https://github.com/happyfreelife/easyBanner/
  */
 
@@ -258,7 +258,6 @@
             // 判定当前显示项的索引是否溢出
             determineIndex: function() {
                 T.activeIndex =
-                T.currentIndex =
                 T.currentIndex === T.len ? 0 : T.currentIndex === -1 ? T.len - 1 : T.currentIndex;
             },
 
@@ -321,11 +320,15 @@
             fade: function() {
                 this.determineIndex();
 
+                T.currentIndex = T.activeIndex;
+
                 T.$list.animating = true;
                 T.$item.removeClass('top-item').eq(T.currentIndex).addClass('top-item');
 
+                T.$list.css('left', -T.currentIndex * 100 + '%');
+
                 if (isSupportTransition) {
-                    T.$item.eq(T.currentIndex).addClass('transition-fade-' + T.options.speed).css('opacity', 1);
+                    T.$item.eq(T.currentIndex).css('opacity', 1);
 
                     setTimeout(T.animation.fadeComplete, T.options.speed);
                 } else {
@@ -346,55 +349,59 @@
             slide: function() {
                 T.$item = T.$list.children();
 
-                var lastIndex = T.$list.data('lastIndex'),
-                    slideDirection = 'left';
 
-                if (T.currentIndex === lastIndex) {
-                    return;
+                if (isSupportTransition) {
+                    var transitionProperty = T.$list.css('transitionProperty'),
+                        transitionDuration = T.$list.css('transitionDuration');
+
+                    // 当前显示最后一屏，点击了序列按钮来切换不连续的屏幕
+                    if (T.lastTimeIndex === T.len || T.currentIndex > T.len) {
+                        T.$list.css('transition','none');
+                        T.$list.css('transform', 'translate3d(0, 0, 0)');
+                    }
+
+                    // 第一屏 -> 最后一屏
+                    if (T.currentIndex < 0) {
+                        T.currentIndex = T.len - 1;
+                        T.$list.css('transition','none');
+                        T.$list.css('transform', 'translate3d(-' + T.$list.children().width() * T.len + 'px, 0, 0)');
+                    }
+
+                    // 最后一屏 -> 第一屏
+                    if (T.currentIndex > T.len) {
+                        T.currentIndex = 1;
+                    }
+
+                } else {
+                    // 第一屏 -> 最后一屏
+                    if (T.currentIndex < 0) {
+                        T.currentIndex = T.len - 1;
+                        T.$list.css('left', -T.$list.children().width() * T.len);
+                    }
+
+                    // 最后一屏 -> 第一屏
+                    if (T.currentIndex > T.len) {
+                        T.currentIndex = 1;
+                        T.$list.css('left', 0);
+                    }
                 }
 
-                /**
-                 * 滑动动画在执行之前需要将第1个item克隆一份
-                 * 还需要判定此次动画的方向，所以不能使用普通的索引判定方法
-                 */
-                if (T.currentIndex < lastIndex) {
-                    slideDirection = 'right';
-                }
+                T.lastTimeIndex = T.currentIndex;
 
-                // first item >> last item
-                if (T.currentIndex < 0) {
-                    T.currentIndex = T.len - 1;
-                    T.$item.eq(T.len).show().siblings().hide();
-                    slideDirection = 'right';
-                }
-
-                // first item >> last item
-                if (T.currentIndex > T.len) {
-                    T.currentIndex = 1;
-                    slideDirection = 'left';
-                }
-
-                if (slideDirection === 'right') {
-                    T.$list.css('left', '-100%');
-                }
-
-                T.$item.eq(T.currentIndex).show();
-
-                // CSS3 transition
                 if (isSupportTransition) {
                     setTimeout(function() {
+                        var translate3d = 'translate3d(-' + T.$list.children().width() * T.currentIndex + 'px, 0, 0)';
+
                         T.$list.animating = true;
-                        T.$list.css('left', slideDirection === 'left' ? '-100%' : 0)
-                        .addClass('transition-left-' + T.options.speed);
+                        T.$list.css('transition', transitionProperty + ' ' + transitionDuration);
+                        T.$list.css('transform', translate3d);
 
                         setTimeout(T.animation.slideComplete, T.options.speed - 20);
                     }, 20);
-                }
-                // jQuery animate
-                if (!isSupportTransition) {
+                } else {
                     T.$list.animating = true;
                     T.$list.animate({
-                        left: slideDirection === 'left' ? '-100%' : 0
+                        left: -T.currentIndex * 100 + '%'
                     }, {
                         duration: T.options.speed,
                         complete: T.animation.slideComplete
@@ -409,7 +416,10 @@
             // 单次fade动画执行完之后调用的函数
             fadeComplete: function() {
                 T.$list.animating = false;
+
+                T.$list.prev().css('left', -T.currentIndex * 100 + '%');
                 T.$item.eq(T.currentIndex).siblings().css('opacity', 0);
+
                 if (T.options.autoPlay && !T.$list.hovering) {
                     T.setPlayTimer();
                 }
@@ -417,16 +427,8 @@
 
             // 单次slide动画执行完之后调用的函数
             slideComplete: function() {
-                if (T.currentIndex === T.len) {
-                    T.$item.first().show().siblings().hide();
-                    T.currentIndex = 0;
-                }
-
                 T.$list.animating = false;
-                T.$list.css('left', 0).removeClass();
-                T.$list.data('lastIndex', T.currentIndex);
 
-                T.$item.eq(T.currentIndex).show().siblings().hide();
                 T.options.after.call(T, T, T.currentIndex);
 
                 if (T.options.autoPlay && !T.$list.hovering) {
@@ -620,13 +622,15 @@
                 $this.$item = $item;
                 $this.len = len;
                 $this.options = options;
-                $this.currentIndex = currentIndex;
+                $this.currentIndex = 0;
+                $this.activeIndex = 0;
+                $this.lastTimeIndex = 0;
 
                 $list.hovering = false;
 
                 if (options.responsive) {
                     if ($this.css('maxWidth') === 'none') {
-                        $this.css('maxWidth', $this.width());
+                        $this.css('maxWidth', '100%');
                     }
 
                     $this.height('auto');
@@ -639,69 +643,62 @@
 
                 $list.css({
                     position: 'relative',
-                    display : 'block'
+                    display : 'block',
+                    overflow: 'hidden',
+                    width: len * 2 * 100 + '%'
                 });
 
+
+                if ($item.css('float') === 'none') {
+                    $item.css('float', 'left');
+                }
                 $item.css({
                     display: 'block',
-                    width  : $this.width(),
-                    height : (options.responsive ? 'auto' : $this.height()),
-                    backgroundRepeat: 'no-repeat',
-                    backgroundPosition: 'center top'
+                    width  : $this.width()
                 });
-                
-                $this.automatic.containerPos();
 
+                if (!options.responsive) {
+                    $item.css({
+                        height : $this.height(),
+                        backgroundRepeat: 'no-repeat',
+                        backgroundPosition: 'center top'
+                    });
+                }
+
+                $this.automatic.containerPos();
                 switch(options.animation) {
                     case 'fade':
                         if (isSupportTransition) {
-                            embeddedStyle +=
-                            '.transition-fade-' + options.speed + '{' +
-                                'transition: opacity ' + options.speed + 'ms ease;' +
-                                '-webkit-transition: opacity ' + options.speed + 'ms ease;' +
-                            '}\n';
+                            $item.css('transition', 'opacity ' + options.speed + 'ms');
                         }
-                        embeddedStyle += '.top-item{z-index: 0 !important;}\n';
 
-                        $item.css({
-                            position: 'absolute',
-                            left  : 0,
-                            top   : 0,
-                            zIndex: -10
-                        });
-                        $item.first().addClass('top-item').siblings().css('opacity', 0);
+                        embeddedStyle += '.top-item{z-index: 0 !important;}\n';
                         break;
 
                     case 'slide':
                         if (isSupportTransition) {
-                            embeddedStyle +=
-                            '.transition-left-' + options.speed + '{' +
-                                'transition: left ' + options.speed + 'ms ease;' +
-                                '-webkit-transition: left ' + options.speed + 'ms ease;' +
-                            '}\n';
+                            $list.css({
+                                transition: 'transform ' + options.speed + 'ms',
+                                transform: 'translate3d(0, 0, 0)'
+                            });
+                        } else {
+                            $list.css('left', 0);
                         }
-
-                        $list.css({
-                            left : 0,
-                            width: (len + 1) * 100 + '%'
-                        });
-
-                        $item.css('float', 'left');
-
-                        $item.first().show().siblings().hide();
                         break;
                 }
 
-                /**
-                 * 在给$item设置样式之前和之后，视口的宽度可能不一致
-                 * 所以这里需要更新一下$item的宽度
-                 */
-                $item.css('width', $this.width());
 
                 // 改变浏览器视口大小时自动调整背景图片的位置
                 $(window).resize(function() {
                     $list.children().width($this.width());
-                    $list.height($list.children().height());
+
+                    // fade
+                    $list.prev().children().width($this.width());
+
+                    // slide
+                    if (isSupportTransition) {
+                        $list.css('transform', 'translate3d(-' + $list.children().width() * $this.currentIndex + 'px, 0, 0)');
+                    }
                 });
             }
 
@@ -739,7 +736,6 @@
                     if (options.responsive) {
                         $itemImg.css({
                             display   : 'block',
-                            width     : '100%',
                             maxWidth  : '100%',
                             userSelect: 'none'
                         });
@@ -748,8 +744,15 @@
                             return false;
                         });
 
-                        // 图片会自动调整宽度和高度，所以列表的高度也要更新
-                        $list.height($item.height());
+                        if (options.animation === 'fade') {
+                            $item.width($this.width());
+
+                            $list.before($list.clone(true).css({
+                                position: 'absolute',
+                                top: 0,
+                                left: 0
+                            }));
+                        }
                     } else {
                         // 标准模式，将图片转为父级元素的背景图片后删除
                         $itemImg.each(function() {
@@ -760,8 +763,14 @@
                     }
                 }
 
+
+                $item.width($this.width());
                 if (options.animation === 'slide') {
                     $item.first().clone(true).appendTo($list);
+                }
+
+                if (options.animation === 'fade') {
+                    $item.first().addClass('top-item').siblings().css('opacity', 0);
                 }
 
                 options.during.call($this[0], $this, $this.currentIndex);
@@ -896,7 +905,7 @@
                 $(this).on({
                     click: function() {
                         if ($list.animating) { return; }
-                        $(this).hasClass('prev') ? currentIndex-- : currentIndex++;
+                        $(this).hasClass('prev') ? $this.currentIndex-- : $this.currentIndex++;
                         play();
                     },
 
@@ -910,8 +919,8 @@
                 $(this).on(
                     options.trigger === 'click' ? 'click' : 'mouseenter',
                     function() {
-                        if ($list.animating) { return; }
-                        currentIndex = $(this).index();
+                        if ($list.animating || $this.activeIndex === $(this).index()) return;
+                        $this.currentIndex = $(this).index();
                         play();
                     }
                 );
@@ -948,15 +957,10 @@
 
             // 播放轮播动画
             function play() {
-                $this.activeIndex = $this.currentIndex = currentIndex;
+                $this.activeIndex = $this.currentIndex/* = currentIndex*/;
 
                 $this.animation[$this.options.animation]();
                 options.during.call($this[0], $this, $this.currentIndex);
-
-                // 防止当前上下文中的currentIndex溢出导致animation组件中的T.currentIndex溢出
-                if (currentIndex >= len || currentIndex <= 0) {
-                    currentIndex = $this.activeIndex;
-                }
             }
 
             // 设置轮播自动播放的定时器
@@ -968,7 +972,7 @@
                 clearInterval($this.playTimer);
 
                 $this.playTimer = setInterval(function() {
-                    currentIndex++;
+                    $this.currentIndex++;
                     play();
                 }, options.interval);
             }
