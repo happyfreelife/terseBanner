@@ -355,7 +355,7 @@
                         transitionDuration = T.$list.css('transitionDuration');
 
                     // 当前显示最后一屏，点击了序列按钮来切换不连续的屏幕
-                    if (T.lastTimeIndex === T.len || T.currentIndex > T.len) {
+                    if (T.lastTimeIndex === T.len && !T.$list.data('switch-prev')) {
                         T.$list.css('transition','none');
                         T.$list.css('transform', 'translate3d(0, 0, 0)');
                     }
@@ -370,6 +370,8 @@
                     // 最后一屏 -> 第一屏
                     if (T.currentIndex > T.len) {
                         T.currentIndex = 1;
+                        T.$list.css('transition','none');
+                        T.$list.css('transform', 'translate3d(0, 0, 0)');
                     }
 
                 } else {
@@ -428,6 +430,7 @@
             // 单次slide动画执行完之后调用的函数
             slideComplete: function() {
                 T.$list.animating = false;
+                T.$list.data('switch-prev', false);
 
                 T.options.after.call(T, T, T.currentIndex);
 
@@ -905,7 +908,12 @@
                 $(this).on({
                     click: function() {
                         if ($list.animating) { return; }
-                        $(this).hasClass('prev') ? $this.currentIndex-- : $this.currentIndex++;
+                        if ($(this).hasClass('prev')) {
+                            $list.data('switch-prev', true);
+                            $this.currentIndex--; 
+                        } else {
+                            $this.currentIndex++;
+                        }
                         play();
                     },
 
