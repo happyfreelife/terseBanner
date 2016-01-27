@@ -7,7 +7,7 @@ module.exports = function(grunt) {
 				banner: '/* jquery.<%= pkg.name %>.min.js    @version: <%= pkg.version %> */\n'
 			},
 
-			'dist/jquery.<%= pkg.name %>.min.js': 'src/*.js'
+			'dist/jquery.<%= pkg.name %>.min.js': 'src/jquery.<%= pkg.name %>.js'
 		}
 	});
 

@@ -1,6 +1,6 @@
 {
 	"name": "easyBanner",
-	"version": "1.4.5",
+	"version": "1.4.6",
 
 	"devDependencies": {
 		"grunt": "~0.4.5",
