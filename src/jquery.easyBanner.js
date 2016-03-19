@@ -748,7 +748,7 @@
 
 			// 提取图片: 将图片转为背景图片;获取手动设置的缩略图地址
 			function convertImage() {
-				var $itemImg = $item.find('img'),
+				var $itemImg = $item.children('img'),
 					thumbSrcArr = [],
 					thumbSrcRegExp = new RegExp('\\?thumb=(.*\\.(jpg|jpeg|gif|png))$');
 
@@ -790,14 +790,7 @@
 
 						if (options.animation === 'fade') {
 							$item.width($this.width());
-
-							if (len > 1) {
-								$list.before($list.clone(true).css({
-									position: 'absolute',
-									top: 0,
-									left: 0
-								}));
-							}
+							
 						}
 					} else {
 						// 标准模式，将图片转为父级元素的背景图片后删除
@@ -816,6 +809,13 @@
 				}
 
 				if (options.animation === 'fade') {
+					if (len > 1) {
+						$list.before($list.clone(true).css({
+							position: 'absolute',
+							top: 0,
+							left: 0
+						}));
+					}
 					$item.first().siblings().css('opacity', 0);
 				}
 
