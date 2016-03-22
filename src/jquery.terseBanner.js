@@ -2,7 +2,7 @@
  * jquery.terseBanner.js
  * Version: 2.0.0
  * URI: https://github.com/happyfreelife/easyBanner/
- * Date:2016/3/18 12:21:59
+ * Date: 2016/3/22 16:33:26
  */
 
 ;(function (root, factory) {
@@ -15,6 +15,29 @@
 	}
 }(this, function ($, window, document) {
 	/**
+	 * Utility property and method
+	 */
+	var Util = {
+		isIE: /msie|trident/i.test(navigator.userAgent),
+
+		isLTIE8: /msie (6.0|7.0)/i.test(navigator.userAgent),
+
+		isSupportTransition: (function () {
+			var style = document.body.style || document.documentElement.style;
+			return style.transition !== undefined || style.WebkitTransition !== undefined;
+		}()),
+
+		isSupportTouch: 'ontouchstart' in window,
+
+ 		// isSupportTransition: false,
+
+		prevArrowImageData: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADcAAABuCAMAAAC0hHtLAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyJpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMy1jMDExIDY2LjE0NTY2MSwgMjAxMi8wMi8wNi0xNDo1NjoyNyAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNiAoV2luZG93cykiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6QjdGOUJEQTlBRjU5MTFFNUFFQjJBQzRBNEM1MkYzMzEiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6QjdGOUJEQUFBRjU5MTFFNUFFQjJBQzRBNEM1MkYzMzEiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDpCN0Y5QkRBN0FGNTkxMUU1QUVCMkFDNEE0QzUyRjMzMSIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDpCN0Y5QkRBOEFGNTkxMUU1QUVCMkFDNEE0QzUyRjMzMSIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PhEdN5oAAAAGUExURf///////1V89WwAAAACdFJOU/8A5bcwSgAAARBJREFUeNq82EEOwDAIA8Hl/58OH4gizSG9R20D2Isbe7JThcfCt4UfGf5beCXhTYYFCOsWljvskrC5wp4MWzmcgHBwwnkLxzSc7lAUQi0JJSg79jp3Fa5QJ0N5DVU5FPPQA0LrCB0nNKrQ30JbDN00NOHQu0PLD0khBIyQS0KcCSkohKeQuUJUCwkvBMOQJ0MMDek1hN6GmfcnYvt38r1wHbju3Gfc1zxHPLesE6xLrIOsu6zz7CvsY+yb7NPMBcwhzD3MWcx1zJHMrczJzOW8B/DewXsO71W8x/HeyHsq78W8h/PezzkD5xqco3BuwzkR51Kcg3Huxjkf54qcY3Juyjkt58KcQzuUa86+zxFgAFs9FmHsomPPAAAAAElFTkSuQmCC',
+
+		nextArrowImageData: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADcAAABuCAMAAAC0hHtLAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyJpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMy1jMDExIDY2LjE0NTY2MSwgMjAxMi8wMi8wNi0xNDo1NjoyNyAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNiAoV2luZG93cykiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6QURDRjhFMjJBRjU4MTFFNUIzMzhBRTk0RUZERDg4OUEiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6QURDRjhFMjNBRjU4MTFFNUIzMzhBRTk0RUZERDg4OUEiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDpBRENGOEUyMEFGNTgxMUU1QjMzOEFFOTRFRkREODg5QSIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDpBRENGOEUyMUFGNTgxMUU1QjMzOEFFOTRFRkREODg5QSIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PqC2oS0AAAAGUExURf///////1V89WwAAAACdFJOU/8A5bcwSgAAARxJREFUeNq82MtuwlAQRMHT///TKEJRILzsWuAtKgmwPbenm12VuRlsBpvBZrAZbAabwWawGWwGm8FmsBlsBpvBZrAZbAabwWawGWwGm8FmsBlsBt9+lrl38MOvz9xr+PH+Zu4VPPAEZ+45PPSOZu4ZPDiFMvcID8/ZzP2HJ06SzN3DU2dl5m7hyTSQuT94Ou9k7hdCosvcFVJmzdwPxFTeVx1+T/xf8D7gfcfnDJ9rfI/wvcU5gXMJ5yDOXZzzeK7gOYbnJp7TmAswh2DuwZyFuQ5zJOZWzMmYy3EPwL0D9xzcq3CPw70R91Tci3EPx70fewbsNbBHwd4GeyLspbAHw94Nez7sFbHHxN4Ue1rshbGH1qisPbtdFwEGAFZuFsthqI7FAAAAAElFTkSuQmCC'
+	};
+
+
+	/**
 	 * Plugin construct function
 	 */
 	function TerseBanner(elem, options) {
@@ -25,6 +48,10 @@
 	// shortcut variable
 	var TB = TerseBanner;
 
+
+	/**
+	 * Private method
+	 */
 	TB.prototype.init = function() {
 		this.$list = this.$elem.children().first().addClass('tb-list');
 		this.$item = this.$list.children();
@@ -35,14 +62,18 @@
 		this.isHovered     = false;
 		this.isAnimated    = false;
 
-		if (typeof this.options.autoPlay === 'number' && this.options.autoPlay > 0) {
-			this.useAutoPlay = true;
-			this.setPlayTimer();
+		if (this.len <= 1) {
+			return;
 		}
 
-		// 检测是否启用自适应功能
-		if (this.$elem.hasClass('responsive')) {
-			this.options.responsive = true;
+		if (Util.isSupportTouch) {
+			this.options.animation = 'slide';
+			bindTouchEvent();
+		}
+
+		if (typeof this.options.auto === 'number' && this.options.auto > 0) {
+			this.useAuto = true;
+			this.setPlayTimer();
 		}
 
 		this.addDefaultStyle();
@@ -52,8 +83,7 @@
 	TB.prototype.addDefaultStyle = function() {
 		$('head').append(
 			'<style>\n' +
-				'.terse-banner, ' +
-				'.tb-list-box, ' +
+				'.relative, ' +
 				'.tb-list{' +
 					'position: relative;' +
 					'overflow: hidden;' +
@@ -63,23 +93,23 @@
 					'background-repeat: no-repeat;' +
 					'background-position: center top;' +
 				'}\n' +
-				'.tb-nav-arrow a{' +
+				'.tb-arrow a{' +
 					'position: absolute;' +
 					'cursor: pointer;' +
 					'top: 0;' +
 				'}\n' +
-				'.tb-nav-arrow .prev{' +
+				'.tb-arrow .prev{' +
 					'left: 0;' +
 				'}\n' +
-				'.tb-nav-arrow .next{' +
+				'.tb-arrow .next{' +
 					'right: 0;' +
 				'}\n' +
-				'.tb-nav-arrow a img{' +
+				'.tb-arrow a img{' +
 					'display: block;' +
 					'max-height: 100%;' +
 				'}\n' +
 
-				'.tb-nav-btn a{' +
+				'.tb-button a{' +
 					'display: inline-block;' +
 					'width: 10px;' +
 					'height: 10px;' +
@@ -88,7 +118,7 @@
 					'border-radius: 50%;' +
 					'cursor: pointer;' +
 				'}\n' +
-				'.tb-nav-btn a.active{' +
+				'.tb-button a.active{' +
 					'background: #09c;' +
 				'}\n' +
 			'</style>'
@@ -104,13 +134,15 @@
 			$item = this.$item,
 			options = this.options;
 
-		$banner.addClass('terse-banner');
+		if ($banner.css('position') === 'static') {
+			$banner.addClass('relative');	
+		}
 
-		$list.wrap('<div class="tb-list-box"/>').width(this.len * 2 * 100 + '%');
+		$list.wrap('<div class="relative"/>').width(this.len * 2 * 100 + '%');
 
 		$item.width($banner.width());
 
-		if (options.responsive) {
+		if (options.adaptive) {
 			if ($banner.css('maxWidth') === 'none') {
 				$banner.css('maxWidth', '100%');
 			}
@@ -120,7 +152,7 @@
 
 		switch (options.animation) {
 			case 'slide':
-				if (util.isSupportTransition) {
+				if (Util.isSupportTransition) {
 					$list.css({
 						transform: 'translate3d(0, 0, 0)',
 						'-webkit-transform': 'translate3d(0, 0, 0)',
@@ -134,7 +166,7 @@
 
 			case 'fade':
 			case 'flashFade':
-				if (util.isSupportTransition) {
+				if (Util.isSupportTransition) {
 					$item.css('transition', 'opacity ' + options.speed + 'ms');
 				}
 				break;
@@ -144,9 +176,86 @@
 		this.handleBannerImage();
 	};
 
+	// 轮播元素自动设置样式
+	TB.prototype.autoSetStyle = function(elem) {
+		var $banner = this.$elem,
+			$arrow = this.$arrow,
+			$arrowBox = this.$arrowBox,
+			$button = this.$button,
+			$buttonBox = this.$buttonBox;
+
+		switch (elem) {
+			case 'arrow' :
+				if (
+					($arrow.css('backgroundColor') === 'rgba(0, 0, 0, 0)' ||
+					$arrow.css('backgroundColor') === 'transparent') &&
+					$arrow.css('backgroundImage') === 'none'
+				) {
+					$arrow.filter('.prev').html('<img src="' + Util.prevArrowImageData + '">');
+					$arrow.filter('.next').html('<img src="' + Util.nextArrowImageData + '">');
+
+					$arrow.height(parseInt($banner.height() * 0.13));
+
+					$arrow.find('img').css({
+						userSelect: 'none',
+						marginTop: function() {
+							return ($arrow.height() - $(this).height()) / 2;
+						}
+					}).on('dragstart', function() {
+						return false;
+					});
+				}
+				break;
+
+			case 'arrowBoxSize' :
+                var bannerWidth;
+            
+                // 缩放网页会导致返回的轮播容器的宽度不精确(产生小数)
+				if ($banner.width().toString().indexOf('.') > -1) {
+					bannerWidth = parseInt($banner.width().toFixed(0));
+				} else {
+					bannerWidth = $banner.width();
+				}
+
+				if ($arrowBox.width() === bannerWidth) {
+					$arrowBox.width('100%');
+				}
+				break;
+
+			case 'arrowBoxPos' :
+				if ($arrowBox.css('top') === 'auto' && $arrowBox.css('bottom') === 'auto') {
+					$arrowBox.css({
+						top: '50%',
+						height: 0,
+						marginTop: -$arrowBox.height() / 2
+					});
+				}
+				if ($arrowBox.css('left') === 'auto' && $arrowBox.css('right') === 'auto') {
+					$arrowBox.css('marginLeft', ($banner.width() - $arrowBox.width()) / 2 + 'px');
+				}
+
+                $banner.append($arrowBox.css('position', 'absolute'));
+				break;
+
+			case 'buttonBoxPos' :
+				if ($buttonBox.css('top') === 'auto' && $buttonBox.css('bottom') === 'auto') {
+					$buttonBox.css('bottom', $banner.height() * 0.04);
+				}
+				if ($buttonBox.css('left') === 'auto' && $buttonBox.css('right') === 'auto') {
+					$buttonBox.css({
+						left: '50%',
+						marginLeft: -$button.outerWidth(true) * $button.length / 2
+					});
+				}
+				$banner.append($buttonBox.css('position', 'absolute'));
+				break;
+		}
+	};
+
 	// 视口大小发生变化时，轮播图片的尺寸自动调整
 	TB.prototype.bindWindowResize = function() {
-		var $banner = this.$elem,
+		var self = this,
+			$banner = this.$elem,
 			$list = this.$list;
 
 		$(window).resize(function() {
@@ -156,9 +265,9 @@
 			$list.prev().children().width($banner.width());
 
 			// slide
-			if (util.isSupportTransition) {
+			if (Util.isSupportTransition) {
 				var translate = 'translate3d(-' + $list.children().width() *
-					this.currentIndex + 'px, 0, 0)';
+					self.currentIndex + 'px, 0, 0)';
 
 				$list.css({
 					'transform': translate,
@@ -168,6 +277,7 @@
 		});
 	};
 
+	// 轮播图片处理
 	TB.prototype.handleBannerImage = function() {
 		var $list = this.$list,
 			$item = this.$item,
@@ -200,7 +310,7 @@
 		}
 
 		// 自适应模式
-		if (options.responsive) {
+		if (options.adaptive) {
 			$img.css({
 				display: 'block',
 				maxWidth: '100%',
@@ -213,7 +323,7 @@
 		}
 
 		// 标准模式
-		if (!options.responsive) {
+		if (!options.adaptive) {
 			$img.each(function() {
 				var src = $(this).attr('src');
 
@@ -234,7 +344,7 @@
 				break;
 
 			case 'fade':
-				if (options.responsive) {
+				if (options.adaptive) {
 					$list.before($list.clone(true).css({
 						position: 'absolute',
 						top: 0,
@@ -249,13 +359,13 @@
 				break;
 		}
 
-		this.addNavArrow();
+		this.addArrow();
 	};
 
 	// 添加导航箭头
-	TB.prototype.addNavArrow = function() {
-		if (!this.options.navArrow) {
-			this.addNavBtn();
+	TB.prototype.addArrow = function() {
+		if (!this.options.arrow) {
+			this.addButton();
 			return;
 		}
 
@@ -263,25 +373,27 @@
 			self = this;
 
 		$banner.append(
-			'<div class="tb-nav-arrow">' +
+			'<div class="tb-arrow">' +
 				'<a class="prev"></a>' +
 				'<a class="next"></a>' +
 			'</div>'
 		);
 
-		this.$navArrowBox = $('.tb-nav-arrow', $banner);
-		this.$navArrow = $('.tb-nav-arrow a', $banner);
+		this.$arrowBox = $('.tb-arrow', $banner);
+		this.$arrow = $('.tb-arrow a', $banner);
 
-		this.autoSetStyle('navArrow');
-		this.autoSetStyle('navArrowBoxSize');
-		this.autoSetStyle('navArrowBoxPos');
+		this.autoSetStyle('arrow');
+		this.autoSetStyle('arrowBoxSize');
+		this.autoSetStyle('arrowBoxPos');
 
-		this.$navArrow.on({
+		this.$arrow.on({
 			click: function() {
-				if (self.isAnimated) { return; }
+				if (self.isAnimated) {
+					return;
+				}
 
 				if ($(this).hasClass('prev')) {
-					$banner.data('switchPrev', true);
+					self.switchPrevItem = true;
 					self.currentIndex--;
 				} else {
 					self.currentIndex++;
@@ -295,12 +407,12 @@
 			}
 		});
 
-		this.addNavBtn();
+		this.addButton();
 	};
 
 	// 添加导航按钮
-	TB.prototype.addNavBtn = function() {
-		if (!this.options.navBtn) {
+	TB.prototype.addButton = function() {
+		if (!this.options.button) {
 			this.lazyLoad();
 			return;
 		}
@@ -311,29 +423,36 @@
 		for (var i = 0, item = ''; i < this.len; i++) {
 			item += '<a><i></i></a>';
 		}
-		$banner.append($('<div class="tb-nav-btn"/>').append(item));
+		$banner.append($('<div class="tb-button"/>').append(item));
 
-		this.$navBtnBox = $('.tb-nav-btn', $banner);
-		this.$navBtn = $('.tb-nav-btn a', $banner);
+		this.$buttonBox = $('.tb-button', $banner);
+		this.$button = $('.tb-button a', $banner);
 
-		this.$navBtn.first().addClass('active');
-		this.autoSetStyle('navBtnBoxPos');
+		this.$button.first().addClass('active');
+		this.autoSetStyle('buttonBoxPos');
 
 		// 导航按键中添加数字
-		if (this.options.navBtn === 'ol') {
-			this.$navBtn.find('i').each(function(index) {
+		if (this.options.button === 'ol') {
+			this.$button.find('i').each(function(index) {
 				$(this).text(index + 1);
 			});
 		}
 
-		this.$navBtn.on(self.options.useHover ? 'mouseenter' : 'click', function() {
-			if (self.isAnimated) { return; }
+		this.$button.on(self.options.useHover ? 'mouseenter' : 'click', function() {
+			if (self.isAnimated) {
+				return;
+			}
 
 			self.currentIndex = $(this).index();
-			// self.play();
+			self.play();
 		});
 
 		this.lazyLoad();
+	};
+
+	// 添加缩略图
+	TB.prototype.addThumb = function() {
+
 	};
 
 	// 图片延迟加载
@@ -346,131 +465,30 @@
 		this.bindAnimation();
 	};
 
-	// 给轮播的元素自动设置样式
-	TB.prototype.autoSetStyle = function(elem) {
-		var $banner = this.$elem,
-			$navArrow = this.$navArrow,
-			$navArrowBox = this.$navArrowBox,
-			$navBtn = this.$navBtn,
-			$navBtnBox = this.$navBtnBox;
-
-		switch (elem) {
-			case 'navArrow' :
-				if (
-					($navArrow.css('backgroundColor') === 'rgba(0, 0, 0, 0)' ||
-					$navArrow.css('backgroundColor') === 'transparent') &&
-					$navArrow.css('backgroundImage') === 'none'
-				) {
-					$navArrow.filter('.prev').html('<img src="' + util.prevArrowImageData + '">');
-					$navArrow.filter('.next').html('<img src="' + util.nextArrowImageData + '">');
-
-					$navArrow.height(parseInt($banner.height() * 0.13));
-
-					$navArrow.find('img').css({
-						userSelect: 'none',
-						marginTop: function() {
-							return ($navArrow.height() - $(this).height()) / 2;
-						}
-					}).on('dragstart', function() {
-						return false;
-					});
-				}
-				break;
-
-			case 'navArrowBoxSize' :
-                var bannerWidth;
-            
-                // 缩放网页会导致返回的轮播容器的宽度不精确(产生小数)
-				if ($banner.width().toString().indexOf('.') > -1) {
-					bannerWidth = parseInt($banner.width().toFixed(0));
-				} else {
-					bannerWidth = $banner.width();
-				}
-
-				if ($navArrowBox.width() === bannerWidth) {
-					$navArrowBox.width('100%');
-				}
-				break;
-
-			case 'navArrowBoxPos' :
-				if ($navArrowBox.css('top') === 'auto' && $navArrowBox.css('bottom') === 'auto') {
-					$navArrowBox.css({
-						top: '50%',
-						height: 0,
-						marginTop: -$navArrowBox.height() / 2
-					});
-				}
-				if ($navArrowBox.css('left') === 'auto' && $navArrowBox.css('right') === 'auto') {
-					$navArrowBox.css('marginLeft', ($banner.width() - $navArrowBox.width()) / 2 + 'px');
-				}
-
-                $banner.append($navArrowBox.css('position', 'absolute'));
-				break;
-
-			case 'navBtnBoxPos' :
-				if ($navBtnBox.css('top') === 'auto' && $navBtnBox.css('bottom') === 'auto') {
-					$navBtnBox.css('bottom', $banner.height() * 0.04);
-				}
-				if ($navBtnBox.css('left') === 'auto' && $navBtnBox.css('right') === 'auto') {
-					$navBtnBox.css({
-						left: '50%',
-						marginLeft: -$navBtn.outerWidth(true) * $navBtn.length / 2
-					});
-				}
-				$banner.append($navBtnBox.css('position', 'absolute'));
-				break;
-		}
-	};
-
-	// 设置自动轮播定时器
-	TB.prototype.setPlayTimer = function() {
-		var self = this,
-			clear = function() {
-				self.isHovered = true;
-				clearInterval(self.playTimer);
-			},
-			reset = function() {
-				self.isHovered = false;
-				if (!self.isAnimated) { self.setPlayTimer(); }
-			};
-
-		clearInterval(this.playTimer);
-
-		this.playTimer = setInterval(function() {
-			self.currentIndex++;
-			self.play();
-		}, self.options.autoPlay);
-
-		this.$elem.off('mouseenter');
-		this.$elem.off('mouseleave');
-		this.$elem.on({
-			mouseenter : clear,
-			mouseleave: reset
-		});
-	};
-
-	// 动画
+	// 绑定动画
 	TB.prototype.bindAnimation = function() {
-
 		var self = this,
 			options = this.options,
 			$banner = this.$elem,
 			$list = this.$list,
 			$item = this.$item,
-			$navBtn = this.$navBtn,
-			$navBtnBox = this.$navBtnBox,
+			$button = this.$button,
+			$buttonBox = this.$buttonBox,
 			A = this.animation = {};
 
 		function determineIndex() {
-			self.activeIndex =
 			self.currentIndex =
 				self.currentIndex === self.len ? 0 :
 				self.currentIndex === -1 ? self.len - 1 : self.currentIndex;
 		}
 
 		function activeElement() {
-			if (options.navBtn) {
-				$navBtn.eq(self.activeIndex).addClass('active').siblings().removeClass('active');
+			self.activeIndex =
+				self.currentIndex === self.len ? 0 :
+				self.currentIndex === -1 ? self.len - 1 : self.currentIndex;
+
+			if (options.button) {
+				$button.eq(self.activeIndex).addClass('active').siblings().removeClass('active');
 			}
 
 			if  (typeof options.thumbnail === 'object' && options.thumbnail !== {}) {
@@ -491,7 +509,7 @@
 
 			$list.css('left', -self.currentIndex * 100 + '%');
 
-			if (util.isSupportTransition) {
+			if (Util.isSupportTransition) {
 				$item.eq(self.currentIndex).css('opacity', 1);
 
 				setTimeout(self.animation.fadeCallback, self.options.speed);
@@ -514,22 +532,18 @@
 		A.flashFade = A.fade;
 
 		A.slide = function() {
-			determineIndex();
-
 			self.isAnimated = true;
-
-			// this.data('switchPrev', false);
 
 			options.begin.call(this, $banner, this.currentIndex);
 
-			if (util.isSupportTransition) {
+			if (Util.isSupportTransition) {
 				var transitionDuration = $list.css('transition-duration');
 
 				// 当前显示最后一屏，点击了序列按钮来切换不连续的屏幕
-				if (self.lastTimeIndex === self.len && !$list.data('switch-prev')) {
+				if (self.lastTimeIndex === self.len && !self.switchPrevItem) {
 					$list.css({
 						transition: 'none',
-						'-webkit-transtion': 'none',
+						// '-webkit-transtion': 'none',
 						transform: 'translate3d(0, 0, 0)',
 						'-webkit-transform': 'translate3d(0, 0, 0)'
 					});
@@ -540,11 +554,11 @@
 					self.currentIndex = self.len - 1;
 					$list.css({
 						transition: 'none',
-						'-webkit-transtion': 'none'
+						// '-webkit-transtion': 'none'
 					});
 					$list.css({
-						transform: 'translate3d(-' + $list.children().width() * self.len + 'px, 0, 0)',
-						'-webkit-transform': 'translate3d(-' + $list.children().width() * self.len + 'px, 0, 0)'
+						transform: 'translate3d(-' + $item.width() * self.len + 'px, 0, 0)',
+						'-webkit-transform': 'translate3d(-' + $item.width() * self.len + 'px, 0, 0)'
 					});
 				}
 
@@ -553,15 +567,16 @@
 					self.currentIndex = 1;
 					$list.css({
 						transition: 'none',
-						'-webkit-transtion': 'none',
+						// '-webkit-transtion': 'none',
 						transform: 'translate3d(0, 0, 0)',
 						'-webkit-transform': 'translate3d(0, 0, 0)'
 					});
 				}
 				
+				self.lastTimeIndex = self.currentIndex;
 
 				setTimeout(function() {
-					var translate3d = 'translate3d(-' + $list.children().width() * self.currentIndex + 'px, 0, 0)';
+					var translate3d = 'translate3d(-' + $item.width() * self.currentIndex + 'px, 0, 0)';
 
 					$list.animating = true;
 
@@ -571,13 +586,15 @@
 						'-webkit-transform': translate3d,
 					});
 
-					setTimeout(self.animation.slideComplete, self.options.speed - 20);
+					setTimeout(self.animation.slideCallback, self.options.speed - 20);
 				}, 20);
 			}
 
-			if (!util.isSupportTransition) {
+			if (!Util.isSupportTransition) {
 
 			}
+
+			activeElement();
 		};
 
 		A.fadeCallback = function() {
@@ -589,20 +606,56 @@
 
 			options.end.call(self, self.$elem, self.activeIndex);
 
-			if (options.useAutoPlay && !self.isHovered) {
+			if (options.useAuto && !self.isHovered) {
 				self.setPlayTimer();
 			}
 		};
 
 		A.slideCallback = function() {
+			self.isAnimated = false;
+
+			self.switchPrevItem = false;
+
 			options.end.call(self, self.$elem, self.activeIndex);
 
-			if (options.useAutoPlay && !self.isHovered) {
+			if (options.useAuto && !self.isHovered) {
 				self.setPlayTimer();
 			}
 		};
 
 		options.init.call(this, $banner);
+	};
+
+	// 触屏事件
+	TB.prototype.bindTouchEvent = function() {
+		
+	};
+
+	// 设置自动轮播定时器
+	TB.prototype.setPlayTimer = function() {
+		var self = this,
+			clear = function() {
+				self.isHovered = true;
+				clearInterval(self.playTimer);
+			},
+			reset = function() {
+				self.isHovered = false;
+				if (!self.isAnimated) { self.setPlayTimer(); }
+			};
+
+		clearInterval(this.playTimer);
+
+		this.playTimer = setInterval(function() {
+			self.currentIndex++;
+			self.play();
+		}, self.options.auto);
+
+		this.$elem.off('mouseenter');
+		this.$elem.off('mouseleave');
+		this.$elem.on({
+			mouseenter: clear,
+			mouseleave: reset
+		});
 	};
 
 	// 播放
@@ -613,6 +666,7 @@
 
 		this.options.begin.call(this, this.$elem, this.activeIndex);
 	};
+
 
 	/**
 	 * Public method
@@ -631,12 +685,11 @@
 
 	};
 
-
 	/**
 	 * Plugin main method
 	 */
 	$.fn.terseBanner = function (option) {
-		if (util.isLTIE8) {
+		if (Util.isLTIE8) {
 			throw new Error('jquey.terseBanner.js cannot work under IE8!');
 		}
 
@@ -658,82 +711,19 @@
 	 */
 	$.fn.terseBanner.defaults = {
 		animation: 'slide', // 动画模式: ['none', 'fade', 'flashFade' 'slide', 'scanning']
+		adaptive : false,   // 图片自适应
 		useHover : false,   // 导航按钮和缩略图支持hover事件触发动画: [true, false]
-		navArrow : false,   // 导航箭头: [true, false]
-		navBtn   : true,    // 导航按钮: [true, false, 'ol', 'equal']
-		autoPlay : 5000,    // 自动轮播: [Number][等于0时禁用此功能]
+		arrow    : false,   // 导航箭头: [true, false]
+		button   : true,    // 导航按钮: [true, false, 'ol', 'equal']
+		auto     : 5000,    // 自动轮播: [Number][等于0时禁用此功能]
 		speed    : 800,     // 动画速度
-		init     : $.noop , // 初始化完成后执行的函数
-		begin    : $.noop,  // 动画开始时执行的函数
-		end      : $.noop , // 动画完成时执行的函数
-		thumbnail: {        // 缩略图
+		init     : $.noop , // 初始化完成后执行的回调函数
+		begin    : $.noop,  // 动画开始时执行的回调函数
+		end      : $.noop , // 动画完成时执行的回调函数
+		thumb    : {        // 缩略图
 			// width: 100,
 			// height: 50,
 			// gap: 20
 		}
-	};
-
-
-	/**
-	 * css3 easing that you can use
-	 */
-	$.fn.terseBanner.css3Easing = {
-		easeInExpo   : 'cubic-bezier(0.95, 0.05, 0.795, 0.035)',
-		easeOutExpo  : 'cubic-bezier(0.19, 1, 0.22, 1)',
-		easeInOutExpo: 'cubic-bezier(1, 0, 0, 1)',
-		easeInBack   : 'cubic-bezier(0.6, -0.28, 0.735, 0.045)',
-		easeOutBack  : 'cubic-bezier(0.175, 0.885, 0.32, 1.275)',
-		easeInOutBack: 'cubic-bezier(0.68, -0.55, 0.265, 1.55)',
-	};
-
-	/**
-	 * Extend jQuery Easing
-	 */
-	$.extend($.easing, {
-		easeInExpo: function(x, t, b, c, d) {
-			return (t === 0) ? b : c * Math.pow(2, 10 * (t / d - 1)) + b;
-		},
-		easeOutExpo: function(x, t, b, c, d) {
-			return (t === d) ? b + c : c * (-Math.pow(2, -10 * t / d) + 1) + b;
-		},
-		easeInOutExpo: function(x, t, b, c, d) {
-			if (t === 0) return b;
-			if (t === d) return b + c;
-			if ((t /= d / 2) < 1) return c / 2 * Math.pow(2, 10 * (t - 1)) + b;
-			return c / 2 * (-Math.pow(2, -10 * --t) + 2) + b;
-		},
-		easeInBack: function(x, t, b, c, d, s) {
-			if (s === undefined) s = 1.70158;
-			return c * (t /= d) * t * ((s + 1) * t - s) + b;
-		},
-		easeOutBack: function(x, t, b, c, d, s) {
-			if (s === undefined) s = 1.70158;
-			return c * ((t = t / d - 1) * t * ((s + 1) * t + s) + 1) + b;
-		},
-		easeInOutBack: function(x, t, b, c, d, s) {
-			if (s === undefined) s = 1.70158;
-			if ((t /= d / 2) < 1) return c / 2 * (t * t * (((s *= (1.525)) + 1) * t - s)) + b;
-			return c / 2 * ((t -= 2) * t * (((s *= (1.525)) + 1) * t + s) + 2) + b;
-		}
-	});
-
-	/**
-	 * Utility property and method
-	 */
-	var util = {
-		isIE: /msie|trident/i.test(navigator.userAgent),
-
-		isLTIE8: /msie (6.0|7.0)/i.test(navigator.userAgent),
-
-		isSupportTransition: (function () {
-			var style = document.body.style || document.documentElement.style;
-			return style.transition !== undefined || style.WebkitTransition !== undefined;
-		}()),
-
- 		// isSupportTransition: false,
-
-		prevArrowImageData: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADcAAABuCAMAAAC0hHtLAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyJpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMy1jMDExIDY2LjE0NTY2MSwgMjAxMi8wMi8wNi0xNDo1NjoyNyAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNiAoV2luZG93cykiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6QjdGOUJEQTlBRjU5MTFFNUFFQjJBQzRBNEM1MkYzMzEiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6QjdGOUJEQUFBRjU5MTFFNUFFQjJBQzRBNEM1MkYzMzEiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDpCN0Y5QkRBN0FGNTkxMUU1QUVCMkFDNEE0QzUyRjMzMSIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDpCN0Y5QkRBOEFGNTkxMUU1QUVCMkFDNEE0QzUyRjMzMSIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PhEdN5oAAAAGUExURf///////1V89WwAAAACdFJOU/8A5bcwSgAAARBJREFUeNq82EEOwDAIA8Hl/58OH4gizSG9R20D2Isbe7JThcfCt4UfGf5beCXhTYYFCOsWljvskrC5wp4MWzmcgHBwwnkLxzSc7lAUQi0JJSg79jp3Fa5QJ0N5DVU5FPPQA0LrCB0nNKrQ30JbDN00NOHQu0PLD0khBIyQS0KcCSkohKeQuUJUCwkvBMOQJ0MMDek1hN6GmfcnYvt38r1wHbju3Gfc1zxHPLesE6xLrIOsu6zz7CvsY+yb7NPMBcwhzD3MWcx1zJHMrczJzOW8B/DewXsO71W8x/HeyHsq78W8h/PezzkD5xqco3BuwzkR51Kcg3Huxjkf54qcY3Juyjkt58KcQzuUa86+zxFgAFs9FmHsomPPAAAAAElFTkSuQmCC',
-
-		nextArrowImageData: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADcAAABuCAMAAAC0hHtLAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyJpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMy1jMDExIDY2LjE0NTY2MSwgMjAxMi8wMi8wNi0xNDo1NjoyNyAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNiAoV2luZG93cykiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6QURDRjhFMjJBRjU4MTFFNUIzMzhBRTk0RUZERDg4OUEiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6QURDRjhFMjNBRjU4MTFFNUIzMzhBRTk0RUZERDg4OUEiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDpBRENGOEUyMEFGNTgxMUU1QjMzOEFFOTRFRkREODg5QSIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDpBRENGOEUyMUFGNTgxMUU1QjMzOEFFOTRFRkREODg5QSIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PqC2oS0AAAAGUExURf///////1V89WwAAAACdFJOU/8A5bcwSgAAARxJREFUeNq82MtuwlAQRMHT///TKEJRILzsWuAtKgmwPbenm12VuRlsBpvBZrAZbAabwWawGWwGm8FmsBlsBpvBZrAZbAabwWawGWwGm8FmsBlsBt9+lrl38MOvz9xr+PH+Zu4VPPAEZ+45PPSOZu4ZPDiFMvcID8/ZzP2HJ06SzN3DU2dl5m7hyTSQuT94Ou9k7hdCosvcFVJmzdwPxFTeVx1+T/xf8D7gfcfnDJ9rfI/wvcU5gXMJ5yDOXZzzeK7gOYbnJp7TmAswh2DuwZyFuQ5zJOZWzMmYy3EPwL0D9xzcq3CPw70R91Tci3EPx70fewbsNbBHwd4GeyLspbAHw94Nez7sFbHHxN4Ue1rshbGH1qisPbtdFwEGAFZuFsthqI7FAAAAAElFTkSuQmCC'
 	};
 }));
