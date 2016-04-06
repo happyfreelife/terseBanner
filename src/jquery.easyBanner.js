@@ -455,6 +455,8 @@
 				T.$list.prev().css('left', -T.currentIndex * 100 + '%');
 				T.$item.eq(T.currentIndex).siblings().css('opacity', 0);
 
+				T.options.after.call(T, T, T.currentIndex, T.activeIndex);
+
 				if (T.options.autoPlay && !T.$list.hovering) {
 					T.setPlayTimer();
 				}
@@ -465,7 +467,7 @@
 				T.$list.animating = false;
 				T.$list.data('switch-prev', false);
 
-				T.options.after.call(T, T, T.currentIndex);
+				T.options.after.call(T, T, T.currentIndex, T.activeIndex);
 
 				if (T.options.autoPlay && !T.$list.hovering) {
 					T.setPlayTimer();
@@ -819,8 +821,8 @@
 					$item.first().siblings().css('opacity', 0);
 				}
 
-				options.during.call($this[0], $this, $this.currentIndex);
-				options.after.call($this[0], $this, $this.currentIndex);
+				options.during.call($this[0], $this, $this.currentIndex, $this.activeIndex);
+				options.after.call($this[0], $this, $this.currentIndex, $this.activeIndex);
 			}
 
 			// 给轮播添加方向箭头
@@ -1019,7 +1021,7 @@
 				$this.activeIndex = $this.currentIndex /* = currentIndex*/ ;
 
 				$this.animation[$this.options.animation]();
-				options.during.call($this[0], $this, $this.currentIndex);
+				options.during.call($this[0], $this, $this.currentIndex, $this.activeIndex);
 			}
 
 			// 设置轮播自动播放的定时器

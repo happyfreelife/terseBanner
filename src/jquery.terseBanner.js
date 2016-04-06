@@ -58,7 +58,7 @@
 		this.len   = this.$item.length;
 		this.currentIndex = 0;
 		this.activeIndex  = 0;
-		this.latestIndex  = 0; // **********************************
+		this.latestIndex  = 0;
 		this.isHovered    = false;
 		this.isAnimated   = false;
 
@@ -156,8 +156,8 @@
 					$list.css({
 						transform: 'translate3d(0, 0, 0)',
 						'-webkit-transform': 'translate3d(0, 0, 0)',
-						transition: 'transform ' + options.speed + 'ms',
-						// '-webkit-transition': '-webkit-transform ' + options.speed + 'ms'
+						transition: 'transform ' + options.duration + 'ms',
+						// '-webkit-transition': '-webkit-transform ' + options.duration + 'ms'
 					});
 				}
 
@@ -169,12 +169,12 @@
 			case 'fade':
 			case 'flashFade':
 				if (Util.isSupportTransition) {
-					$item.css('transition', 'opacity ' + options.speed + 'ms');
+					$item.css('transition', 'opacity ' + options.duration + 'ms');
 				}
 				break;
 		}
 
-		this.bindWindowResize();
+		this.bindResizeEvent();
 		this.handleImage();
 	};
 
@@ -254,31 +254,6 @@
 		}
 	};
 
-	// 视口大小发生变化时，轮播图片的尺寸自动调整
-	TB.prototype.bindWindowResize = function() {
-		var self = this,
-			$banner = this.$elem,
-			$list = this.$list;
-
-		$(window).resize(function() {
-			$list.children().width($banner.width());
-
-			// fade
-			$list.prev().children().width($banner.width());
-
-			// slide
-			/*if (Util.isSupportTransition) {
-				var translate = 'translate3d(-' + $list.children().width() *
-					self.currentIndex + 'px, 0, 0)';
-
-				$list.css({
-					'transform': translate,
-					'-webkit-transform': translate
-				});
-			}*/
-		});
-	};
-
 	// 轮播图片处理
 	TB.prototype.handleImage = function() {
 		var $list = this.$list,
@@ -342,7 +317,7 @@
 
 		switch (options.animation) {
 			case 'slide':
-				$item.first().clone(true).appendTo(this.$list);
+				$item.first().clone(true).hide().appendTo(this.$list);
 				break;
 
 			case 'fade':
@@ -395,7 +370,6 @@
 				}
 
 				if ($(this).hasClass('prev')) {
-					self.switchPrevItem = true;
 					self.currentIndex--;
 				} else {
 					self.currentIndex++;
@@ -467,13 +441,38 @@
 		this.bindAnimation();
 	};
 
+	// 视口变化时，图片的尺寸自动调整
+	TB.prototype.bindResizeEvent = function() {
+		var self = this,
+			$banner = this.$elem,
+			$list = this.$list;
+
+		$(window).resize(function() {
+			$list.children().width($banner.width());
+
+			// fade
+			$list.prev().children().width($banner.width());
+
+			// slide
+			/*if (Util.isSupportTransition) {
+				var translate = 'translate3d(-' + $list.children().width() *
+					self.currentIndex + 'px, 0, 0)';
+
+				$list.css({
+					'transform': translate,
+					'-webkit-transform': translate
+				});
+			}*/
+		});
+	};
+
 	// 绑定动画
 	TB.prototype.bindAnimation = function() {
 		var self = this,
 			options = this.options,
 			$banner = this.$elem,
 			$list = this.$list,
-			$item = this.$item,
+			$item = $list.children(),
 			$btn = this.$btn,
 			$btnBox = this.$btnBox,
 			A = this.animation = {};
@@ -514,17 +513,15 @@
 			if (Util.isSupportTransition) {
 				$item.eq(self.currentIndex).css('opacity', 1);
 
-				setTimeout(self.animation.fadeCallback, self.options.speed);
+				setTimeout(self.animation.fadeCallback, self.options.duration);
 			} else {
 				$item.eq(self.currentIndex).animate({
 					opacity: 1
 				}, {
-					duration: self.options.speed,
+					duration: self.options.duration,
 					complete: self.animation.fadeCallback
 				});
 			}
-
-			options.before.call(self, $banner, self.activeIndex);
 
 			activeElement();
 
@@ -532,72 +529,6 @@
 		};
 
 		A.flashFade = A.fade;
-
-		/*A.slide = function() {
-			self.isAnimated = true;
-
-			options.before.call(this, $banner, this.currentIndex);
-
-			if (Util.isSupportTransition) {
-				var transitionDuration = $list.css('transition-duration');
-
-				// 当前显示最后一屏，点击了序列按钮来切换不连续的屏幕
-				if (self.lastTimeIndex === self.len && !self.switchPrevItem) {
-					$list.css({
-						transition: 'none',
-						// '-webkit-transtion': 'none',
-						transform: 'translate3d(0, 0, 0)',
-						'-webkit-transform': 'translate3d(0, 0, 0)'
-					});
-				}
-
-				// 第一屏 -> 最后一屏
-				if (self.currentIndex < 0) {
-					self.currentIndex = self.len - 1;
-					$list.css({
-						transition: 'none',
-						// '-webkit-transtion': 'none'
-					});
-					$list.css({
-						transform: 'translate3d(-' + $item.width() * self.len + 'px, 0, 0)',
-						'-webkit-transform': 'translate3d(-' + $item.width() * self.len + 'px, 0, 0)'
-					});
-				}
-
-				// 最后一屏 -> 第一屏
-				if (self.currentIndex > self.len) {
-					self.currentIndex = 1;
-					$list.css({
-						transition: 'none',
-						// '-webkit-transtion': 'none',
-						transform: 'translate3d(0, 0, 0)',
-						'-webkit-transform': 'translate3d(0, 0, 0)'
-					});
-				}
-
-				self.lastTimeIndex = self.currentIndex;
-
-				setTimeout(function() {
-					var translate3d = 'translate3d(-' + $item.width() * self.currentIndex + 'px, 0, 0)';
-
-					$list.animating = true;
-
-					$list.css({
-						transform: translate3d,
-						transition: 'transform ' + transitionDuration,
-						'-webkit-transform': translate3d,
-					});
-
-					setTimeout(self.animation.slideCallback, self.options.speed - 20);
-				}, 20);
-			}
-
-			if (!Util.isSupportTransition) {
-
-			}
-
-			activeElement();
-		};*/
 
 		A.slide = function() {
 			var direction = 'left';
@@ -613,19 +544,20 @@
 			// first item to last item
 			if (self.currentIndex < 0) {
 				self.currentIndex = self.len - 1;
-				$item.eq(self.len).show().siblings().hide();
+
+				$item.first().hide();
+				$item.eq(self.len - 1).show().next().show();
+
+				$list.css('left', -$item.width());
+
 				direction = 'right';
 			}
-
-			/*if (self.currentIndex === self.len) {
-				T.$item.first().show().siblings().hide();
-				self.currentIndex = 0;
-			}*/
 
 			// last item to first item
 			if (self.currentIndex > self.len) {
 				self.currentIndex = 1;
-				direction = 'left';
+				$item.first().show().siblings().hide();
+				// direction = 'left';
 			}
 
 			if (direction === 'right') {
@@ -647,7 +579,7 @@
 						'-webkit-transform': listTransform
 					});
 
-					setTimeout(self.animation.slideCallback, options.speed - 20);
+					setTimeout(self.animation.slideCallback, options.duration - 20);
 				}, 20);
 			}
 
@@ -655,7 +587,7 @@
 				self.isAnimated = true;
 				$list.animate({
 					left: direction === 'left' ? '-100%' : 0
-				}, options.speed, animation.slideComplete);
+				}, options.duration, animation.slideComplete);
 			}
 
 			activeElement();
@@ -692,18 +624,20 @@
 
 			$item.eq(self.currentIndex).show().siblings().hide();
 
-			$list.css('transition', 'transform ' + options.speed + 'ms');
+			$list.css('transition', 'transform ' + options.duration + 'ms');
 
-			options.after.call(self, $banner, self.currentIndex);
+			options.after.call(self, $banner, self.activeIndex);
 
 			if (options.useAuto && !self.isHovered) {
 				self.setPlayTimer();
 			}
 		};
 
-		options.init.call(this, $banner);
-		options.before.call(this, $banner);
-		options.after.call(this, $banner);
+		setTimeout(function() {
+			options.init.call(this, $banner, 0);
+			options.before.call(this, $banner, 0);
+			options.after.call(this, $banner, 0);
+		}, 20);
 	};
 
 	// 触屏事件
@@ -747,41 +681,58 @@
 		this.options.before.call(this, this.$elem, this.activeIndex);
 	};
 
+	TB.prototype.switchTo = function() {
+		if (this.isAnimated) {
+			return;
+		}
 
-	/**
-	 * Public method
-	 */
-	$.terseBanner = {};
+		if ($.isNumeric(arguments[0]) && (arguments[0] < 0 || arguments[0] > this.len)) {
+			throw new Error('TerseBanner\'s index overflow!');
+		}
 
-	$.terseBanner.switchToNext = function($banner) {
+		switch (arguments[0]) {
+			case 'prev':
+				this.currentIndex--;
+				break;
 
+			case 'next':
+				this.currentIndex++;
+				break;
+
+			default:
+				this.currentIndex = arguments[0];
+				break;
+		}
+		this.play();
 	};
 
-	$.terseBanner.switchToPrev = function($banner) {
-
-	};
-
-	$.terseBanner.switchToInex = function($banner, index) {
-
-	};
 
 	/**
 	 * Plugin main method
 	 */
-	$.fn.terseBanner = function (option) {
+	$.fn.terseBanner = function(option) {
 		if (Util.isLTIE8) {
 			throw new Error('terseBanner cannot work under IE8!');
 		}
 
 		return this.each(function() {
-			var data = $(this).data('terseBanner'),
+			var terseBanner = $(this).data('terseBanner');
+
+			if (!terseBanner) {
 				options = $.extend(true, {}, $.fn.terseBanner.defaults, typeof option === 'object' && option);
 
-			if (!data) {
-				$(this).data('terseBanner', (data = new TerseBanner(this, options)));
-			}
+				$(this).data('terseBanner', (terseBanner = new TerseBanner(this, options)));
 
-			data.init();
+				terseBanner.init();
+			} else {
+				if (option === 'prev') {
+					terseBanner.switchTo.call(terseBanner, 'prev');
+				} else if (option === 'next') {
+					terseBanner.switchTo.call(terseBanner, 'next');
+				} else if ($.isNumeric(option)) {
+					terseBanner.switchTo.call(terseBanner, option);
+				}
+			}
 		});
 	};
 
@@ -796,7 +747,7 @@
 		navArrow : false,   // 导航箭头: [true, false]
 		navBtn   : true,    // 导航按钮: [true, false, 'ol', 'equal']
 		auto     : 5000,    // 自动轮播: [Number][等于0时禁用此功能]
-		speed    : 800,     // 动画速度
+		duration : 800,     // 动画速度
 		init     : $.noop , // 初始化完成后执行的回调函数
 		before   : $.noop,  // 动画开始时执行的回调函数
 		end      : $.noop , // 动画完成时执行的回调函数
