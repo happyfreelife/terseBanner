@@ -2,7 +2,6 @@
  * jquery.terseBanner.js
  * Version: 2.0.0
  * URI: https://github.com/happyfreelife/easyBanner/
- * Date: 2016/3/22 16:33:26
  */
 
 ;(function (root, factory) {
@@ -76,7 +75,117 @@
 			this.setPlayTimer();
 		}
 
+		this.build();
+	};
+
+	// 创建轮播的初始结构
+	TB.prototype.build = function() {
 		this.addDefaultStyle();
+
+		var $banner = this.$elem,
+			$list = this.$list,
+			$item = this.$item,
+			options = this.options,
+			thumbArr = [],
+			self = this,
+			regExp = new RegExp('\\?thumb=(.*\\.(gif|jpg|jpeg|png))$');
+
+		if ($banner.css('position') === 'static') {
+			$banner.addClass('relative');
+		}
+
+		$list.wrap('<div class="relative"/>').width(this.len * 2 * 100 + '%');
+
+		$item.width($banner.width());
+
+		// 自适应模式
+		if (options.adaptive) {
+			if ($banner.css('maxWidth') === 'none') {
+				$banner.css('maxWidth', '100%');
+			}
+
+			$item.each(function() {
+				var $img = $(this).find('img'),
+					src = $img.attr('src') || $img.attr('data-src');
+
+				$img.css({
+					display: 'block',
+					maxWidth: '100%',
+					userSelect: 'none'
+				});
+
+				$(this).data('thumb', src);
+			});
+
+			setTimeout(function() {
+				$banner.height($list.height());
+			}, 20);
+		}
+
+		// 标准模式
+		if (!options.adaptive) {
+			$item.each(function() {
+				var $img = $(this).find('img'),
+					src = $img.attr('src') || $img.attr('data-src');
+
+				if ($img.attr('data-src')) {
+					$(this).data('origin', src);
+				}
+
+				$(this)
+					.data('thumb', src)
+					.height($banner.height())
+					.css('backgroundImage', 'url(' + src + ')');
+
+				$img.remove();
+			});
+		}
+
+		// 获取图片缩略图的路径
+		$item.each(function() {
+			var thumb = $(this).data('thumb');
+
+			thumbArr.push(thumb.match(regExp) ? thumb.match(regExp)[1] : thumb);
+
+			self.thumbArr = thumbArr;
+		});
+
+		// animation: slide
+		if (options.animation === 'slide') {
+			if (Util.isSupportTransition) {
+				$list.css({
+					transform: 'translate3d(0, 0, 0)',
+					'-webkit-transform': 'translate3d(0, 0, 0)',
+					transition: 'transform ' + options.duration + 'ms',
+					// '-webkit-transition': '-webkit-transform ' + options.duration + 'ms'
+				});
+			}
+
+			$list.css('left', 0);
+			$item.css('float', 'left').first().show().siblings().hide();
+			$item.first().clone(true).hide().appendTo($list);
+		}
+
+		// animation: fade
+		if (options.animation === 'fade') {
+			$list.before($list.clone(true).css({
+				position: 'absolute',
+				top: 0,
+				left: 0
+			}));
+		}
+
+		// animation: fade || flashFade
+		if (options.animation === 'fade' || options.animation === 'flashFade') {
+			if (Util.isSupportTransition) {
+				$item.css('transition', 'opacity ' + options.duration + 'ms');
+			}
+			$item.first().siblings().css('opacity', 0);
+		}
+
+
+		this.addArrow();
+		this.bindResizeEvent();
 	};
 
 	// 写入轮播元素的默认样式
@@ -88,24 +197,32 @@
 					'position: relative;' +
 					'overflow: hidden;' +
 				'}\n' +
+
+				'.tb-arrow, ' +
+				'.tb-btn, ' +
+				'.tb-thumb{' +
+					'position: absolute;' +
+				'}\n' +
+
 				'.tb-list > *{' +
 					'float: left;' +
 					'background-repeat: no-repeat;' +
 					'background-position: center top;' +
 				'}\n' +
+
 				'.tb-arrow a{' +
 					'position: absolute;' +
 					'cursor: pointer;' +
 					'top: 0;' +
 				'}\n' +
-				'.tb-arrow .prev{' +
+				'.tb-arrow a.prev{' +
 					'left: 0;' +
 				'}\n' +
-				'.tb-arrow .next{' +
+				'.tb-arrow a.next{' +
 					'right: 0;' +
 				'}\n' +
 				'.tb-arrow a img{' +
-					'display: block;' +
+					'display: inline-block;' +
 					'max-height: 100%;' +
 				'}\n' +
 
@@ -120,62 +237,9 @@
 				'}\n' +
 				'.tb-btn a.active{' +
 					'background: #09c;' +
-				'}\n' +
+				'}\n'
 			'</style>'
 		);
-
-		this.setInitStyle();
-	};
-
-	// 设置轮播的初始样式
-	TB.prototype.setInitStyle = function() {
-		var $banner = this.$elem,
-			$list = this.$list,
-			$item = this.$item,
-			options = this.options;
-
-		if ($banner.css('position') === 'static') {
-			$banner.addClass('relative');
-		}
-
-		$list.wrap('<div class="relative"/>').width(this.len * 2 * 100 + '%');
-
-		$item.width($banner.width());
-
-		if (options.adaptive) {
-			if ($banner.css('maxWidth') === 'none') {
-				$banner.css('maxWidth', '100%');
-			}
-		} else {
-			$item.height($banner.height());
-		}
-
-		switch (options.animation) {
-			case 'slide':
-				if (Util.isSupportTransition) {
-					$list.css({
-						transform: 'translate3d(0, 0, 0)',
-						'-webkit-transform': 'translate3d(0, 0, 0)',
-						transition: 'transform ' + options.duration + 'ms',
-						// '-webkit-transition': '-webkit-transform ' + options.duration + 'ms'
-					});
-				}
-
-				$list.css('left', 0);
-
-				$item.css('float', 'left').first().show().siblings().hide();
-				break;
-
-			case 'fade':
-			case 'flashFade':
-				if (Util.isSupportTransition) {
-					$item.css('transition', 'opacity ' + options.duration + 'ms');
-				}
-				break;
-		}
-
-		this.bindResizeEvent();
-		this.handleImage();
 	};
 
 	// 轮播元素自动设置样式
@@ -188,38 +252,21 @@
 
 		switch (elem) {
 			case 'arrow' :
-				if (
-					($arrow.css('backgroundColor') === 'rgba(0, 0, 0, 0)' ||
-					$arrow.css('backgroundColor') === 'transparent') &&
-					$arrow.css('backgroundImage') === 'none'
-				) {
+				if ($arrow.css('backgroundImage') === 'none') {
 					$arrow.filter('.prev').html('<img src="' + Util.prevArrowImageData + '">');
 					$arrow.filter('.next').html('<img src="' + Util.nextArrowImageData + '">');
 
-					$arrow.height(parseInt($banner.height() * 0.13));
+					$arrow.height(parseInt($banner.height() * 0.1));
 
-					$arrow.find('img').css({
-						userSelect: 'none',
-						marginTop: function() {
-							return ($arrow.height() - $(this).height()) / 2;
-						}
-					}).on('dragstart', function() {
+					$arrow.find('img').css('userSelect', 'none')
+					.on('dragstart', function() {
 						return false;
 					});
 				}
 				break;
 
 			case 'arrowBoxSize' :
-				var bannerWidth;
-
-				// 缩放网页会导致返回的轮播容器的宽度不精确(产生小数)
-				if ($banner.width().toString().indexOf('.') > -1) {
-					bannerWidth = parseInt($banner.width().toFixed(0));
-				} else {
-					bannerWidth = $banner.width();
-				}
-
-				if ($arrowBox.width() === bannerWidth) {
+				if (!$arrowBox.width()) {
 					$arrowBox.width('100%');
 				}
 				break;
@@ -228,20 +275,22 @@
 				if ($arrowBox.css('top') === 'auto' && $arrowBox.css('bottom') === 'auto') {
 					$arrowBox.css({
 						top: '50%',
-						height: 0,
-						marginTop: -$arrowBox.height() / 2
+						marginTop: -$arrow.height() / 2
 					});
 				}
 				if ($arrowBox.css('left') === 'auto' && $arrowBox.css('right') === 'auto') {
-					$arrowBox.css('marginLeft', ($banner.width() - $arrowBox.width()) / 2 + 'px');
+					$arrowBox.css({
+						left: '50%',
+						marginLeft: -$arrowBox.width() / 2
+					});
 				}
 
-				$banner.append($arrowBox.css('position', 'absolute'));
+				$banner.append($arrowBox);
 				break;
 
 			case 'btnBoxPos' :
 				if ($btnBox.css('top') === 'auto' && $btnBox.css('bottom') === 'auto') {
-					$btnBox.css('bottom', $banner.height() * 0.04);
+					$btnBox.css('bottom', 10);
 				}
 				if ($btnBox.css('left') === 'auto' && $btnBox.css('right') === 'auto') {
 					$btnBox.css({
@@ -249,100 +298,15 @@
 						marginLeft: -$btn.outerWidth(true) * $btn.length / 2
 					});
 				}
-				$banner.append($btnBox.css('position', 'absolute'));
+				$banner.append($btnBox);
 				break;
 		}
 	};
 
-	// 轮播图片处理
-	TB.prototype.handleImage = function() {
-		var $list = this.$list,
-			$item = this.$item,
-			$img = $item.children('img'),
-			imgRegExp = new RegExp('\\?thumbnail=(.*\\.(jpg|jpeg|gif|png))$'),
-			thumbnailImg = [],
-			options = this.options;
-
-		// 获取手动设置的缩略图
-		$img.each(function() {
-			var src = $(this).attr('src') || $(this).data('src');
-
-			if (src.match(imgRegExp)) {
-				thumbnailImg.push(src.match(thumbSrcRegExp)[1]);
-			}
-			this.thumbnailImg = thumbnailImg;
-		});
-
-		// 延迟加载模式
-		if ($img.filter('[data-src]').length === this.len) {
-			$img.each(function() {
-				var src = $(this).data('src');
-
-				$(this).parent().data('image', src).data('thumbnail', src);
-				$(this).remove();
-			});
-
-			// $item.last().addClass('loading');
-			// Lazyload($item, currentIndex, currentIndex);
-		}
-
-		// 自适应模式
-		if (options.adaptive) {
-			$img.css({
-				display: 'block',
-				maxWidth: '100%',
-				userSelect: 'none'
-			});
-
-			if (options.animation === 'fade') {
-				$item.width(this.$elem.width());
-			}
-		}
-
-		// 标准模式
-		if (!options.adaptive) {
-			$img.each(function() {
-				var src = $(this).attr('src');
-
-				$(this)
-					.parent()
-					.css('background-image', 'url(' + src + ')')
-					.data('thumb', src);
-
-				$(this).remove();
-			});
-		}
-
-		$item.width(this.$elem.width());
-
-		switch (options.animation) {
-			case 'slide':
-				$item.first().clone(true).hide().appendTo(this.$list);
-				break;
-
-			case 'fade':
-				if (options.adaptive) {
-					$list.before($list.clone(true).css({
-						position: 'absolute',
-						top: 0,
-						left: 0
-					}));
-				}
-				break;
-
-			case 'fade':
-			case 'flashFade':
-				$item.first().siblings().css('opacity', 0);
-				break;
-		}
-
-		this.addNavArrow();
-	};
-
-	// 添加导航箭头
-	TB.prototype.addNavArrow = function() {
+	// 添加控制箭头
+	TB.prototype.addArrow = function() {
 		if (!this.options.navArrow) {
-			this.addNavBtn();
+			this.addBtn();
 			return;
 		}
 
@@ -383,13 +347,13 @@
 			}
 		});
 
-		this.addNavBtn();
+		this.addBtn();
 	};
 
-	// 添加导航按钮
-	TB.prototype.addNavBtn = function() {
+	// 添加序列按钮
+	TB.prototype.addBtn = function() {
 		if (!this.options.navBtn) {
-			this.lazyLoad();
+			this.addThumb();
 			return;
 		}
 
@@ -423,12 +387,59 @@
 			self.play();
 		});
 
-		this.lazyLoad();
+		this.addThumb();
 	};
 
 	// 添加缩略图
 	TB.prototype.addThumb = function() {
+		if (!(typeof this.options.thumb === 'object' &&
+			$.isNumeric(this.options.thumb.width) &&
+			$.isNumeric(this.options.thumb.height))) 
+		{
+			this.lazyLoad();
+			return;
+		}
 
+		var $banner = this.$elem,
+			$list = this.$list,
+			$item = this.$item;
+
+		for (var i = 0, str = '', thumb; i < this.len; i++) {
+			thumb = this.thumbArr[i];
+			str += '<dd><img src="' + thumb + '"></dd>';
+		}
+
+		$banner.append(
+			'<div class="tb-thumb">' +
+				'<a class="prev"></a>' +
+				'<div class="relative">' +
+					'<dl>' + str + '</dl>' +
+				'</div>' +
+				'<a class="next"></a>' +
+			'</div>'
+		);
+
+		/*'.tb-thumb dl dd{' +
+			'float: left;' +
+			'overflow: hidden;' +
+		'}\n' +
+
+		'.tb-thumb dl dd img{' +
+			'display: block;' +
+			'position: relative' +
+		'}\n' +
+		*/
+		this.$thumbBox = $('.tb-thumb', $banner);
+		this.$thumbInnerBox = $('.tb-thumb .relative', $banner);
+		this.$thumbList = $('.tb-thumb .relative dl', $banner);
+		this.$thumb =$('.tb-thumb .relative dl dd', $banner);
+
+		this.$thumb.css({
+			width: this.options.thumb.width,
+			height: this.options.thumb.height
+		});
+
+		this.lazyLoad();
 	};
 
 	// 图片延迟加载
@@ -439,31 +450,6 @@
 		}
 
 		this.bindAnimation();
-	};
-
-	// 视口变化时，图片的尺寸自动调整
-	TB.prototype.bindResizeEvent = function() {
-		var self = this,
-			$banner = this.$elem,
-			$list = this.$list;
-
-		$(window).resize(function() {
-			$list.children().width($banner.width());
-
-			// fade
-			$list.prev().children().width($banner.width());
-
-			// slide
-			/*if (Util.isSupportTransition) {
-				var translate = 'translate3d(-' + $list.children().width() *
-					self.currentIndex + 'px, 0, 0)';
-
-				$list.css({
-					'transform': translate,
-					'-webkit-transform': translate
-				});
-			}*/
-		});
 	};
 
 	// 绑定动画
@@ -524,8 +510,6 @@
 			}
 
 			activeElement();
-
-			// Lazyload($item, self.currentIndex, self.currentIndex);
 		};
 
 		A.flashFade = A.fade;
@@ -587,13 +571,10 @@
 				self.isAnimated = true;
 				$list.animate({
 					left: direction === 'left' ? '-100%' : 0
-				}, options.duration, animation.slideComplete);
+				}, options.duration, self.animation.slideCallback);
 			}
 
 			activeElement();
-
-			// Lazyload($item, self.currentIndex, self.currentIndex);
-
 		};
 
 		A.fadeCallback = function() {
@@ -634,10 +615,29 @@
 		};
 
 		setTimeout(function() {
-			options.init.call(this, $banner, 0);
-			options.before.call(this, $banner, 0);
-			options.after.call(this, $banner, 0);
+			options.init.call(self, $banner, 0);
+			options.before.call(self, $banner, 0);
+			options.after.call(self, $banner, 0);
 		}, 20);
+	};
+
+	// 浏览器视口变化事件
+	TB.prototype.bindResizeEvent = function() {
+		var self = this,
+			$banner = this.$elem,
+			$list = this.$list;
+
+		$(window).resize(function() {
+			$list.children().width($banner.width());
+
+			// adaptive
+			if (this.options.adaptive) {
+				$banner.height($list.height());
+			}
+
+			// animation: fade
+			$list.prev().children().width($banner.width());
+		});
 	};
 
 	// 触屏事件
@@ -748,13 +748,9 @@
 		navBtn   : true,    // 导航按钮: [true, false, 'ol', 'equal']
 		auto     : 5000,    // 自动轮播: [Number][等于0时禁用此功能]
 		duration : 800,     // 动画速度
-		init     : $.noop , // 初始化完成后执行的回调函数
+		init     : $.noop,  // 初始化完成后执行的回调函数
 		before   : $.noop,  // 动画开始时执行的回调函数
-		end      : $.noop , // 动画完成时执行的回调函数
-		thumb    : {        // 缩略图
-			// width: 100,
-			// height: 50,
-			// gap: 20
-		}
+		after    : $.noop,  // 动画完成时执行的回调函数
+		thumb    : {}       // 缩略图
 	};
 }));
