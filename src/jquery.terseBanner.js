@@ -29,7 +29,7 @@
 			var style = document.body.style || document.documentElement.style;
 			return style.transition !== undefined || style.WebkitTransition !== undefined;
 		}()),
-		
+
 		// isSupportTransition: false,
 
 		prevArrowImageData: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADcAAABuCAMAAAC0hHtLAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyJpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMy1jMDExIDY2LjE0NTY2MSwgMjAxMi8wMi8wNi0xNDo1NjoyNyAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNiAoV2luZG93cykiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6QjdGOUJEQTlBRjU5MTFFNUFFQjJBQzRBNEM1MkYzMzEiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6QjdGOUJEQUFBRjU5MTFFNUFFQjJBQzRBNEM1MkYzMzEiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDpCN0Y5QkRBN0FGNTkxMUU1QUVCMkFDNEE0QzUyRjMzMSIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDpCN0Y5QkRBOEFGNTkxMUU1QUVCMkFDNEE0QzUyRjMzMSIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PhEdN5oAAAAGUExURf///////1V89WwAAAACdFJOU/8A5bcwSgAAARBJREFUeNq82EEOwDAIA8Hl/58OH4gizSG9R20D2Isbe7JThcfCt4UfGf5beCXhTYYFCOsWljvskrC5wp4MWzmcgHBwwnkLxzSc7lAUQi0JJSg79jp3Fa5QJ0N5DVU5FPPQA0LrCB0nNKrQ30JbDN00NOHQu0PLD0khBIyQS0KcCSkohKeQuUJUCwkvBMOQJ0MMDek1hN6GmfcnYvt38r1wHbju3Gfc1zxHPLesE6xLrIOsu6zz7CvsY+yb7NPMBcwhzD3MWcx1zJHMrczJzOW8B/DewXsO71W8x/HeyHsq78W8h/PezzkD5xqco3BuwzkR51Kcg3Huxjkf54qcY3Juyjkt58KcQzuUa86+zxFgAFs9FmHsomPPAAAAAElFTkSuQmCC',
@@ -65,16 +65,6 @@
 		this.isHovered    = false;
 		this.isAnimated   = false;
 
-		if (Util.isSupportTouch) {
-			this.options.animation = 'slide';
-			bindTouchEvent();
-		}
-
-		if (typeof this.options.auto === 'number' && this.options.auto > 0) {
-			this.useAuto = true;
-			this.setPlayTimer();
-		}
-
 		this.build();
 	};
 
@@ -96,8 +86,6 @@
 
 		$list.wrap('<div class="tb-img"/>').width(this.len * 2 * 100 + '%');
 
-		$item.width($banner.width());
-
 		// 自适应模式
 		if (options.adaptive) {
 			if ($banner.css('maxWidth') === 'none') {
@@ -114,12 +102,16 @@
 					userSelect: 'none'
 				});
 
+				if ($img.attr('data-src')) {
+					$(this).data('origin', src);
+				}
+
 				$(this).data('thumb', src);
 			});
 
-			setTimeout(function() {
-				$banner.height($list.height());
-			}, 20);
+			// setTimeout(function() {
+				// $banner.height($list.height());
+			// }, 20);
 		}
 
 		// 标准模式
@@ -130,19 +122,18 @@
 
 				if ($img.attr('data-src')) {
 					$(this).data('origin', src);
+				} else {
+					$(this).css('backgroundImage', 'url(' + src + ')');
 				}
 
-				$(this)
-					.data('thumb', src)
-					.height($banner.height())
-					.css('backgroundImage', 'url(' + src + ')');
+				$(this).data('thumb', src).height($banner.height());
 
 				$img.remove();
 			});
 		}
 
-		this.bindResizeEvent();
-		
+		$item.width($banner.width());
+
 		if (this.len <= 1) {
 			return;
 		}
@@ -189,7 +180,6 @@
 			$item.first().siblings().css('opacity', 0);
 		}
 
-
 		this.addArrow();
 	};
 
@@ -199,7 +189,7 @@
 			'<style>\n' +
 				'.relative, .tb-img, .tb-img-list, .tb-thumb-list{position: relative;overflow: hidden;}\n' +
 
-				'.tb-img-list > *{float: left;background-repeat: no-repeat;background-position: center top;}\n' +
+				'.tb-img-list > *{position: relative;float: left;min-height: 1px;background-repeat: no-repeat;background-position: center top;}\n' +
 
 				'.tb-arrow a{position: absolute;top: 0;cursor: pointer;}\n' +
 				'.tb-arrow a.prev{left: 0;}\n' +
@@ -214,12 +204,15 @@
 					'height: ' + this.options.thumb.height + 'px;' +
 				'}\n' +
 				'.tb-thumb dl{position: relative;overflow: hidden;}\n' +
-				'.tb-thumb dl dd{position: relative;float: left;overflow: hidden;cursor: pointer;' + 
+				'.tb-thumb dl dd{position: relative;float: left;overflow: hidden;cursor: pointer;' +
 					'width: ' + this.options.thumb.width + 'px;' +
 					'height: ' + this.options.thumb.height + 'px;' +
 					'margin-right: ' + this.options.thumb.gap + 'px;' +
 				'}\n' +
 				'.tb-thumb dl dd img{position: relative;display: block;width: 100%;}\n' +
+
+				'.tb-loader{position: absolute;top: 0;left: 0;width: 100%;height: 100%;}\n' +
+				'.tb-loader img{position: absolute;left: 50%;width: 40px;height: 40px;margin-left: -20px;}\n' +
 			'</style>'
 		);
 	};
@@ -262,7 +255,7 @@
 				if ($arrowBox.css('top') === 'auto' && $arrowBox.css('bottom') === 'auto') {
 					$arrowBox.css({
 						top: '50%',
-						marginTop: -$arrow.height() / 2
+						marginTop: -$arrow.outerHeight() / 2
 					});
 				}
 				if ($arrowBox.css('left') === 'auto' && $arrowBox.css('right') === 'auto') {
@@ -441,7 +434,7 @@
 			parseInt(this.options.thumb.height) > 0 &&
 			parseInt(this.options.thumb.gap) >= 0))
 		{
-			this.lazyLoad();
+			this.bindAnimation();
 			return;
 		}
 
@@ -492,7 +485,7 @@
 
 		this.$thumbSlideBtn.on({
 			click: function() {
-				if (self.isAnimated) {
+				if (self.isAnimated || $(this).hasClass('disabled')) {
 					return;
 				}
 
@@ -510,16 +503,6 @@
 			}
 		});
 
-
-		this.lazyLoad();
-	};
-
-	// 图片延迟加载
-	TB.prototype.lazyLoad = function() {
-		if (!this.options.lazyLoad) {
-			this.bindAnimation();
-			return;
-		}
 
 		this.bindAnimation();
 	};
@@ -556,8 +539,12 @@
 
 		A.none = function() {
 			determineIndex();
+
 			$item.eq(self.currentIndex).show().siblings().hide();
+
 			activeElement();
+
+			options.after.call(self, $banner, self.activeIndex);
 		};
 
 		A.fade = function() {
@@ -656,9 +643,9 @@
 				thumbVisibleCount = Math.floor($thumbBox.width() / $thumb.outerWidth(true));
 
 			if (!self.activeIndex) {
-				$thumbSlideBtn.filter('.prev').addClass('disalbed').siblings('a').removeClass('disabled');
+				$thumbSlideBtn.filter('.prev').addClass('disabled').siblings('a').removeClass('disabled');
 			} else if (self.activeIndex === self.len - 1) {
-				$thumbSlideBtn.filter('.next').addClass('disalbed').siblings('a').removeClass('disabled');	
+				$thumbSlideBtn.filter('.next').addClass('disabled').siblings('a').removeClass('disabled');
 			} else {
 				$thumbSlideBtn.removeClass('disabled');
 			}
@@ -666,16 +653,21 @@
 			// 根据activeIndex来判定高亮的缩略图所在的位置
 			// 直接切换到高亮缩略图对应的那一组
 			$thumbList.animate({
-				left: -Math.min(
+				left:
+				-Math.min(
 					parseInt(self.activeIndex / thumbVisibleCount) * $thumb.outerWidth(true) * thumbVisibleCount,
-					$thumbList.width() - $thumb.outerWidth(true) * thumbVisibleCount)
+					$thumbList.width() - $thumb.outerWidth(true) * thumbVisibleCount
+				)
 			});
 		};
 
 		A.fadeCallback = function() {
 			self.isAnimated = false;
 
-			$list.prev().css('left', -self.currentIndex * 100 + '%');
+			if (options.animation === 'fade') {
+				$list.prev().css('left', -self.currentIndex * 100 + '%');
+				$list.prev().html($list.html());
+			}
 
 			$item.eq(self.currentIndex).siblings().css('opacity', 0);
 
@@ -714,6 +706,8 @@
 			options.before.call(self, $banner, 0);
 			options.after.call(self, $banner, 0);
 		}, 20);
+
+		this.bindResizeEvent();
 	};
 
 	// 浏览器视口变化事件
@@ -726,18 +720,105 @@
 			$list.children().width($banner.width());
 
 			// adaptive
-			if (this.options.adaptive) {
-				$banner.height($list.height());
-			}
+			// if (this.options.adaptive) {
+				// $banner.height($list.height());
+			// }
 
 			// animation: fade
-			$list.prev().children().width($banner.width());
+			if (this.options.animation === 'fade') {
+				$list.prev().children().width($banner.width());
+			}
+
+			self.$arrowBox.css('marginLeft', function() {
+				return -($(this).width() / 2);
+			});
+
+			// thumb
 		});
+
+		if (Util.isSupportTouch) {
+			this.options.animation = 'slide';
+			bindTouchEvent();
+		}
+
+		this.lazyLoad();
 	};
 
 	// 触屏事件
 	TB.prototype.bindTouchEvent = function() {
 
+	};
+
+	// 图片延迟加载
+	TB.prototype.lazyLoad = function() {
+		var options = this.options,
+			currentIndex = arguments[0] || 0,
+			$banner = this.$elem,
+			$list = this.$list,
+			$visibleItem = $list.children().eq(currentIndex),
+			visibleItemImg = $visibleItem.data('origin');
+
+		var showVisibleItem = function() {
+			if (options.adaptive) {
+				$('img[data-src]', $visibleItem).attr('src', visibleItemImg);
+			} else {
+				$visibleItem.css('backgroundImage', 'url(' + visibleItemImg + ')');
+			}
+
+			$visibleItem.data('origin', '');
+			$visibleItem.find('.tb-loader').fadeOut(400, function() {
+				$(this).remove();
+			});
+		};
+
+		if (!visibleItemImg) {
+			return;
+		}
+
+		if (!currentIndex) {
+			showVisibleItem();
+
+			if (options.animation === 'slide') {
+				this.lazyLoad(this.len);
+			}
+		} else {
+			// 添加loading动画
+			var loaderBackground;
+
+			if ($banner.css('backgroundColor') === 'rgba(0, 0, 0, 0)' ||
+				$banner.css('backgroundColor') === 'transparent') {
+				loaderBackground = '#fff';
+			} else {
+				loaderBackground = $banner.css('backgroundColor');
+			}
+
+			$visibleItem.append(
+				'<div class="tb-loader">' +
+					'<img src="' + Util.loaderImageData + '">' +
+				'</div>'
+			);
+
+			$('.tb-loader', $visibleItem).css('background', loaderBackground);
+			$('.tb-loader img', $visibleItem).css('top', function() {
+				return ($banner.height() - $(this).height()) / 2;
+			});
+
+			// 绑定图片加载完成的事件
+			var img = new Image();
+
+			img.src = visibleItemImg;
+
+			if (img.complete) {
+				showVisibleItem();
+			} else {
+				img.onload = showVisibleItem;
+			}
+		}
+
+		if (typeof this.options.auto === 'number' && this.options.auto > 0) {
+			this.useAuto = true;
+			this.setPlayTimer();
+		}
 	};
 
 	// 设置自动轮播定时器
@@ -774,6 +855,8 @@
 		this.animation[this.options.animation]();
 
 		this.options.before.call(this, this.$elem, this.activeIndex);
+
+		this.lazyLoad(this.currentIndex);
 	};
 
 	TB.prototype.switchTo = function() {
@@ -836,16 +919,20 @@
 	 * Plugin default options
 	 */
 	$.fn.terseBanner.defaults = {
-		animation: 'slide', // 动画模式: ['none', 'fade', 'flashFade' 'slide', 'scanning']
+		animation: 'slide', // 动画模式: ['none', 'fade', 'flashFade' 'slide']
 		adaptive : false,   // 图片自适应
 		useHover : false,   // 导航按钮和缩略图支持hover事件触发动画: [true, false]
 		arrow    : false,   // 导航箭头: [true, false]
-		btn     : true,    // 导航按钮: [true, false, 'ol', 'equal']
+		btn      : true,    // 导航按钮: [true, false, 'ol', 'equal']
 		auto     : 5000,    // 自动轮播: [Number][等于0时禁用此功能]
 		duration : 800,     // 动画速度
 		init     : $.noop,  // 初始化完成后执行的回调函数
 		before   : $.noop,  // 动画开始时执行的回调函数
 		after    : $.noop,  // 动画完成时执行的回调函数
-		thumb    : {}       // 缩略图
+		thumb    : {        // 缩略图
+			// width: 150,
+			// height: 100,
+			// gap: 10
+		}
 	};
 }));
