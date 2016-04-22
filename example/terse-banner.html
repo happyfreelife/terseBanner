@@ -1,0 +1,67 @@
+<!DOCTYPE html>		
+<html>
+<head>
+	<title>terseBanner Test</title>
+	<meta charset="utf-8">
+	<style>
+		*{margin: 0;padding: 0;}
+		ul, ol{list-style: none;}
+		.new{max-width: 1000px;height: 600px;margin: 0 auto;}
+		button{position: absolute;width: 100px;line-height: 30px;right: 10%;}
+		button.prev{top: 20px;}
+		button.next{top: 70px;}
+		.number{position: absolute;width: 30px;right: 10%;top: 120px;}
+		.number li{line-height: 30px;text-align: center;margin-top: 10px;background: #ccc;cursor: pointer;}
+	</style>
+</head>
+<body>
+	<div class="new">
+		<ul>
+			<li><img src="img/banner-1.jpg"></li>
+			<li><img src="img/banner-2.jpg"></li>
+			<li><img src="img/banner-3.jpg"></li>
+			<li><img src="img/banner-4.jpg"></li>
+			<li><img src="img/banner-5.jpg"></li>
+		</ul>
+	</div>
+	<button class="prev">prev</button>
+	<button class="next">next</button>
+	<ul class="number">
+		<li>1</li>
+		<li>2</li>
+		<li>3</li>
+		<li>4</li>
+		<li>5</li>
+	</ul>
+</body>
+<script type="text/javascript" src="js/jquery-1.11.3.min.js"></script>
+<script type="text/javascript" src="../src/jquery.terseBanner.js"></script>
+<script>
+	$('.new').terseBanner({
+		animation: 'slide',                           // 动画模式: ['none', 'fade', 'flashFade' 'slide', 'scanning']
+		adaptive : false,                            // 图片自适应
+		useHover : false,                             // 导航按钮和缩略图支持hover事件触发动画: [true, false]
+		arrow    : true,                             // 导航箭头: [true, false]
+		btn      : true,                              // 导航按钮: [true, false, 'ol', 'equal']
+		duration : 800,                               // 动画速度
+		auto     : 0,                              // 自动轮播: [Number][等于0时禁用此功能]
+		init     : $.noop ,                           // 初始化完成后执行的回调函数
+		before   : $.noop,                            // 动画开始时执行的回调函数
+		after    : $.noop ,                           // 动画完成时执行的回调函数
+		thumb    : {                                  // 缩略图
+			// width: 100,
+			// height: 50,
+		}
+	});
+
+	$('button.prev').click(function() {
+		$('.new').terseBanner('prev');
+	});
+	$('button.next').click(function() {
+		$('.new').terseBanner('next');
+	});
+	$('.number li').click(function() {
+		$('.new').terseBanner(parseInt($(this).text()) - 1);
+	});
+</script>
+</html>

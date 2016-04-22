@@ -4,7 +4,7 @@ module.exports = function(grunt) {
 
 		uglify: {
 			options: {
-				banner: '/* jquery.<%= pkg.name %>.min.js    @version: <%= pkg.version %> */\n'
+				banner: '/* <%= pkg.name %> v<%= pkg.version %> | <%= pkg.uri %>*/\n'
 			},
 
 			'dist/jquery.<%= pkg.name %>.min.js': 'src/jquery.<%= pkg.name %>.js'

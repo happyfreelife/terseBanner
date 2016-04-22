@@ -1,0 +1,33 @@
+<!DOCTYPE html>		
+<html>
+<head>
+	<title>terseBanner fade</title>
+	<meta charset="utf-8">
+	<style>
+		*{margin: 0;padding: 0;}
+		ul, ol{list-style: none;}
+		.fade{max-width: 1000px;height: 625px;margin: 0 auto;}
+		/*.fade ul li{float: left;}*/
+	</style>
+</head>
+<body>
+	<div class="fade">
+		<ul>
+			<li><img src="img/banner-1.jpg"></li>
+			<li><img src="img/banner-2.jpg"></li>
+			<li><img src="img/banner-3.jpg"></li>
+			<li><img src="img/banner-4.jpg"></li>
+			<li><img src="img/banner-5.jpg"></li>
+		</ul>
+	</div>
+</body>
+<script type="text/javascript" src="js/jquery-1.11.3.min.js"></script>
+<script type="text/javascript" src="../src/jquery.terseBanner.js"></script>
+<script>
+	$('.fade').terseBanner({
+		adaptive: true,
+		auto: 0,
+		animation: 'fade'
+	});
+</script>
+</html>

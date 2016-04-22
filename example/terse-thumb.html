@@ -1,0 +1,51 @@
+<!DOCTYPE html>		
+<html>
+<head>
+	<title>terse thumb</title>
+	<meta charset="utf-8">
+	<style>
+		*{margin: 0;padding: 0;}
+		ul, ol{list-style: none;}
+		.thumb{width: 1000px;height: 625px;margin: 0 auto;}
+		.thumb .tb-arrow a{background: rgba(0, 0, 0, 0.5);padding: 10px 20px;}
+		.thumb .tb-thumb{width: 660px;left: 50%;margin-left: -330px;bottom: 38px;}
+		.thumb .tb-thumb dl dd{-webkit-transition: all .3s;transition: all .3s;opacity: .5;filter: alpha(opacity=50);}
+		.thumb .tb-thumb dl dd.active{opacity: 1;filter: alpha(opacity=100);}
+		.thumb .tb-thumb a.disabled{cursor: not-allowed;background: #ccc;}
+	</style>
+</head>
+<body>
+	<div class="thumb">
+		<ul>
+			<li><img src="img/banner-1.jpg?thumb=img/thumb-1.jpg"></li>
+			<li><img src="img/banner-2.jpg?thumb=img/thumb-2.jpg"></li>
+			<li><img src="img/banner-3.jpg?thumb=img/thumb-3.jpg"></li>
+			<li><img src="img/banner-4.jpg?thumb=img/thumb-4.jpg"></li>
+			<li><img src="img/banner-5.jpg?thumb=img/thumb-5.jpg"></li>
+			<li><img src="img/banner-1.jpg?thumb=img/thumb-1.jpg"></li>
+			<li><img src="img/banner-2.jpg?thumb=img/thumb-2.jpg"></li>
+			<li><img src="img/banner-3.jpg?thumb=img/thumb-3.jpg"></li>
+			<li><img src="img/banner-4.jpg?thumb=img/thumb-4.jpg"></li>
+			<li><img src="img/banner-5.jpg?thumb=img/thumb-5.jpg"></li>
+		</ul>
+	</div>
+
+</body>
+<script type="text/javascript" src="js/jquery-1.11.3.min.js"></script>
+<script type="text/javascript" src="../src/jquery.terseBanner.js"></script>
+<script>
+	$('.thumb').terseBanner({
+		adaptive : false, // 图片自适应
+		useHover : false, // 导航按钮和缩略图支持hover事件触发动画: [true, false]
+		arrow    : true, // 导航箭头: [true, false]
+		btn      : true, // 导航按钮: [true, false, 'ol', 'equal']
+		duration : 500,   // 动画速度
+		auto     : 0,     // 自动轮播: [Number][等于0时禁用此功能]
+		thumb    : {      // 缩略图
+			width: 150,
+			height: 90,
+			gap: 0
+		}
+	});
+</script>
+</html>
