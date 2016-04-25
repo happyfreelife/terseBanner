@@ -87,11 +87,11 @@
 				'.tb-arrow a.next{right: 0;}\n' +
 				'.tb-arrow a img{display: inline-block;max-height: 100%;}\n' +
 
-				'.tb-btn a{display: inline-block;width: 10px;height: 10px;margin: 0 5px;background: #fff;border-radius: 50%;cursor: pointer;}\n' +
-				'.tb-btn a.active{background: #09c;}\n' +
+				'.tb-btn a{display: inline-block;width: 10px;height: 10px;margin: 0 5px;background-color: #fff;border-radius: 50%;cursor: pointer;}\n' +
+				'.tb-btn a.active{background-color: #09c;}\n' +
 
 				'.tb-thumb{position: absolute;width: 100%;overflow: hidden;bottom: 10px;left: 0;}\n' +
-				'.tb-thumb a{float: left;width: 30px;cursor: pointer;background: #666;' +
+				'.tb-thumb a{float: left;width: 30px;cursor: pointer;background-color: #666;' +
 					'height: ' + this.options.thumb.height + 'px;' +
 				'}\n' +
 				'.tb-thumb dl dd{position: relative;float: left;overflow: hidden;cursor: pointer;' +
@@ -669,7 +669,7 @@
 
 			options.after.call(self, $banner, self.activeIndex);
 
-			if (options.useAuto && !self.isHovered) {
+			if (self.useAuto && !self.isHovered) {
 				self.setPlayTimer();
 			}
 		};
@@ -677,7 +677,9 @@
 		A.slideCallback = function() {
 			self.isAnimated = false;
 
-			self.latestIndex = self.currentIndex;
+			self.latestIndex =
+			self.currentIndex === self.len ? 0 :
+			self.currentIndex === -1 ? self.len - 1 : self.currentIndex;
 
 			$list.css({
 				left: 0,
@@ -692,7 +694,7 @@
 
 			options.after.call(self, $banner, self.activeIndex);
 
-			if (options.useAuto && !self.isHovered) {
+			if (self.useAuto && !self.isHovered) {
 				self.setPlayTimer();
 			}
 		};
@@ -748,15 +750,20 @@
 				$list.prev().children().width($banner.width());
 			}
 
-			self.$arrowBox.css('marginLeft', function() {
-				return -($(this).width() / 2);
-			});
-
-			// thumb
+			if (this.options.arrow) {
+				self.$arrowBox.css('marginLeft', function() {
+					return -($(this).width() / 2);
+				});
+			}
 		});
 
 		if (Util.isSupportTouch) {
 			this.bindTouchEvent();
+		}
+
+		if (typeof this.options.auto === 'number' && this.options.auto > 0) {
+			this.useAuto = true;
+			this.setPlayTimer();
 		}
 
 		this.lazyLoad();
@@ -940,11 +947,6 @@
 			} else {
 				img.onload = showVisibleItem;
 			}
-		}
-
-		if (typeof this.options.auto === 'number' && this.options.auto > 0) {
-			this.useAuto = true;
-			this.setPlayTimer();
 		}
 	};
 

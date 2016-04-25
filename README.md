@@ -1,3 +1,3 @@
 # terseBanner
 
-## [Online Example is rebuilding...](javascript:)
+### [Online Example is rebuilding...](javascript:)
