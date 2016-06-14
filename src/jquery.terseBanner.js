@@ -140,7 +140,7 @@
 			}
 
 			$item.each(function() {
-				var $img = $(this).find('img'),
+				var $img = $(this).children('img'),
 					src = $img.attr('src') || $img.attr('data-src');
 
 				$img.css({
@@ -164,7 +164,7 @@
 		// 标准模式
 		if (!options.adaptive) {
 			$item.each(function() {
-				var $img = $(this).find('img'),
+				var $img = $(this).children('img'),
 					src = $img.attr('src') || $img.attr('data-src');
 
 				if ($img.attr('data-src')) {
@@ -184,13 +184,15 @@
 		if (this.len <= 1) return;
 
 		// 获取图片缩略图的路径
-		$item.each(function() {
-			var thumb = $(this).data('thumb');
+		try {
+			$item.each(function() {
+				var thumb = $(this).data('thumb');
 
-			thumbArr.push(thumb.match(regExp) ? thumb.match(regExp)[1] : thumb);
-
-			self.thumbArr = thumbArr;
-		});
+				thumbArr.push(thumb.match(regExp) ? thumb.match(regExp)[1] : thumb);
+	
+				self.thumbArr = thumbArr;
+			});
+		} catch (e) {}
 
 		// animation: slide
 		if (options.animation === 'slide') {
@@ -547,7 +549,7 @@
 
 			self.directiveElementActive();
 
-			options.after.call(self, $banner, self.activeIndex);
+			options.after.call(self, $banner, self.currentIndex);
 		};
 
 		A.fade = function() {
@@ -677,7 +679,7 @@
 
 			$item.eq(self.currentIndex).siblings().css('opacity', 0);
 
-			options.after.call(self, $banner, self.activeIndex);
+			options.after.call(self, $banner, self.currentIndex);
 
 			if (self.useAuto && !self.isHovered) {
 				self.setPlayTimer();
@@ -702,7 +704,7 @@
 
 			$list.css('transition', 'transform ' + options.duration + 'ms');
 
-			options.after.call(self, $banner, self.activeIndex);
+			options.after.call(self, $banner, self.currentIndex);
 
 			if (self.useAuto && !self.isHovered) {
 				self.setPlayTimer();
@@ -887,6 +889,7 @@
 					self.animation.slideCallback();
 				}, self.options.duration);
 
+				touchRange = 0;
 			};
 
 		$banner[0].addEventListener('touchstart', touchStart, false);
@@ -993,7 +996,7 @@
 
 		this.animation[this.options.animation]();
 
-		this.options.before.call(this, this.$elem, this.activeIndex);
+		this.options.before.call(this, this.$elem, this.currentIndex);
 
 		this.lazyLoad(this.currentIndex);
 	};
