@@ -327,12 +327,14 @@
 					thumbSlideBtnPosition = $thumbInnerBox.siblings('a').css('position');
 
 				if (thumbListWidth <= thumbBoxWidth) {
-					$thumbInnerBox.siblings('a').remove();
+					$thumbInnerBox.siblings('a').hide();
 
-					$thumbInnerBox.css({
-						margin: '0 auto',
-						width: thumbListWidth
-					});
+					// delete this.$thumbSlideBtn;
+
+					// $thumbInnerBox.css({
+					// 	margin: '0 auto',
+					// 	width: thumbListWidth
+					// });
 				} else {
 					$thumbInnerBox.css({
 						float: 'left',
@@ -739,7 +741,9 @@
 
 		if (this.$thumb) {
 			this.$thumb.eq(this.activeIndex).addClass('active').siblings().removeClass('active');
-			this.animation.thumbListSlide();
+			if (this.$thumbSlideBtn.is(':visible')) {
+				this.animation.thumbListSlide();
+			}
 		}
 	};
 
