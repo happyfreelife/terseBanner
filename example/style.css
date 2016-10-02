@@ -1,0 +1,113 @@
+@charset "utf-8";
+
+body, h1, h2, h3, h4, h5, h6, hr, p, blockquote, ul, ol, li, dl, dd, input, button, textarea, fieldset, legend, figure, menu, th, td, pre{margin:0;padding:0;}
+body{font-size: 12px;font-family: "Arial", "Microsoft YaHei";color: #666;}
+h1, h2, h3, h4, h5, h6{font-weight: normal;font-size: inherit;}
+a{color: #999;text-decoration: none;outline: none;}
+img{border: none;}
+ul, ol{list-style: none;}
+i, em{font-style: normal;}
+table{border-collapse: collapse;}
+td,th{padding:0}
+
+.clearfix:after{content: "";display: block;clear: both;}
+
+.side{position: fixed;top: 0;left: 0;width: 220px;padding: 0 20px;}
+.side .logo{padding: 20px 0 20px;}
+.side .logo h1{height: 50px;background: url(img/logo.png) no-repeat center;}
+.side .logo span{display: block;font-size: 14px;text-align: right;}
+.side .anchor{overflow: hidden;border-top: 1px solid #ccc;}
+.side .anchor a{float: left;width: 100px;line-height: 24px;margin-top: 15px;background: #333;color: #fff;text-align: center;}
+.side .anchor a:nth-child(even){float: right;}
+.side .anchor a:hover,
+.side .anchor a.active{background: #09c;color: #fff;}
+
+.main{margin-left: 270px;padding-top: 30px;overflow: hidden;}
+.main .container{position: relative;margin-bottom: 50px;padding: .1px 0;}
+.main .container:after{content: "";display: block;clear: both;}
+.main h2{width: 960px;margin-bottom: 20px;font-weight: bold;font-size: 18px;color: #333;}
+.main p{width: 960px;line-height: 24px;margin-bottom: 10px;font-size: 14px;}
+.main .rps{max-width: 100%;padding: 5px;border: 1px solid #ccc;}
+.main .banner{float: left;width: 960px;height: 540px;margin-right: 10px;}
+.main .code{float: left;width: calc(100% - 970px);}
+.main pre{padding: 2px;border: 1px solid #23241f;}
+.main pre .hljs{font: 14px/1.4 "Consolas";}
+@media (max-width: 1580px){.main .code{width: 960px;margin-top: 5px;}}
+
+#custom .tb-arrow a{width: 64px;height: 64px;opacity: 0;-webkit-transition: all .3s;transition: all .3s;}
+#custom .tb-arrow a.prev{background: url(img/icon-prev.png) no-repeat;}
+#custom .tb-arrow a.next{background: url(img/icon-next.png) no-repeat;}
+#custom:hover .tb-arrow a{opacity: 1;}
+#custom .tb-btn{bottom: 0;height: 10px;}
+#custom .tb-btn a{width: 160px;margin: 0;box-sizing: border-box;background: #666;border-right: 1px solid #fff;border-radius: 0;}
+#custom .tb-btn a:last-child{border: none;}
+#custom .tb-btn a.active{background: #f80;}
+
+#select{position: absolute;top: 40px;left: 860px;z-index: 10;width: 100px;cursor: default;font-family: "Consolas";}
+#select:after{position: absolute;top: 10px;right: 10px;content: "";border: 5px solid rgba(0, 0, 0, 0);border-top: 6px solid #fff;}
+#select span{display: block;line-height: 26px;background: #333;color: #fff;text-indent: 10px;}
+#select div{position: absolute;top: 26px;left: 0;width: 100%;height: 0;overflow: hidden;-webkit-transition: all .3s;transition: all .3s;}
+#select.active div{height: 107px ;}
+#select a{display: block;line-height: 26px;background: rgba(0, 0, 0, .7);border-top: 1px solid #fff;color: #fff;text-indent: 10px;}
+#select a:hover{background: #09c;}
+
+/*#thumb{padding-bottom: 100px;}*/
+
+#thumb .tb-thumb{width: 470px;}
+#thumb .tb-thumb a{}
+#thumb .tb-thumb a.prev{left:-50px;}
+#thumb .tb-thumb a.next{right: -50px;}
+/*#thumb .tb-thumb-list{width: 470px;}*/
+#thumb .tb-thumb-list dd{border: 1px solid #fff;padding: 1px;height: 84px;}
+
+/****************************** highlight ******************************/
+.hljs{display: block;padding: .5em;overflow-x: auto;background: #23241f;}
+
+.hljs,
+.hljs-tag,
+.hljs-subst{color: #f8f8f2;}
+
+.hljs-strong,
+.hljs-emphasis{color: #a8a8a2;}
+
+.hljs-bullet,
+.hljs-quote,
+.hljs-number,
+.hljs-regexp,
+.hljs-literal,
+.hljs-link{color: #ae81ff;}
+
+.hljs-code,
+.hljs-title,
+.hljs-section,
+.hljs-selector-class{color: #a6e22e;}
+
+.hljs-strong{font-weight: bold;}
+
+.hljs-emphasis{font-style: italic;}
+
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-name,
+.hljs-attr{color: #f92672;}
+
+.hljs-symbol,
+.hljs-attribute{color: #66d9ef;}
+
+.hljs-params,
+.hljs-class .hljs-title{color: #f8f8f2;}
+
+.hljs-string,
+.hljs-type,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-selector-id,
+.hljs-selector-attr,
+.hljs-selector-pseudo,
+.hljs-addition,
+.hljs-variable,
+.hljs-template-variable{color: #e6db74;}
+
+.hljs-comment,
+.hljs-deletion,
+.hljs-meta{color: #75715e;}

@@ -85,6 +85,7 @@
 				'.tb-list > * > *{position: relative;float: left;min-height: 1px;background-repeat: no-repeat;background-position: center top;}\n' +
 				'.tb-list > .touching{-webkit-transition-duration: 0ms !important;transition-duration: 0ms !important;}\n' +
 
+				'.tb-arrow{width: 95%;}\n' +
 				'.tb-arrow a{position: absolute;top: 0;cursor: pointer;}\n' +
 				'.tb-arrow a.prev{left: 0;}\n' +
 				'.tb-arrow a.next{right: 0;}\n' +
@@ -219,8 +220,8 @@
 			}));
 		}
 
-		// animation: fade || flashFade
-		if (options.animation === 'fade' || options.animation === 'flashFade') {
+		// animation: fade || flash
+		if (options.animation === 'fade' || options.animation === 'flash') {
 			if (Util.isSupportTransition) {
 				$item.css('transition', 'opacity ' + options.duration + 'ms');
 			}
@@ -577,7 +578,7 @@
 			self.directiveElementActive();
 		};
 
-		A.flashFade = A.fade;
+		A.flash = A.fade;
 
 		A.slide = function() {
 			var slideDirection = 'left';
@@ -1063,7 +1064,7 @@
 	 * Plugin default options
 	 */
 	$.fn.terseBanner.defaults = {
-		animation: 'slide', // 动画模式: ['none', 'fade', 'flashFade' 'slide']
+		animation: 'slide', // 动画模式: ['none', 'fade', 'flash' 'slide']
 		adaptive : false,   // 图片自适应
 		useHover : false,   // 导航按钮和缩略图支持hover事件触发动画
 		arrow    : false,   // 导航箭头

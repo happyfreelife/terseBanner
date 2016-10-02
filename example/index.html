@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>terseBanner</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+<!-- 添加视口判定，轮播元素显示时淡入再调用方法 -->
+    <!-- side:begin -->
+    <div class="side">
+        <div class="logo">
+            <h1></h1>
+            <span>简洁优雅的轮播插件</span>
+        </div>
+        <div class="anchor">
+            <a href="#anchor-1">自动化</a>
+            <a href="#anchor-2">自定义样式</a>
+            <a href="#anchor-3">动画</a>
+            <a href="#anchor-4">缩略图</a>
+            <a href="#anchor-5">自适应</a>
+            <a href="#anchor-6">延迟加载</a>
+            <a href="#anchor-7">方法</a>
+            <a href="#anchor-8">回调函数</a>
+            <a href="#anchor-9">参数列表</a>
+            <a href="#anchor-10">满屏宽度演示</a>
+        </div>
+
+        <a href="" class="github" target="_blank">See it on GitHub</a>
+        <a href="" class="download">Download<sub>2.0.2</sub></a>
+    </div>
+    <!-- side:end -->
+    
+    <!-- main:begin -->
+    <div class="main">
+        <div class="container" id="top">
+            <p>不同与大部分轮播插件的是，terseBanner删除了很多不实用或很少用的功能，只保留了常用的功能，可以绝大多数网站的需求</p>
+            <div class="banner">
+                <ul>
+                    <li><img src="img/banner-1.jpg"></li>
+                    <li><img src="img/banner-2.jpg"></li>
+                    <li><img src="img/banner-3.jpg"></li>
+                    <li><img src="img/banner-4.jpg"></li>
+                    <li><img src="img/banner-5.jpg"></li>
+                    <li><img src="img/banner-6.jpg"></li>
+                </ul>
+            </div>
+            <div class="code">
+<pre><code>
+&lt;style&gt;
+    .banner{width: 960px;height: 540px;}
+&lt;/style&gt;
+&lt;div class=&quot;banner&quot;&gt;
+    &lt;ul&gt;
+        &lt;li&gt;&lt;img src=&quot;img/banner-1.jpg&quot;&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;img src=&quot;img/banner-2.jpg&quot;&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;img src=&quot;img/banner-3.jpg&quot;&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;img src=&quot;img/banner-4.jpg&quot;&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;img src=&quot;img/banner-5.jpg&quot;&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;img src=&quot;img/banner-6.jpg&quot;&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+&lt;/div&gt;
+
+&lt;script type=&quot;text/javascript&quot; src=&quot;js/jquery-1.11.3.min.js&quot;&gt;&lt;/script&gt;
+&lt;script type=&quot;text/javascript&quot; src=&quot;../src/jquery.terseBanner.js&quot;&gt;&lt;/script&gt;
+
+&lt;script&gt;
+    $(&#x27;.banner&#x27;).terseBanner();
+&lt;/script&gt;
+</code></pre>
+            </div>
+        </div>
+    
+        <div class="container" id="anchor-1">
+            <h2>自动化</h2>
+            <p>自动添加必须的DOM元素，显著简化原生代码</p>
+            <img src="img/auto-add-dom.png" class="rps">
+            <br><br><br>
+            <p>自动写入默认样式，减少排版复杂度</p>
+            <img src="img/auto-add-style.png" class="rps">
+        </div>
+    
+        <div class="container" id="anchor-2">
+            <h2>自定义样式</h2>
+            <p>也可以使用自定义的样式来覆盖默认的样式（在默认样式的选择器前面再加一级）</p>
+            <div class="banner" id="custom">
+                <ul>
+                    <li><img src="img/banner-1.jpg"></li>
+                    <li><img src="img/banner-2.jpg"></li>
+                    <li><img src="img/banner-3.jpg"></li>
+                    <li><img src="img/banner-4.jpg"></li>
+                    <li><img src="img/banner-5.jpg"></li>
+                    <li><img src="img/banner-6.jpg"></li>
+                </ul>
+            </div>
+            <div class="code">
+<pre><code>
+#custom .tb-arrow a{width: 64px;height: 64px;margin: 0 20px;opacity: 0;-webkit-transition: all .3s;transition: all .3s;}
+#custom .tb-arrow a.prev{background: url(img/icon-prev.png) no-repeat;}
+#custom .tb-arrow a.next{background: url(img/icon-next.png) no-repeat;}
+#custom:hover .tb-arrow a{opacity: 1;}
+#custom .tb-btn{bottom: 0;height: 10px;}
+#custom .tb-btn a{width: 160px;margin: 0;box-sizing: border-box;background: #666;border-right: 1px solid #fff;border-radius: 0;}
+#custom .tb-btn a:last-child{border: none;}
+#custom .tb-btn a.active{background: #f80;}
+</code></pre>
+            </div>
+        </div>
+
+        <div class="container" id="anchor-3">
+            <h2>动画</h2>
+            <p>4种动画方式：slide, fade, flash, none（flash模式是fade模式的简化，图片切换时可以出现闪烁的白色背景）</p>
+            <div id="select">
+                <span>fade</span>
+                <div>
+                    <a>slide</a>
+                    <a>fade</a>
+                    <a>flash</a>
+                    <a>none</a>
+                </div>
+            </div>
+            <div class="banner" id="animation">
+                <ul>
+                    <li><img src="img/banner-1.jpg"></li>
+                    <li><img src="img/banner-2.jpg"></li>
+                    <li><img src="img/banner-3.jpg"></li>
+                    <li><img src="img/banner-4.jpg"></li>
+                    <li><img src="img/banner-5.jpg"></li>
+                    <li><img src="img/banner-6.jpg"></li>
+                </ul>
+            </div>
+            <div class="code">
+<pre><code>
+$('#animation').terseBanner({
+    arrow: true,
+    animation: 'fade'
+});
+</code></pre>
+            </div>
+        </div>
+    
+        <div class="container" id="anchor-4">
+            <h2>缩略图</h2>
+            <p>自动截取原始图片的一部分作为缩略图，缩略图列表超出容器时自动添加左右箭头</p>
+                <div class="banner" id="thumb">
+                    <ul>
+                        <li><img src="img/banner-1.jpg"></li>
+                        <li><img src="img/banner-2.jpg"></li>
+                        <li><img src="img/banner-3.jpg"></li>
+                        <li><img src="img/banner-4.jpg"></li>
+                        <li><img src="img/banner-5.jpg"></li>
+                        <li><img src="img/banner-6.jpg"></li>
+                    </ul>
+                </div>
+                <div class="code">
+<pre><code>
+
+</code></pre>
+                </div>
+            <div class="clearfix"><br><br><br></div>
+            <p>也可以手动设置每一张缩略图,在原始图片的地址后面加上 "?thumb=..."</p>
+            <div class="code">
+<pre><code>
+&lt;div class=&quot;banner&quot; id=&quot;thumb&quot;&gt;
+    &lt;ul&gt;
+        &lt;li&gt;&lt;img src=&quot;img/banner-1.jpg?thumb=img/thumb-1.png&quot;&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;img src=&quot;img/banner-2.jpg?thumb=img/thumb-2.png&quot;&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;img src=&quot;img/banner-3.jpg?thumb=img/thumb-3.png&quot;&gt;&lt;/li&gt;
+        &lt;!-- ... --&gt;
+    &lt;/ul&gt;
+&lt;/div&gt;
+</code></pre>
+            </div>
+        </div>
+
+        <div class="container" id="anchor-4">
+
+        </div>
+    
+        <div class="container" id="anchor-5">
+            <h2>自适应</h2>
+            <p>让图片自适应浏览器的宽度,这样可以完全显示图片（使用此功能时，缩略图将会被禁用）</p>
+        </div>
+
+        <div class="container" id="anchor-6">
+            <h2>延迟加载</h2>
+            <p>减少大图片的单个加载时间</p>
+        
+        </div>
+
+        <div class="container" id="anchor-7">
+            <h2>方法</h2>
+            <p>可以使用下面的方法，可以在自定义的事件中切换轮播图片</p>
+        
+        </div>
+
+        <div class="container" id="anchor-8">
+            <h2>回调函数</h2>
+            <p>3个回调函数:init, before, after, 可以传入的参数为</p>
+        
+        </div>
+
+        <div class="container" id="anchor-8" style="margin-bottom: 800px;">
+            <h2>参数列表</h2>
+            <!-- 参数名   类型   可选值   作用 -->
+        </div>
+    </div>
+
+
+    <!-- ie8支持 -->
+    <!-- 不支持垂直方向的图片滑动切换 -->
+    <!-- main:end -->
+</body>
+<script type="text/javascript" src="js/jquery-1.11.3.min.js"></script>
+<script type="text/javascript" src="../src/jquery.terseBanner.js"></script>
+<script type="text/javascript" src="js/highlight.pack.js"></script>
+<script type="text/javascript" src="js/script.js"></script>
+</html>
