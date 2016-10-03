@@ -23,7 +23,6 @@
             <a href="#anchor-7">方法</a>
             <a href="#anchor-8">回调函数</a>
             <a href="#anchor-9">参数列表</a>
-            <a href="#anchor-10">满屏宽度演示</a>
         </div>
 
         <a href="" class="github" target="_blank">See it on GitHub</a>
@@ -109,7 +108,8 @@
 
         <div class="container" id="anchor-3">
             <h2>动画</h2>
-            <p>4种动画方式：slide, fade, flash, none（flash模式是fade模式的简化，图片切换时可以出现闪烁的白色背景）</p>
+            <p>4种动画方式：slide, fade, flash, none（flash模式是fade模式的简化，图片切换时可以出现闪烁的白色背景）
+            <br>PS：slide模式不支持垂直方向的滑动</p>
             <div id="select">
                 <span>fade</span>
                 <div>
@@ -129,19 +129,12 @@
                     <li><img src="img/banner-6.jpg"></li>
                 </ul>
             </div>
-            <div class="code">
-<pre><code>
-$('#animation').terseBanner({
-    arrow: true,
-    animation: 'fade'
-});
-</code></pre>
-            </div>
         </div>
     
         <div class="container" id="anchor-4">
             <h2>缩略图</h2>
             <p>自动截取原始图片的一部分作为缩略图，缩略图列表超出容器时自动添加左右箭头</p>
+            <div class="clearfix">
                 <div class="banner" id="thumb">
                     <ul>
                         <li><img src="img/banner-1.jpg"></li>
@@ -154,12 +147,21 @@ $('#animation').terseBanner({
                 </div>
                 <div class="code">
 <pre><code>
-
+$('#thumb').terseBanner({
+    btn: false,
+    thumb: {
+        width: 150,
+        height: 84,
+        gap: 4,
+        visible: 3
+    }
+});
 </code></pre>
                 </div>
-            <div class="clearfix"><br><br><br></div>
-            <p>也可以手动设置每一张缩略图,在原始图片的地址后面加上 "?thumb=..."</p>
-            <div class="code">
+            </div>
+            <div class="clearfix">
+                <p><br>也可以手动设置每一张缩略图,在原始图片的地址后面加上 "?thumb=..."</p>
+                <div class="code">
 <pre><code>
 &lt;div class=&quot;banner&quot; id=&quot;thumb&quot;&gt;
     &lt;ul&gt;
@@ -170,28 +172,50 @@ $('#animation').terseBanner({
     &lt;/ul&gt;
 &lt;/div&gt;
 </code></pre>
+                </div>
             </div>
         </div>
-
-        <div class="container" id="anchor-4">
-
-        </div>
-    
+        
         <div class="container" id="anchor-5">
             <h2>自适应</h2>
-            <p>让图片自适应浏览器的宽度,这样可以完全显示图片（使用此功能时，缩略图将会被禁用）</p>
+            <p>让图片自适应轮播的宽度,可以用来满屏显示图片（使用此功能时，缩略图将会被禁用）</p>
+            <div id="scale">
+                <span>改变轮播的宽度：</span>
+                <a>→ ←</a>
+                <a class="larger">← →</a>
+            </div>
+            <a id="widescreen">宽屏演示</a>
+            <div class="banner" id="adaptive">
+                <ul>
+                    <li><img src="img/banner-1.jpg"></li>
+                    <li><img src="img/banner-2.jpg"></li>
+                    <li><img src="img/banner-3.jpg"></li>
+                    <li><img src="img/banner-4.jpg"></li>
+                    <li><img src="img/banner-5.jpg"></li>
+                    <li><img src="img/banner-6.jpg"></li>
+                </ul>
+            </div>
         </div>
 
         <div class="container" id="anchor-6">
             <h2>延迟加载</h2>
-            <p>减少大图片的单个加载时间</p>
-        
+            <p>减少大图片的单张加载时间（有默认的loading动画）</p>
+            <a id="reload">重新加载大图</a>
+            <div class="banner" id="lazyload">
+                <ul>
+                    <li><img data-src="http://desk.fd.zol-img.com.cn/t_s1920x1080c5/g5/M00/05/02/ChMkJ1bxATiIVlzmAAlJIHaXmLkAAOTUgN32YEACUk4716.jpg"></li>
+                    <li><img data-src="http://desk.fd.zol-img.com.cn/t_s1920x1080c5/g5/M00/05/02/ChMkJ1bxATaIevuuABYRrSzYfikAAOTUgI7dk0AFhHF290.jpg"></li>
+                    <li><img data-src="http://desk.fd.zol-img.com.cn/t_s1920x1080c5/g5/M00/05/02/ChMkJ1bxATyIHmOaAA427DMtOHcAAOTUwGiFqgADjcE489.jpg"></li>
+                    <li><img data-src="http://desk.fd.zol-img.com.cn/t_s1920x1080c5/g5/M00/05/02/ChMkJlbxAUCIMqKdAAMVx51HXogAAOTUwP6tOQAAxXf894.jpg"></li>
+                    <li><img data-src="http://desk.fd.zol-img.com.cn/t_s1920x1080c5/g5/M00/05/02/ChMkJlbxATqIBOwbAAt1D9lCvKkAAOTUwB9S5IAC3Un823.jpg"></li>
+                </ul>
+            </div>
         </div>
 
         <div class="container" id="anchor-7">
             <h2>方法</h2>
             <p>可以使用下面的方法，可以在自定义的事件中切换轮播图片</p>
-        
+            
         </div>
 
         <div class="container" id="anchor-8">
@@ -202,8 +226,9 @@ $('#animation').terseBanner({
 
         <div class="container" id="anchor-8" style="margin-bottom: 800px;">
             <h2>参数列表</h2>
-            <!-- 参数名   类型   可选值   作用 -->
+            参数名   类型   可选值   作用
         </div>
+       
     </div>
 
 

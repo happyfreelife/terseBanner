@@ -111,7 +111,7 @@ $(function() {
 			$('#select span').text(currentAnimation);
 
 			$('#animation').animate({
-				left: 960,
+				left: '100%',
 				opacity: 0
 			}, function() {
 				$(this).remove();
@@ -126,10 +126,56 @@ $(function() {
 
 
 	$('#thumb').terseBanner({
+		btn: false,
 		thumb: {
 			width: 150,
-			height: 90,
-			gap: 6
+			height: 84,
+			gap: 4,
+			visible: 3
 		}
+	});
+
+	$('#adaptive').terseBanner({ adaptive: true });
+	var minWidth = 560,
+		maxWidth = 960,
+		step = 100;
+
+	$('#scale a').click(function() {
+		var bannerWidth = $(this).hasClass('larger') ? Math.min(maxWidth, $('#adaptive').width() + step) :
+		Math.max(minWidth, $('#adaptive').width() - step);
+
+		$('#adaptive').stop(true, false).animate({ width: bannerWidth }, 300);
+	});
+
+
+	var lazyloadDOM = $('#lazyload')[0].outerHTML;
+	function addTimeStamp() {
+		$('#lazyload ul li img').each(function() {
+			$(this).attr('data-src', $(this).attr('data-src') + '?' + Date.now());
+		});
+	}
+
+	addTimeStamp();
+	$('#lazyload').terseBanner({
+		arrow: true,
+		adaptive: true,
+		// animation: 'fade'
+	});
+
+	$('#reload').click(function() {
+		$('#lazyload').animate({
+			left: '100%',
+			opacity: 0
+		}, function() {
+			$(this).remove();
+			$('#reload').after(lazyloadDOM);
+
+			addTimeStamp();
+			$('#lazyload').terseBanner({
+				arrow: true,
+				adaptive: true,
+				// animation: 'fade'
+			});
+		});
 	});
 });
