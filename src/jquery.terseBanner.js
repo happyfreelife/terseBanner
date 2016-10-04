@@ -1,6 +1,6 @@
 /**
  * terseBanner
- * Version: 2.0.3
+ * Version: 2.0.4
  * URI: https://github.com/happyfreelife/easyBanner/
  */
 
@@ -14,9 +14,9 @@
 	}
 }(this, function ($, window, document) {
 	/**
-	 * Utility property and method
+	 * Global property and method
 	 */
-	var Util = {
+	var Global = {
 		// 是否为ie8以下的浏览器
 		isLTIE8: /msie (6.0|7.0)/i.test(navigator.userAgent),
 
@@ -75,7 +75,7 @@
 		this.isAnimated   = false;
 
 		// 在移动端，动画方式必须是slide
-		if (Util.isSupportTouch) {
+		if (Global.isSupportTouch) {
 			this.options.animation = 'slide';
 		}
 
@@ -126,6 +126,8 @@
 			thumbArr = [],
 			self = this,
 			regExp = new RegExp('\\?thumb=(.*\\.(gif|jpg|jpeg|png))$');
+
+		options.init.call(self, $banner, $item);
 
 		if ($banner.css('position') === 'static') {
 			$banner.css('position', 'relative');
@@ -201,7 +203,7 @@
 
 		// animation: slide
 		if (options.animation === 'slide') {
-			if (Util.isSupportTransition) {
+			if (Global.isSupportTransition) {
 				$list.css({
 					transform: 'translate3d(0, 0, 0)',
 					'-webkit-transform': 'translate3d(0, 0, 0)',
@@ -211,7 +213,8 @@
 
 			$list.css('left', 0);
 			$item.css('float', 'left').first().show().siblings().hide();
-			$item.first().clone(true).hide().appendTo($list);
+			$item.first().clone(true).addClass('first').hide().appendTo($list);
+			$item.last().clone(true).addClass('last').hide().prependTo($list);
 		}
 
 		// animation: fade
@@ -225,9 +228,6 @@
 
 		// animation: fade || flash
 		if (options.animation === 'fade' || options.animation === 'flash') {
-			if (Util.isSupportTransition) {
-				$item.css('transition', 'opacity ' + options.duration + 'ms');
-			}
 			$item.first().siblings().css('opacity', 0);
 		}
 
@@ -253,18 +253,12 @@
 						$arrow.height(parseInt($banner.height() * 0.1));
 					}
 
-					$arrow.filter('.prev').html('<img src="' + Util.prevArrow + '">');
-					$arrow.filter('.next').html('<img src="' + Util.nextArrow + '">');
+					$arrow.filter('.prev').html('<img src="' + Global.prevArrow + '">');
+					$arrow.filter('.next').html('<img src="' + Global.nextArrow + '">');
 
 					$arrow.find('img').on('dragstart', function() {
 						return false;
 					});
-				}
-				break;
-
-			case 'arrowBoxSize' :
-				if ($arrowBox.width() === $banner.width()) {
-					$arrowBox.width($banner.width());
 				}
 				break;
 
@@ -354,12 +348,12 @@
 				} else {
 					$thumbSlideBtn.filter('.prev').css({
 						left: this.options.thumb.gap,
-						backgroundImage: 'url(' + Util.prevThumbBtn + ')'
+						backgroundImage: 'url(' + Global.prevThumbBtn + ')'
 					});
 
 					$thumbSlideBtn.filter('.next').css({
 						right: this.options.thumb.gap,
-						backgroundImage: 'url(' + Util.nextThumbBtn + ')'
+						backgroundImage: 'url(' + Global.nextThumbBtn + ')'
 					});
 				}
 				break;
@@ -368,7 +362,7 @@
 
 	// 添加箭头
 	TB.prototype.addArrow = function() {
-		if (!this.options.arrow || Util.isMobile) {
+		if (!this.options.arrow || Global.isMobile) {
 			this.addBtn();
 			return;
 		}
@@ -386,15 +380,14 @@
 		this.$arrowBox = $('.tb-arrow', $banner);
 		this.$arrow = $('.tb-arrow a', $banner);
 
-		setTimeout(function() {
-			self.autoSetStyle('arrow');
-			self.autoSetStyle('arrowBoxSize');
-			self.autoSetStyle('arrowBoxPos');
-		}, 50);
+		this.autoSetStyle('arrow');
+		this.autoSetStyle('arrowBoxPos');
 
 		this.$arrow.on({
 			click: function() {
 				if (self.isAnimated) return;
+
+				self.options.before.call(self, self.$elem, self.$item, self.currentIndex);
 
 				if ($(this).hasClass('prev')) {
 					self.currentIndex--;
@@ -432,23 +425,23 @@
 		this.$btn = $('.tb-btn a', $banner);
 
 		this.$btn.first().addClass('active');
-		setTimeout(function() {
-			self.autoSetStyle('btnBoxPos');
-		}, 50);
 
-		// 按钮中添加数字
+		this.autoSetStyle('btnBoxPos');
+
+		// 导航按钮中添加序列数字
 		if (this.options.btn === 'ol') {
 			this.$btn.find('i').each(function(index) {
 				$(this).text(index + 1);
 			});
 		}
 
-		if (!Util.isMobile) {
+		if (!Global.isMobile) {
 			this.$btn.on(
 				self.options.useHover ? 'mouseenter' : 'click',
 				function() {
 					if (self.isAnimated) return;
 
+					self.options.before.call(self, self.$elem, self.$item, self.currentIndex);
 					self.currentIndex = $(this).index();
 					self.play();
 				}
@@ -503,6 +496,8 @@
 			self.options.useHover ? 'mouseenter' : 'click',
 			function() {
 				if (self.isAnimated) return;
+
+				self.options.before.call(self, self.$elem, self.$item, self.currentIndex);
 				self.currentIndex = $(this).index();
 				self.play();
 			}
@@ -563,7 +558,7 @@
 			self.directiveElementActive();
 
 			if (!$item.eq(self.currentIndex).data('origin')) {
-				options.after.call(self, $banner, self.currentIndex);
+				options.after.call(self, self.$elem, self.$item, self.currentIndex);
 			}
 		};
 
@@ -574,18 +569,12 @@
 
 			$list.css('left', -self.currentIndex * 100 + '%');
 
-			if (Util.isSupportTransition) {
-				$item.eq(self.currentIndex).css('opacity', 1);
-
-				setTimeout(self.animation.fadeCallback, self.options.duration);
-			} else {
-				$item.eq(self.currentIndex).animate({
-					opacity: 1
-				}, {
-					duration: self.options.duration,
-					complete: self.animation.fadeCallback
-				});
-			}
+			$item.eq(self.currentIndex).animate({
+				opacity: 1
+			}, {
+				duration: self.options.duration * 0.8,
+				complete: self.animation.fadeCallback
+			});
 
 			self.directiveElementActive();
 		};
@@ -593,43 +582,39 @@
 		A.flash = A.fade;
 
 		A.slide = function() {
-			var slideDirection = 'left';
+			var slidToLeft = true;
 
 			if (self.currentIndex === self.latestIndex) return;
 
 			if (self.currentIndex < self.latestIndex) {
-				slideDirection = 'right';
+				slidToLeft = false;
 			}
 
-			// first item to last item
-			if (self.currentIndex < 0) {
+			// first item -> last item
+			if (self.currentIndex < -1) {
 				self.currentIndex = self.len - 1;
+				$item.last().show().siblings().hide();
 
-				$item.first().hide();
-				$item.eq(self.len - 1).show().next().show();
-
-				$list.css('left', -$item.width());
-
-				slideDirection = 'right';
+				slidToLeft = false;
 			}
 
-			// last item to first item
+			// last item -> first item
 			if (self.currentIndex > self.len) {
 				self.currentIndex = 1;
 				$item.first().show().siblings().hide();
 			}
 
-			if (slideDirection === 'right') {
+			if (slidToLeft === false) {
 				$list.css('left', '-100%');
 			}
 
-			$item.eq(self.currentIndex).show();
+			$item.eq(self.currentIndex + 1).show();
 
-			if (Util.isSupportTransition) {
+			if (Global.isSupportTransition) {
 				setTimeout(function() {
 					self.isAnimated = true;
 
-					var listTransform = slideDirection === 'left' ?
+					var listTransform = slidToLeft ?
 						'translate3d(' + -$item.width() + 'px, 0, 0)' :
 						'translate3d(' + $item.width() + 'px, 0, 0)';
 
@@ -642,11 +627,11 @@
 				}, 20);
 			}
 
-			if (!Util.isSupportTransition) {
+			if (!Global.isSupportTransition) {
 				self.isAnimated = true;
 
 				$list.animate({
-					left: slideDirection === 'left' ? '-100%' : 0
+					left: slidToLeft? '-100%' : 0
 				}, options.duration, self.animation.slideCallback);
 			}
 
@@ -702,7 +687,7 @@
 			$item.eq(self.currentIndex).siblings().css('opacity', 0);
 
 			if (!$item.eq(self.currentIndex).data('origin')) {
-				options.after.call(self, $banner, self.currentIndex);
+				options.after.call(self, self.$elem, self.$item, self.currentIndex);
 			}
 
 			if (self.useAuto && !self.isHovered) {
@@ -714,8 +699,9 @@
 			self.isAnimated = false;
 
 			self.latestIndex =
-			self.currentIndex === self.len ? 0 :
-			self.currentIndex === -1 ? self.len - 1 : self.currentIndex;
+			self.currentIndex =
+			self.currentIndex === -1 ? self.len - 1 :
+			self.currentIndex === self.len ? 0 : self.currentIndex;
 
 			$list.css({
 				left: 0,
@@ -724,12 +710,12 @@
 				'-webkit-transform': 'translate3d(0, 0, 0)'
 			});
 
-			$item.eq(self.currentIndex).show().siblings().hide();
+			$item.eq(self.currentIndex + 1).show().siblings().hide();
 
 			$list.css('transition', 'transform ' + options.duration + 'ms');
 
 			if (!$item.eq(self.currentIndex).data('origin')) {
-				options.after.call(self, $banner, self.currentIndex);
+				options.after.call(self, self.$elem, self.$item, self.currentIndex);
 			}
 
 			if (self.useAuto && !self.isHovered) {
@@ -738,12 +724,10 @@
 		};
 
 		setTimeout(function() {
-			options.init.call(self, $banner, 0);
-
-			options.before.call(self, $banner, 0);
+			options.before.call(self, self.$elem, self.$item, 0);
 
 			if (!self.currentIndex && !$item.eq(self.currentIndex).data('origin')) {
-				options.after.call(self, $banner, self.currentIndex);
+				options.after.call(self, self.$elem, self.$item, self.currentIndex);
 			}
 		}, 20);
 
@@ -805,7 +789,7 @@
 			}
 		}, 50);
 
-		if (Util.isSupportTouch) {
+		if (Global.isSupportTouch) {
 			this.bindTouchEvent();
 		}
 
@@ -849,6 +833,8 @@
 				touchCurrentX = touch.pageX - $banner.offset().left;
 				touchRange = touchCurrentX - touchStarX;
 
+				self.options.before.call(self, self.$elem, self.$item, self.currentIndex);
+
 				if (!$list.hasClass('touching')) {
 					if (touchRange < 0) {
 						touchDirection = 'left';
@@ -858,19 +844,21 @@
 						self.currentIndex--;
 					} else return;
 
-					// first item to last item
-					if (self.currentIndex < 0) {
-						self.currentIndex = self.len - 1;
+					// first item -> last item
+					if (self.currentIndex < -1) {
+						// self.currentIndex = self.len - 1;
 
 						$item.first().hide();
 						$item.eq(self.len - 1).show().next().show();
+
+						// $item.last().show().siblings().hide();
 
 						$list.css('left', -$item.width());
 
 						touchDirection = 'right';
 					}
 
-					// last item to first item
+					// last item -> first item
 					if (self.currentIndex > self.len) {
 						self.currentIndex = 1;
 						$item.first().show().siblings().hide();
@@ -880,7 +868,7 @@
 						$list.css('left', '-100%');
 					}
 
-					$item.eq(self.currentIndex).show();
+					$item.eq(self.currentIndex + 1).show();
 
 					$list.addClass('touching');
 				}
@@ -889,6 +877,8 @@
 					transform: 'translate3d(' + touchRange + 'px, 0, 0)',
 					'-webkit-transform': 'translate3d(' + touchRange + 'px, 0, 0)'
 				});
+
+				self.lazyLoad(self.currentIndex);
 			},
 
 			touchEnd = function(e) {
@@ -940,12 +930,15 @@
 			$banner = this.$elem,
 			$list = this.$list,
 			$item = this.$item,
-			$visibleItem = $list.children().eq(currentIndex),
+			// $visibleItem = $list.children().eq(currentIndex),
+			$visibleItem = $item.eq(currentIndex),
 			visibleItemImg = $visibleItem.data('origin');
+
+		if (!visibleItemImg) return;
 
 		function showVisibleItem() {
 			if (options.adaptive) {
-				$('img[data-src]', $visibleItem).attr('src', visibleItemImg);
+				$('img[data-src]', $item.eq(currentIndex)).attr('src', visibleItemImg);
 			} else {
 				$visibleItem.css('backgroundImage', 'url(' + visibleItemImg + ')');
 			}
@@ -956,11 +949,11 @@
 				img.src = visibleItemImg;
 
 				if (img.complete) {
-					options.after.call(self, $banner, self.currentIndex);
+					options.after.call(self, self.$elem, self.$item, self.currentIndex);
 					$visibleItem.data('origin', '');
 				} else {
 					img.onload = function() {
-						options.after.call(self, $banner, self.currentIndex);
+						options.after.call(self, self.$elem, self.$item, self.currentIndex);
 						$visibleItem.data('origin', '');
 					};
 				}
@@ -970,24 +963,27 @@
 					$(this).remove();
 				});
 
-				options.after.call(self, $banner, self.currentIndex);
+				options.after.call(self, self.$elem, self.$item, self.currentIndex);
 			}
-		}
-
-		if (!visibleItemImg) return;
-
-		if (!currentIndex) {
-			showVisibleItem();
 
 			// slide动画模式下，第一张图片克隆之后添加到列表的最后，
 			// 在这里需要手动更新它的src属性
 			if (options.animation === 'slide') {
-				$list.children().last().html($item.first().html());
+				if (!currentIndex) {
+					$list.children().last().html($item.first().html());
+				}
+
+				if (currentIndex === -1 || currentIndex === self.len - 1) {
+					$list.children().first().html($item.last().html());
+				}
 			}
+		}
+
+		if (!currentIndex) {
+			showVisibleItem();
 		} else {
 			// 添加loading动画
 			var loaderBackground;
-
 			if ($banner.css('backgroundColor') === 'rgba(0, 0, 0, 0)' ||
 				$banner.css('backgroundColor') === 'transparent') {
 				loaderBackground = '#fff';
@@ -997,18 +993,33 @@
 
 			$visibleItem.append(
 				'<div class="tb-loader">' +
-					'<img src="' + Util.loaderImage + '">' +
+					'<img src="' + Global.loaderImage + '">' +
 				'</div>'
 			);
 
-			$('.tb-loader', $visibleItem).css({
+			if (options.animation === 'slide' && currentIndex === -1) {
+				$list.children().first().append(
+					'<div class="tb-loader">' +
+					'<img src="' + Global.loaderImage + '">' +
+					'</div>'
+				);
+			}
+
+			$('.tb-loader').css({
 				background: loaderBackground,
 				height: $banner.height()
 			});
 
-			$('.tb-loader img', $visibleItem).css('top', function() {
+			$('.tb-loader img').css('top', function() {
 				return ($banner.height() - $(this).height()) / 2;
 			});
+
+			if (options.animation === 'fade' || options.animation === 'flash') {
+				// $('.tb-loader').css({ opacity: 0 }).animate({
+				// 	opacity: 1
+				// }, options.duration * 0.8);
+				$('.tb-loader').hide().fadeIn();
+			}
 
 
 			// 绑定图片加载完成的事件
@@ -1039,6 +1050,7 @@
 		clearInterval(this.playTimer);
 
 		this.playTimer = setInterval(function() {
+			self.options.before.call(self, self.$elem, self.$item, self.currentIndex);
 			self.currentIndex++;
 			self.play();
 		}, self.options.auto);
@@ -1057,8 +1069,6 @@
 
 		this.animation[this.options.animation]();
 
-		this.options.before.call(this, this.$elem, this.currentIndex);
-
 		this.lazyLoad(this.currentIndex);
 	};
 
@@ -1069,6 +1079,7 @@
 			throw new Error('TerseBanner\'s index overflow!');
 		}
 
+		this.options.before.call(this, this.$elem, this.$item, this.currentIndex);
 		switch (arguments[0]) {
 			case 'prev':
 				this.currentIndex--;
@@ -1079,7 +1090,7 @@
 				break;
 
 			default:
-				this.currentIndex = arguments[0];
+				this.currentIndex = arguments[0] - 1;
 				break;
 		}
 		this.play();
@@ -1090,7 +1101,7 @@
 	 * Plugin main method
 	 */
 	$.fn.terseBanner = function(option) {
-		if (Util.isLTIE8) {
+		if (Global.isLTIE8) {
 			throw new Error('terseBanner cannot work under IE8!');
 		}
 
@@ -1121,20 +1132,15 @@
 	 */
 	$.fn.terseBanner.defaults = {
 		animation: 'slide', // 动画模式: ['none', 'fade', 'flash' 'slide']
-		adaptive : false,   // 图片自适应
+		adaptive : false,   // 图片宽度自适应
 		useHover : false,   // 导航按钮和缩略图支持hover事件触发动画
 		arrow    : false,   // 导航箭头
-		btn      : true,    // 导航按钮: [true, false, 'ol', 'equal']
+		btn      : true,    // 导航按钮: [true, false, 'ol']
 		auto     : 5000,    // 自动轮播: [为0时禁用此功能]
 		duration : 800,     // 动画速度
-		init     : $.noop,  // 轮播初始化完成后执行的回调函数
+		init     : $.noop,  // 轮播初始化时执行的回调函数
 		before   : $.noop,  // 动画开始时执行的回调函数
 		after    : $.noop,  // 动画完成时执行的回调函数
-		thumb    : {        // 缩略图
-			// width: 150,
-			// height: 100,
-			// gap: 10
-			// visible: 0
-		}
+		thumb    : { }      // 缩略图
 	};
 }));

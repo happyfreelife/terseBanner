@@ -34,9 +34,7 @@ td,th{padding:0}
 .main .code{float: left;width: calc(100% - 970px);}
 .main pre{padding: 2px;border: 1px solid #23241f;}
 .main pre .hljs{font: 14px/1.4 "Consolas";}
-@media (max-width: 1580px){
-	.main .code{width: 960px;margin-top: 5px;}
-}
+@media (max-width: 1580px){.main .code{width: 960px;margin-top: 5px;}}
 
 #custom .tb-arrow a{width: 64px;height: 64px;opacity: 0;-webkit-transition: all .3s;transition: all .3s;}
 #custom .tb-arrow a.prev{background: url(img/icon-prev.png) no-repeat;}
@@ -56,16 +54,34 @@ td,th{padding:0}
 #select a:hover{background: #09c;}
 
 #thumb .tb-thumb dl dd{border: 3px solid #fff;}
-#thumb .tb-thumb dl dd.active {border-color: #09c;}
+#thumb .tb-thumb dl dd.active{border-color: #09c;}
 
 #scale{position: absolute;top: 35px;left: 600px;}
-#scale span{float: left;font-size: 14px;line-height: 24px;}
-#scale a{font-size: 14px;color: #fff;background: #333;text-align: center;width: 40px;margin-left: 10px;float: left;line-height: 24px;cursor: pointer;font-family: "Microsoft YaHei";}
-#widescreen{position: absolute;color: #fff;background: #333;text-align: center;width: 80px;line-height: 24px;cursor: pointer;top: 35px;left: 880px;}
+#scale span{float: left;line-height: 24px;font-size: 14px;}
+#scale a{float: left;width: 40px;line-height: 24px;margin-left: 10px;background: #333;cursor: pointer;font-size: 14px;font-family: "Microsoft YaHei";color: #fff;text-align: center;}
+#widescreen{position: absolute;top: 35px;left: 880px;width: 80px;line-height: 24px;background: #333;cursor: pointer;color: #fff;text-align: center;}
 #adaptive{height: auto;}
 
-#reload{position: absolute;color: #fff;background: #333;text-align: center;width: 100px;line-height: 24px;cursor: pointer;top: 35px;left: 860px;}
-/*#lazyload{height: 600px;}*/
+#reload{position: absolute;top: 35px;left: 860px;width: 100px;line-height: 24px;background: #333;cursor: pointer;color: #fff;text-align: center;}
+
+#switch{position: absolute;top: 35px;left: 668px;width: 292px;}
+#switch a{float: left;line-height: 24px;padding: 0 10px;background: #333;cursor: pointer;font-size: 14px;color: #fff;}
+#switch ul{float: left;margin: 0 15px;}
+#switch ul li{float: left;width: 24px;line-height: 24px;background: #333;font-size: 14px;color: #fff;text-align: center;margin: 0 2px;cursor: pointer;}
+#switch a:hover,
+#switch ul li:hover{background: #09c;}
+
+#callback ul li em{position: absolute;top: -120px;left: 50%;width: 120px;font: bold 50px/120px "Microsoft YaHei";margin-left: -60px;background: rgba(0, 0, 0, .9);color: #fff;text-align: center;-webkit-transition: all .6s;transition: all .6s;}
+
+#options{width: 960px;border: 1px solid #ddd;}
+#options tr:first-child{font-weight: bold;}
+#options tr:first-child td{font-weight: bold;}
+#options td{border: 1px solid #ddd;padding-left: 10px;vertical-align: top;font: 14px/32px "Consolas" "Microsoft YaHei";}
+#options td:nth-child(1){width: 100px;color: #000;font-weight: bold;}
+#options td:nth-child(2){width: 100px;}
+#options td:nth-child(3){width: 160px;}
+#options td:nth-child(4){width: 200px;}
+#options td:nth-child(5){width: 400px;font-size: 12px;}
 
 /****************************** highlight ******************************/
 .hljs{display: block;padding: .5em;overflow-x: auto;background: #23241f;}

@@ -22,18 +22,21 @@
             <a href="#anchor-6">延迟加载</a>
             <a href="#anchor-7">方法</a>
             <a href="#anchor-8">回调函数</a>
-            <a href="#anchor-9">参数列表</a>
+            <a href="#anchor-9">**参数列表</a>
         </div>
 
         <a href="" class="github" target="_blank">See it on GitHub</a>
         <a href="" class="download">Download<sub>2.0.2</sub></a>
     </div>
     <!-- side:end -->
-    
+
     <!-- main:begin -->
     <div class="main">
         <div class="container" id="top">
-            <p>不同与大部分轮播插件的是，terseBanner删除了很多不实用或很少用的功能，只保留了常用的功能，可以绝大多数网站的需求</p>
+            <p>
+                不同与大部分轮播插件的是，terseBanner删除了很多不实用或很少用的功能，只保留了常用的功能，可以绝大多数网站的需求<br>
+                支持ie8浏览器，支持触屏事件
+            </p>
             <div class="banner">
                 <ul>
                     <li><img src="img/banner-1.jpg"></li>
@@ -69,7 +72,7 @@
 </code></pre>
             </div>
         </div>
-    
+
         <div class="container" id="anchor-1">
             <h2>自动化</h2>
             <p>自动添加必须的DOM元素，显著简化原生代码</p>
@@ -78,7 +81,7 @@
             <p>自动写入默认样式，减少排版复杂度</p>
             <img src="img/auto-add-style.png" class="rps">
         </div>
-    
+
         <div class="container" id="anchor-2">
             <h2>自定义样式</h2>
             <p>也可以使用自定义的样式来覆盖默认的样式（在默认样式的选择器前面再加一级）</p>
@@ -130,7 +133,7 @@
                 </ul>
             </div>
         </div>
-    
+
         <div class="container" id="anchor-4">
             <h2>缩略图</h2>
             <p>自动截取原始图片的一部分作为缩略图，缩略图列表超出容器时自动添加左右箭头</p>
@@ -160,7 +163,7 @@ $('#thumb').terseBanner({
                 </div>
             </div>
             <div class="clearfix">
-                <p><br>也可以手动设置每一张缩略图,在原始图片的地址后面加上 "?thumb=..."</p>
+                <p><br>也可以手动设置每一张缩略图,在原始图片的地址后面加上 <b>?thumb=...</b></p>
                 <div class="code">
 <pre><code>
 &lt;div class=&quot;banner&quot; id=&quot;thumb&quot;&gt;
@@ -175,7 +178,7 @@ $('#thumb').terseBanner({
                 </div>
             </div>
         </div>
-        
+
         <div class="container" id="anchor-5">
             <h2>自适应</h2>
             <p>让图片自适应轮播的宽度,可以用来满屏显示图片（使用此功能时，缩略图将会被禁用）</p>
@@ -199,7 +202,8 @@ $('#thumb').terseBanner({
 
         <div class="container" id="anchor-6">
             <h2>延迟加载</h2>
-            <p>减少大图片的单张加载时间（有默认的loading动画）</p>
+            <p>减少大图片的单张加载时间（有默认的loading动画）<br>
+            把图片的 <b>src</b> 属性换成 <b>data-src</b> 即可</p>
             <a id="reload">重新加载大图</a>
             <div class="banner" id="lazyload">
                 <ul>
@@ -210,30 +214,209 @@ $('#thumb').terseBanner({
                     <li><img data-src="http://desk.fd.zol-img.com.cn/t_s1920x1080c5/g5/M00/05/02/ChMkJlbxATqIBOwbAAt1D9lCvKkAAOTUwB9S5IAC3Un823.jpg"></li>
                 </ul>
             </div>
+            <div class="code">
+<pre><code>
+&lt;div class=&quot;banner&quot; id=&quot;lazyload&quot;&gt;
+    &lt;ul&gt;
+        &lt;li&gt;&lt;img data-src=&quot;img/banner-1.jpg&quot;&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;img data-src=&quot;img/banner-2.jpg&quot;&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;img data-src=&quot;img/banner-3.jpg&quot;&gt;&lt;/li&gt;
+        &lt;!-- ... --&gt;
+    &lt;/ul&gt;
+&lt;/div&gt;
+</code></pre>
+            </div>
         </div>
 
         <div class="container" id="anchor-7">
             <h2>方法</h2>
-            <p>可以使用下面的方法，可以在自定义的事件中切换轮播图片</p>
-            
+            <p>可以对外提供的方法 switchTo() 在自定义的事件中切换轮播图片</p>
+            <div id="switch">
+                <a class="prev">prev</a>
+                <ul><li>1</li><li>2</li><li>3</li><li>4</li><li>5</li><li>6</li></ul>
+                <a class="next">next</a>
+            </div>
+            <div class="banner" id="method">
+                <ul>
+                    <li><img src="img/banner-1.jpg"></li>
+                    <li><img src="img/banner-2.jpg"></li>
+                    <li><img src="img/banner-3.jpg"></li>
+                    <li><img src="img/banner-4.jpg"></li>
+                    <li><img src="img/banner-5.jpg"></li>
+                    <li><img src="img/banner-6.jpg"></li>
+                </ul>
+            </div>
+            <div class="code">
+<pre><code>
+$('#switch .prev').click(function() {
+    $('#method').terseBanner('prev');
+});
+
+$('#switch .next').click(function() {
+    $('#method').terseBanner('next');
+});
+
+$('#switch ul li').click(function() {
+    $('#method').terseBanner(parseInt($(this).text()));
+});
+</code></pre>
+            </div>
         </div>
 
         <div class="container" id="anchor-8">
             <h2>回调函数</h2>
-            <p>3个回调函数:init, before, after, 可以传入的参数为</p>
-        
+            <p><b>init</b>, <b>before</b>, <b>after</b><br>
+            可以传入的参数为 <b>$banner, $item, currentIndex</b>（参数说明在参数列表中）</p>
+            <div class="banner" id="callback">
+                <ul>
+                    <li><img src="img/banner-1.jpg"></li>
+                    <li><img src="img/banner-2.jpg"></li>
+                    <li><img src="img/banner-3.jpg"></li>
+                    <li><img src="img/banner-4.jpg"></li>
+                    <li><img src="img/banner-5.jpg"></li>
+                    <li><img src="img/banner-6.jpg"></li>
+                </ul>
+            </div>
+            <div class="code">
+<pre><code>
+$('#callback').terseBanner({
+    arrow: true,
+    init: function ($banner, $item) {
+        $item.each(function(i) {
+            $(this).append('&lt;em&gt;' + (i + 1) +'&lt;/e&gt;>');
+        });
+    },
+    before: function ($banner, $item, currentIndex) {
+        $item.eq(currentIndex).find('em').css({
+            top: -120,
+            opacity: 0
+        });
+    },
+    after: function ($banner, $item, currentIndex) {
+        $item.eq(currentIndex).find('em').css({
+            top: 210,
+            opacity: 1
+        });
+    }
+});
+</code></pre>
+            </div>
         </div>
 
-        <div class="container" id="anchor-8" style="margin-bottom: 800px;">
-            <h2>参数列表</h2>
-            参数名   类型   可选值   作用
+        <div class="container" id="anchor-9">
+            <h2>**参数列表</h2>
+            <table id="options">
+                <tbody>
+                    <tr>
+                        <td>命名</td>
+                        <td>类型</td>
+                        <td>可选值</td>
+                        <td>默认值</td>
+                        <td>说明</td>
+                    </tr>
+                    <tr>
+                        <td>animation</td>
+                        <td>[String]</td>
+                        <td>'slide', 'fade', 'flash', 'none'</td>
+                        <td>'slide'</td>
+                        <td>动画模式（不支持垂直方向的图片滑动切换）</td>
+                    </tr>
+                    <tr>
+                        <td>adaptive</td>
+                        <td>[Boolean]</td>
+                        <td></td>
+                        <td>false</td>
+                        <td>轮播图片的宽度自适应</td>
+                    </tr>
+                    <tr>
+                        <td>useHover</td>
+                        <td>[Boolean]</td>
+                        <td></td>
+                        <td>false</td>
+                        <td>导航按钮和缩略图使用 hover 事件触发动画</td>
+                    </tr>
+                    <tr>
+                        <td>arrow</td>
+                        <td>[Boolean]</td>
+                        <td></td>
+                        <td>false</td>
+                        <td>显示导航箭头</td>
+                    </tr>
+                    <tr>
+                        <td>btn</td>
+                        <td>[Boolean]</td>
+                        <td>true, false, 'ol'</td>
+                        <td>false</td>
+                        <td>显示导航按钮（使用 'ol' 在导航按钮中添加序列数字）</td>
+                    </tr>
+                    <tr>
+                        <td>auto</td>
+                        <td>[Number]</td>
+                        <td>0或正整数</td>
+                        <td>5000</td>
+                        <td>自动轮播每次的间隔[毫秒]（为0时禁用自动轮播）</td>
+                    </tr>
+                    <tr>
+                        <td>duration</td>
+                        <td>[Number]</td>
+                        <td>正整数</td>
+                        <td>800</td>
+                        <td>动画速度[毫秒]</td>
+                    </tr>
+                    <tr>
+                        <td>init</td>
+                        <td>[Function]</td>
+                        <td></td>
+                        <td>$.noop</td>
+                        <td>
+                            轮播初始化时执行的回调函数<br>
+                            function ($banner, $item) { }<br>
+                            - $banner：轮播容器<br>
+                            - $item：轮播图片列表项
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>before</td>
+                        <td>[Function]</td>
+                        <td></td>
+                        <td>$.noop</td>
+                        <td>
+                            动画开始时执行的回调函数<br>
+                            function ($banner, $item, currentIndex) { }<br>
+                            - $banner, $item与init回调函数的一样<br>
+                            - currentIndex：当前显示图片的索引
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>after</td>
+                        <td>[Function]</td>
+                        <td></td>
+                        <td>$.noop</td>
+                        <td>
+                            动画完成时执行的回调函数<br>
+                            function ($banner, $item, currentIndex) { }<br>
+                            - 参数与before回调函数的一样
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>thumb</td>
+                        <td>[Object]</td>
+                        <td></td>
+                        <td>{ }</td>
+                        <td>缩略图<br>
+                        参数是对象类型，包含4个属性<br>
+                        - width: 缩略图的宽度<br>
+                        - height: 缩略图的高亮<br>
+                        - gap: 缩略图的水平外边距<br>
+                        - visible : 缩略图显示的数量<br>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
         </div>
-       
+
     </div>
-
-
-    <!-- ie8支持 -->
-    <!-- 不支持垂直方向的图片滑动切换 -->
     <!-- main:end -->
 </body>
 <script type="text/javascript" src="js/jquery-1.11.3.min.js"></script>
