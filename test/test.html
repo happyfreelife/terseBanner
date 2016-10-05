@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>test</title>
+	<meta charset="utf-8">
+	<style>
+		*{margin: 0;padding: 0;}
+		img{border: none;}
+		ul, ol{list-style: none;}
+		.banner{width: 960px;margin: 20px auto;height: 540px;overflow: hidden;}
+	</style>
+</head>
+<body>
+	<div class="banner" id="simple">
+		<ul>
+			<li><img src="img/banner-1.jpg"></li>
+			<li><img src="img/banner-2.jpg"></li>
+			<li><img src="img/banner-3.jpg"></li>
+			<li><img src="img/banner-4.jpg"></li>
+		</ul>
+	</div>
+	<br><br><br>
+	<div class="banner" id="lazyload">
+		<ul>
+			<li><img data-src="http://desk.fd.zol-img.com.cn/t_s1920x1080c5/g5/M00/05/02/ChMkJ1bxATiIVlzmAAlJIHaXmLkAAOTUgN32YEACUk4716.jpg"></li>
+			<li><img data-src="http://desk.fd.zol-img.com.cn/t_s1920x1080c5/g5/M00/05/02/ChMkJ1bxATaIevuuABYRrSzYfikAAOTUgI7dk0AFhHF290.jpg"></li>
+			<li><img data-src="http://desk.fd.zol-img.com.cn/t_s1920x1080c5/g5/M00/05/02/ChMkJ1bxATyIHmOaAA427DMtOHcAAOTUwGiFqgADjcE489.jpg"></li>
+			<li><img data-src="http://desk.fd.zol-img.com.cn/t_s1920x1080c5/g5/M00/05/02/ChMkJlbxAUCIMqKdAAMVx51HXogAAOTUwP6tOQAAxXf894.jpg"></li>
+			<li><img data-src="http://desk.fd.zol-img.com.cn/t_s1920x1080c5/g5/M00/05/02/ChMkJlbxATqIBOwbAAt1D9lCvKkAAOTUwB9S5IAC3Un823.jpg"></li>
+		</ul>
+	</div>
+	<br><br><br>
+</body>
+<script type="text/javascript" src="../lib/jquery-1.11.3.min.js"></script>
+<script type="text/javascript" src="../lib/require.js" data-main="test.js"></script>
+</html>

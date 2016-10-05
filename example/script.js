@@ -101,20 +101,23 @@ $(function() {
 });
 
 $(function() {
-	$('.side').anchorScroll({
+	$('.side .anchor').anchorScroll({
 		fixed: 0,
 		offset: -10
 	});
 
-	$('#top .banner').terseBanner();
+	$('#top').terseBanner();
 
+	$('.container').isInViewport(function() {
+		$(this).fadeTo('300', 1);
+	});
 
+	
 	// 自定义样式
 	$('#custom').terseBanner({ arrow: true });
 
-
 	// 动画
-	$('#select').on({
+	$('.animation .select').on({
 		'mouseenter': function() {
 			$(this).addClass('active');
 		},
@@ -129,20 +132,20 @@ $(function() {
 		animation: 'fade'
 	});
 
-	$('#select a').click(function() {
-		$('#select').trigger('mouseleave');
+	$('.animation .select li').click(function() {
+		$('.animation .select').trigger('mouseleave');
 
 		var currentAnimation = $(this).text();
 
-		if ($('#select span').text() !== currentAnimation) {
-			$('#select span').text(currentAnimation);
+		if ($('.animation .select span').text() !== currentAnimation) {
+			$('.animation .select span').text(currentAnimation);
 
 			$('#animation').animate({
 				left: '100%',
 				opacity: 0
 			}, function() {
 				$(this).remove();
-				$('#select').after(animationDOM);
+				$('.animation .select').after(animationDOM);
 				$('#animation').terseBanner({
 					arrow: true,
 					animation: currentAnimation
@@ -153,7 +156,7 @@ $(function() {
 
 
 	// 缩略图
-	$('#thumb').terseBanner({
+	$('#thumbnail').terseBanner({
 		btn: false,
 		thumb: {
 			width: 150,
@@ -164,13 +167,13 @@ $(function() {
 	});
 
 
-	// 乍适应
+	// 自适应
 	$('#adaptive').terseBanner({ adaptive: true });
 	var minWidth = 560,
 		maxWidth = 960,
 		step = 100;
 
-	$('#scale a').click(function() {
+	$('.adaptive .scale a').click(function() {
 		var bannerWidth = $(this).hasClass('larger') ? Math.min(maxWidth, $('#adaptive').width() + step) :
 		Math.max(minWidth, $('#adaptive').width() - step);
 
@@ -208,7 +211,7 @@ $(function() {
 		'<' + '/script>' +
 		'</html>';
 
-	$('#widescreen').click(function() {
+	$('.adaptive .widescreen').click(function() {
 		var windowWidth = window.screen.width - 20 - 100,
 			windowHeight = windowWidth / 1920 * 800 + 50;
 
@@ -234,13 +237,13 @@ $(function() {
 		auto: 0
 	});
 
-	$('#reload').click(function() {
+	$('.lazyload .reload').click(function() {
 		$('#lazyload').animate({
 			left: '100%',
 			opacity: 0
 		}, function() {
 			$(this).remove();
-			$('#reload').after(lazyloadDOM);
+			$('.lazyload .reload').after(lazyloadDOM);
 
 			addTimeStamp();
 			$('#lazyload').terseBanner({
@@ -253,17 +256,17 @@ $(function() {
 
 
 	// 方法
-	$('#method').terseBanner();
-	$('#switch .prev').click(function() {
-		$('#method').terseBanner('prev');
+	$('#switch').terseBanner();
+	$('.switch .btn .prev').click(function() {
+		$('#switch').terseBanner('prev');
 	});
 
-	$('#switch .next').click(function() {
-		$('#method').terseBanner('next');
+	$('.switch .btn .next').click(function() {
+		$('#switch').terseBanner('next');
 	});
 
-	$('#switch ul li').click(function() {
-		$('#method').terseBanner(parseInt($(this).text()));
+	$('.switch .btn ul li').click(function() {
+		$('#switch').terseBanner(parseInt($(this).text()));
 	});
 
 
