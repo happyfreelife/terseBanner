@@ -15,7 +15,7 @@ module.exports = function(grunt) {
 				},
 				src: [
 					'src/global.js',
-					'src/main.js',
+					'src/banner.js',
 					'src/init.js',
 					'src/default-style.js',
 					'src/set-style.js',
@@ -23,6 +23,7 @@ module.exports = function(grunt) {
 					'src/bind-animation.js',
 					'src/bind-event.js',
 					'src/lazyload.js',
+					'src/main.js'
 				],
 				dest: 'dist/jquery.<%= pkg.name %>.pkgd.js',
 			}

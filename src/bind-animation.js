@@ -7,7 +7,7 @@
 	if (typeof define === 'function' && define.amd) {
 		define([
 			'global',
-			'main',
+			'banner',
 			'bind-event'
 		], function (Global, Banner) {
 			return factory($, window, document, Global, Banner);
@@ -15,7 +15,7 @@
 	} else if (typeof exports !== 'undefined') {
 		module.exports = factory($, window, document,
 			require('global'),
-			require('main'),
+			require('banner'),
 			require('bind-event')
 		);
 	} else {
@@ -89,8 +89,6 @@
 			}
 
 			self.activeBtnAndThumb();
-
-			self.lazyload(self.currentIndex);
 		};
 
 		animation.fade = function() {
@@ -108,8 +106,6 @@
 			});
 
 			self.activeBtnAndThumb();
-
-			self.lazyload(self.currentIndex);
 		};
 
 		animation.flash = animation.fade;
@@ -120,8 +116,6 @@
 			$item.eq(self.currentIndex).show().siblings().hide();
 
 			self.activeBtnAndThumb();
-
-			self.lazyload(self.currentIndex);
 
 			if (!$item.eq(self.currentIndex).data('origin')) {
 				afterCallback();

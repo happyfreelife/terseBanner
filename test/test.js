@@ -2,19 +2,11 @@ $(function() {
 	requirejs.config({
 		baseUrl: '../src',
 		paths: {
-			global       : 'global',
-			init         : 'init',
-			defaultStyle : 'default-style',
-			setStyle     : 'set-style',
-			addElement   : 'add-element',
-			bindAnimation: 'animation',
-			bindEvent    : 'bind-event',
-			lazyload     : 'lazyload',
-			main         : 'main'
+			main: 'main'
 		}
 	});
 	
-	define(['init'], function() {
+	define(['main'], function() {
 		$('#simple').terseBanner({
 			arrow: true
 		});

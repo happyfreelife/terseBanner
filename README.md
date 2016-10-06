@@ -1,3 +1,3 @@
 # terseBanner
 
-### [Online Example is rebuilding...](javascript:)
+### [View Online example...](https://happyfreelife.github.io/terseBanner/example/example.html)

@@ -2,7 +2,7 @@
  * terseBanner
  * Version: 2.1.0
  * URI: https://github.com/happyfreelife/terseBanner
- * Date: 2016-10-05
+ * Date: 2016-10-06
  **/
 
 /**
@@ -55,162 +55,24 @@
 
 
 /**
- * 主方法
+ * Plugin construct function
  */
 ;(function (window, factory) {
 	if (typeof define === 'function' && define.amd) {
-		define([
-			'global'
-		], function (Global) {
-			return factory($, window, document, Global);
+		define(function () {
+			return factory(window, document);
 		});
 	} else if (typeof exports !== 'undefined') {
-		module.exports = factory($, window, document,
-			require('global')
-		);
+		module.exports = factory(window, document);
 	} else {
 		window.terseBanner = window.terseBanner || {};
-		window.terseBanner.Banner = factory($, window, document, window.terseBanner.Global);
+		window.terseBanner.Banner = factory(window, document);
 	}
-}(window, function (jQuery, window, document, Global) {
-	/**
-	 * Plugin construct function
-	 */
+}(window, function (window, document) {
 	function Banner(elem, options) {
 		this.$elem = $(elem);
 		this.options = options;
 	}
-
-	/**
-	 * Private method
-	 */
-	// 播放
-	Banner.prototype.play = function() {
-		this.activeIndex = this.currentIndex;
-		this.animation[this.options.animation]();
-	};
-
-	// 自动轮播定时器
-	Banner.prototype.setPlayTimer = function() {
-		var self = this,
-			clear = function() {
-				self.isHovered = true;
-				clearInterval(self.playTimer);
-			},
-			reset = function() {
-				self.isHovered = false;
-				if (!self.isAnimated) {
-					self.setPlayTimer();
-				}
-			};
-
-		clearInterval(self.playTimer);
-
-		self.playTimer = setInterval(function() {
-			self.options.before.call(self, self.$elem, self.$item, self.currentIndex);
-			self.currentIndex++;
-			self.play();
-		}, self.options.auto);
-
-		self.$elem.off('mouseenter');
-		self.$elem.off('mouseleave');
-		self.$elem.on({
-			mouseenter: clear,
-			mouseleave: reset
-		});
-	};
-
-	// 导航按钮和缩略图添加高亮样式
-	Banner.prototype.activeBtnAndThumb = function() {
-		this.activeIndex =
-		this.currentIndex === this.len ? 0 :
-		this.currentIndex === -1 ? this.len - 1 : this.currentIndex;
-
-		if (this.$btn) {
-			this.$btn.eq(this.activeIndex).addClass('active').siblings().removeClass('active');
-		}
-
-		if (this.$thumb) {
-			this.$thumb.eq(this.activeIndex).addClass('active').siblings().removeClass('active');
-			if (this.$thumbSlideBtn.is(':visible')) {
-				this.animation.thumbListSlide();
-			}
-		}
-	};
-
-	// 切换轮播图片
-	Banner.prototype.switchTo = function() {
-		if (this.isAnimated) return;
-
-		if ($.isNumeric(arguments[0]) && (arguments[0] < 0 || arguments[0] > this.len)) {
-			throw new Error('TerseBanner\'s index overflow!');
-		}
-
-		this.options.before.call(this, this.$elem, this.$item, this.currentIndex);
-		switch (arguments[0]) {
-			case 'prev':
-				this.currentIndex--;
-				break;
-
-			case 'next':
-				this.currentIndex++;
-				break;
-
-			default:
-				this.currentIndex = arguments[0] - 1;
-				break;
-		}
-
-		this.play();
-	};
-
-
-	/**
-	 * Plugin main method
-	 */
-	$.fn.terseBanner = function(option) {
-		if (Global.isLTIE8) {
-			throw new Error('terseBanner cannot work under IE8!');
-		}
-
-		return this.each(function() {
-			var terseBanner = $(this).data('terseBanner');
-
-			if (!terseBanner) {
-				options = $.extend(true, {}, $.fn.terseBanner.defaults, typeof option === 'object' && option);
-
-				$(this).data('terseBanner', (terseBanner = new Banner(this, options)));
-
-				terseBanner.init();
-			} else {
-				if (option === 'prev') {
-					terseBanner.switchTo.call(terseBanner, 'prev');
-				} else if (option === 'next') {
-					terseBanner.switchTo.call(terseBanner, 'next');
-				} else if ($.isNumeric(option)) {
-					terseBanner.switchTo.call(terseBanner, option);
-				}
-			}
-		});
-	};
-
-
-	/**
-	 * Plugin default options
-	 */
-	$.fn.terseBanner.defaults = {
-		animation: 'slide', // 动画模式: ['none', 'fade', 'flash' 'slide']
-		adaptive : false,   // 图片宽度自适应
-		useHover : false,   // 导航按钮和缩略图支持hover事件触发动画
-		arrow    : false,   // 导航箭头
-		btn      : true,    // 导航按钮: [true, false, 'ol']
-		auto     : 5000,    // 自动轮播: [为0时禁用此功能]
-		duration : 800,     // 动画速度
-		init     : $.noop,  // 轮播初始化时执行的回调函数
-		before   : $.noop,  // 动画开始时执行的回调函数
-		after    : $.noop,  // 动画完成时执行的回调函数
-		thumb    : { }      // 缩略图
-	};
 
 	return Banner;
 }));
@@ -223,7 +85,7 @@
 	if (typeof define === 'function' && define.amd) {
 		define([
 			'global',
-			'main',
+			'banner',
 			'default-style',
 			'add-element'
 		], function (Global, Banner) {
@@ -232,7 +94,9 @@
 	} else if (typeof exports !== 'undefined') {
 		module.exports = factory($, window, document,
 			require('global'),
-			require('main')
+			require('banner'),
+			require('default-style'),
+			require('add-element')
 		);
 	} else {
 		window.terseBanner = window.terseBanner || {};
@@ -379,20 +243,21 @@
 	if (typeof define === 'function' && define.amd) {
 		define([
 			'global',
-			'main'
+			'banner'
 		], function (Global, Banner) {
 			return factory($, window, document, Global, Banner);
 		});
 	} else if (typeof exports !== 'undefined') {
 		module.exports = factory($, window, document,
 			require('global'),
-			require('main')
+			require('banner')
 		);
 	} else {
 		window.terseBanner = window.terseBanner || {};
 		factory($, window, document, window.terseBanner.Global, window.terseBanner.Banner);
 	}
 }(window, function (jQuery, window, document, Global, Banner) {
+	
 	Banner.prototype.defaultStyle = function() {
 		var style =
 			'.tb-list,\n' +
@@ -458,6 +323,7 @@
 			'    width: 32px;\n' +
 			'    height: 32px;\n' +
 			'    background-repeat: no-repeat;\n' +
+			'    cursor: pointer;\n' +
 			'}\n' +
 			'.tb-thumb dl dd{\n' +
 			'    position: relative;\n' +
@@ -501,14 +367,14 @@
 	if (typeof define === 'function' && define.amd) {
 		define([
 			'global',
-			'main'
+			'banner'
 		], function (Global, Banner) {
 			return factory($, window, document, Global, Banner);
 		});
 	} else if (typeof exports !== 'undefined') {
 		module.exports = factory($, window, document,
 			require('global'),
-			require('main')
+			require('banner')
 		);
 	} else {
 		window.terseBanner = window.terseBanner || {};
@@ -658,7 +524,7 @@
 	if (typeof define === 'function' && define.amd) {
 		define([
 			'global',
-			'main',
+			'banner',
 			'set-style',
 			'bind-animation'
 		], function (Global, Banner) {
@@ -667,7 +533,7 @@
 	} else if (typeof exports !== 'undefined') {
 		module.exports = factory($, window, document,
 			require('global'),
-			require('main'),
+			require('banner'),
 			require('set-style'),
 			require('bind-animation')
 		);
@@ -864,7 +730,7 @@
 	if (typeof define === 'function' && define.amd) {
 		define([
 			'global',
-			'main',
+			'banner',
 			'bind-event'
 		], function (Global, Banner) {
 			return factory($, window, document, Global, Banner);
@@ -872,7 +738,7 @@
 	} else if (typeof exports !== 'undefined') {
 		module.exports = factory($, window, document,
 			require('global'),
-			require('main'),
+			require('banner'),
 			require('bind-event')
 		);
 	} else {
@@ -946,8 +812,6 @@
 			}
 
 			self.activeBtnAndThumb();
-
-			self.lazyload(self.currentIndex);
 		};
 
 		animation.fade = function() {
@@ -965,8 +829,6 @@
 			});
 
 			self.activeBtnAndThumb();
-
-			self.lazyload(self.currentIndex);
 		};
 
 		animation.flash = animation.fade;
@@ -977,8 +839,6 @@
 			$item.eq(self.currentIndex).show().siblings().hide();
 
 			self.activeBtnAndThumb();
-
-			self.lazyload(self.currentIndex);
 
 			if (!$item.eq(self.currentIndex).data('origin')) {
 				afterCallback();
@@ -1086,7 +946,7 @@
 	if (typeof define === 'function' && define.amd) {
 		define([
 			'global',
-			'main',
+			'banner',
 			'lazyload'
 		], function (Global, Banner) {
 			return factory($, window, document, Global, Banner);
@@ -1094,7 +954,7 @@
 	} else if (typeof exports !== 'undefined') {
 		module.exports = factory($, window, document,
 			require('global'),
-			require('main'),
+			require('banner'),
 			require('lazyload')
 		);
 	} else {
@@ -1254,14 +1114,14 @@
 	if (typeof define === 'function' && define.amd) {
 		define([
 			'global',
-			'main'
+			'banner'
 		], function (Global, Banner) {
 			return factory($, window, document, Global, Banner);
 		});
 	} else if (typeof exports !== 'undefined') {
 		module.exports = factory($, window, document,
 			require('global'),
-			require('main')
+			require('banner')
 		);
 	} else {
 		window.terseBanner = window.terseBanner || {};
@@ -1381,5 +1241,158 @@
 				img.onload = showVisibleItem;
 			}
 		}
+	};
+}));
+
+
+/**
+ * Plugin main method
+ */
+;(function (window, factory) {
+	if (typeof define === 'function' && define.amd) {
+		define([
+			'global',
+			'banner',
+			'init'
+		], function (Global, Banner) {
+			return factory($, window, document, Global, Banner);
+		});
+	} else if (typeof exports !== 'undefined') {
+		module.exports = factory($, window, document,
+			require('global'),
+			require('banner'),
+			require('init')
+		);
+	} else {
+		window.terseBanner = window.terseBanner || {};
+		factory($, window, document, window.terseBanner.Global, window.terseBanner.Banner);
+	}
+}(window, function (jQuery, window, document, Global, Banner) {
+	// 播放
+	Banner.prototype.play = function() {
+		this.activeIndex = this.currentIndex;
+
+		this.animation[this.options.animation]();
+
+		this.lazyload(this.currentIndex);
+	};
+
+	// 自动轮播定时器
+	Banner.prototype.setPlayTimer = function() {
+		var self = this,
+			clear = function() {
+				self.isHovered = true;
+				clearInterval(self.playTimer);
+			},
+			reset = function() {
+				self.isHovered = false;
+				if (!self.isAnimated) {
+					self.setPlayTimer();
+				}
+			};
+
+		clearInterval(self.playTimer);
+
+		self.playTimer = setInterval(function() {
+			self.options.before.call(self, self.$elem, self.$item, self.currentIndex);
+			self.currentIndex++;
+			self.play();
+		}, self.options.auto);
+
+		self.$elem.off('mouseenter');
+		self.$elem.off('mouseleave');
+		self.$elem.on({
+			mouseenter: clear,
+			mouseleave: reset
+		});
+	};
+
+	// 导航按钮和缩略图添加高亮样式
+	Banner.prototype.activeBtnAndThumb = function() {
+		this.activeIndex =
+		this.currentIndex === this.len ? 0 :
+		this.currentIndex === -1 ? this.len - 1 : this.currentIndex;
+
+		if (this.$btn) {
+			this.$btn.eq(this.activeIndex).addClass('active').siblings().removeClass('active');
+		}
+
+		if (this.$thumb) {
+			this.$thumb.eq(this.activeIndex).addClass('active').siblings().removeClass('active');
+			if (this.$thumbSlideBtn.is(':visible')) {
+				this.animation.thumbListSlide();
+			}
+		}
+	};
+
+	// 切换轮播图片
+	Banner.prototype.switchTo = function() {
+		if (this.isAnimated) return;
+
+		if ($.isNumeric(arguments[0]) && (arguments[0] < 0 || arguments[0] > this.len)) {
+			throw new Error('TerseBanner\'s index overflow!');
+		}
+
+		this.options.before.call(this, this.$elem, this.$item, this.currentIndex);
+		switch (arguments[0]) {
+			case 'prev':
+				this.currentIndex--;
+				break;
+
+			case 'next':
+				this.currentIndex++;
+				break;
+
+			default:
+				this.currentIndex = arguments[0] - 1;
+				break;
+		}
+
+		this.play();
+	};
+
+
+	$.fn.terseBanner = function(option) {
+		if (Global.isLTIE8) {
+			throw new Error('terseBanner cannot work under IE8!');
+		}
+
+		return this.each(function() {
+			var terseBanner = $(this).data('terseBanner');
+
+			if (!terseBanner) {
+				options = $.extend(true, {}, $.fn.terseBanner.defaults, typeof option === 'object' && option);
+
+				$(this).data('terseBanner', (terseBanner = new Banner(this, options)));
+
+				terseBanner.init();
+			} else {
+				if (option === 'prev') {
+					terseBanner.switchTo.call(terseBanner, 'prev');
+				} else if (option === 'next') {
+					terseBanner.switchTo.call(terseBanner, 'next');
+				} else if ($.isNumeric(option)) {
+					terseBanner.switchTo.call(terseBanner, option);
+				}
+			}
+		});
+	};
+
+
+	/**
+	 * Plugin default options
+	 */
+	$.fn.terseBanner.defaults = {
+		animation: 'slide', // 动画模式: ['none', 'fade', 'flash' 'slide']
+		adaptive : false,   // 图片宽度自适应
+		useHover : false,   // 导航按钮和缩略图支持hover事件触发动画
+		arrow    : false,   // 导航箭头
+		btn      : true,    // 导航按钮: [true, false, 'ol']
+		auto     : 5000,    // 自动轮播: [为0时禁用此功能]
+		duration : 800,     // 动画速度
+		init     : $.noop,  // 轮播初始化时执行的回调函数
+		before   : $.noop,  // 动画开始时执行的回调函数
+		after    : $.noop,  // 动画完成时执行的回调函数
+		thumb    : { }      // 缩略图
 	};
 }));

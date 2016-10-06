@@ -1,39 +1,35 @@
 
 
 /**
- * 主方法
+ * Plugin main method
  */
 ;(function (window, factory) {
 	if (typeof define === 'function' && define.amd) {
 		define([
-			'global'
-		], function (Global) {
-			return factory($, window, document, Global);
+			'global',
+			'banner',
+			'init'
+		], function (Global, Banner) {
+			return factory($, window, document, Global, Banner);
 		});
 	} else if (typeof exports !== 'undefined') {
 		module.exports = factory($, window, document,
-			require('global')
+			require('global'),
+			require('banner'),
+			require('init')
 		);
 	} else {
 		window.terseBanner = window.terseBanner || {};
-		window.terseBanner.Banner = factory($, window, document, window.terseBanner.Global);
+		factory($, window, document, window.terseBanner.Global, window.terseBanner.Banner);
 	}
-}(window, function (jQuery, window, document, Global) {
-	/**
-	 * Plugin construct function
-	 */
-	function Banner(elem, options) {
-		this.$elem = $(elem);
-		this.options = options;
-	}
-
-	/**
-	 * Private method
-	 */
+}(window, function (jQuery, window, document, Global, Banner) {
 	// 播放
 	Banner.prototype.play = function() {
 		this.activeIndex = this.currentIndex;
+
 		this.animation[this.options.animation]();
+
+		this.lazyload(this.currentIndex);
 	};
 
 	// 自动轮播定时器
@@ -111,9 +107,6 @@
 	};
 
 
-	/**
-	 * Plugin main method
-	 */
 	$.fn.terseBanner = function(option) {
 		if (Global.isLTIE8) {
 			throw new Error('terseBanner cannot work under IE8!');
@@ -157,6 +150,4 @@
 		after    : $.noop,  // 动画完成时执行的回调函数
 		thumb    : { }      // 缩略图
 	};
-
-	return Banner;
 }));

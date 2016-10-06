@@ -7,7 +7,7 @@
 	if (typeof define === 'function' && define.amd) {
 		define([
 			'global',
-			'main',
+			'banner',
 			'lazyload'
 		], function (Global, Banner) {
 			return factory($, window, document, Global, Banner);
@@ -15,7 +15,7 @@
 	} else if (typeof exports !== 'undefined') {
 		module.exports = factory($, window, document,
 			require('global'),
-			require('main'),
+			require('banner'),
 			require('lazyload')
 		);
 	} else {
