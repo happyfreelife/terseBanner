@@ -45,7 +45,7 @@ td,th{padding:0}
 .custom .tb-arrow a{width: 64px;height: 64px;opacity: 0;-webkit-transition: all .3s;transition: all .3s;}
 .custom .tb-arrow a.prev{background: url(img/icon-prev.png) no-repeat;}
 .custom .tb-arrow a.next{background: url(img/icon-next.png) no-repeat;}
-.custom:hover .tb-arrow a{opacity: 1;}
+.custom .banner:hover .tb-arrow a{opacity: 1;}
 .custom .tb-btn{bottom: 0;height: 10px;}
 .custom .tb-btn a{width: 160px;margin: 0;box-sizing: border-box;background: #666;border-right: 1px solid #fff;border-radius: 0;}
 .custom .tb-btn a:last-child{border: none;}

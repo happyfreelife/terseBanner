@@ -23,7 +23,7 @@
 
         <div class="btn">
             <a href="https://github.com/happyfreelife/terseBanner" class="github" target="_blank">See it on GitHub</a>
-            <a href="https://github.com/happyfreelife/terseBanner/archive/master.zip" class="download">Download<sub>2.1.0</sub></a>
+            <a href="https://github.com/happyfreelife/terseBanner/archive/v2.1.0.zip" class="download">Download<sub>2.1.0</sub></a>
         </div>
     </div>
     <!-- side:end -->
@@ -61,8 +61,8 @@
     &lt;/ul&gt;
 &lt;/div&gt;
 
-&lt;script type=&quot;text/javascript&quot; src=&quot;js/jquery-1.11.3.min.js&quot;&gt;&lt;/script&gt;
-&lt;script type=&quot;text/javascript&quot; src=&quot;../src/jquery.terseBanner.js&quot;&gt;&lt;/script&gt;
+&lt;script type=&quot;text/javascript&quot; src=&quot;jquery-1.11.3.min.js&quot;&gt;&lt;/script&gt;
+&lt;script type=&quot;text/javascript&quot; src=&quot;jquery.terseBanner.min.js&quot;&gt;&lt;/script&gt;
 
 &lt;script&gt;
     $(&#x27;.banner&#x27;).terseBanner();
@@ -74,7 +74,7 @@
         <div class="container automatic" id="anchor-1">
             <h2>自动化</h2>
             <div class="box">
-                <p class="fl">自动添加必须的DOM元素，显著简化原生代码</p>
+                <p class="fl">自动添加轮播必须的元素，显著简化原生代码</p>
                 <div class="code">
 <pre><code>
 &lt;!-- 原始代码的结构 --&gt;
@@ -129,17 +129,8 @@
     position: relative;
     overflow: hidden;
 }
-.tb-list > * > *{
-    position: relative;
-    float: left;
-    min-height: 1px;
-    background-repeat: no-repeat;
-    background-position: center top;
-}
-.tb-list > .touching{
-    -webkit-transition-duration: 0ms !important;
-    transition-duration: 0ms !important;
-}
+/* ... */
+
 .tb-arrow{
     width: 95%;
 }
@@ -148,15 +139,34 @@
     top: 0;
     cursor: pointer;
 }
-.tb-arrow a.prev{
-    left: 0;
-}
-.tb-arrow a.next{
-    right: 0;
-}
-.tb-arrow a img{
+/* ... */
+
+.tb-btn a{
     display: inline-block;
-    max-height: 100%;
+    width: 10px;
+    height: 10px;
+    margin: 0 5px;
+    background-color: #fff;
+    border-radius: 50%;
+    cursor: pointer;
+}
+/* ... */
+
+.tb-thumb{
+    position: absolute;
+    bottom: 10px;
+    left: 0;
+    width: 100%;
+    overflow: hidden;
+}
+/* ... */
+
+.tb-loading{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
 }
 /* ... */
 </code></pre>
@@ -179,21 +189,36 @@
             </div>
             <div class="code">
 <pre><code>
-.custom .tb-arrow a{width: 64px;height: 64px;margin: 0 20px;opacity: 0;-webkit-transition: all .3s;transition: all .3s;}
-.custom .tb-arrow a.prev{background: url(img/icon-prev.png) no-repeat;}
-.custom .tb-arrow a.next{background: url(img/icon-next.png) no-repeat;}
-.custom:hover .tb-arrow a{opacity: 1;}
-.custom .tb-btn{bottom: 0;height: 10px;}
-.custom .tb-btn a{width: 160px;margin: 0;box-sizing: border-box;background: #666;border-right: 1px solid #fff;border-radius: 0;}
-.custom .tb-btn a:last-child{border: none;}
-.custom .tb-btn a.active{background: #f80;}
+.custom .tb-arrow a{
+    width: 64px;
+    height: 64px;
+    margin: 0 20px;
+    opacity: 0;
+    -webkit-transition: all .3s;
+    transition: all .3s;
+}
+/* ... */
+
+.custom .tb-btn{
+    bottom: 0;
+    height: 10px;
+}
+.custom .tb-btn a{
+    width: 160px;
+    margin: 0;
+    box-sizing: border-box;
+    background: #666;
+    border-right: 1px solid #fff;
+    border-radius: 0;
+}
+/* ... */
 </code></pre>
             </div>
         </div>
 
         <div class="container animation" id="anchor-3">
             <h2>动画</h2>
-            <p>4种动画方式：slide, fade, flash, none（flash模式是fade模式的简化，图片切换时可以出现闪烁的白色背景）
+            <p>4种动画方式：<b>slide, fade, flash, none</b>（flash模式是fade模式的简化，图片切换时可以出现闪烁的白色背景）
             <br>PS：slide模式不支持垂直方向的滑动</p>
             <div class="select">
                 <span>fade</span>
@@ -218,7 +243,7 @@
 
         <div class="container thumbnail" id="anchor-4">
             <h2>缩略图</h2>
-            <p>自动截取原始图片的一部分作为缩略图，缩略图列表超出容器时自动添加左右箭头</p>
+            <p>自动截取原始图片的一部分作为缩略图，缩略图列表超出容器时自动添加列表滑动按钮</p>
             <div class="clearfix">
                 <div class="banner" id="thumbnail">
                     <ul>
@@ -263,7 +288,7 @@ $('#thumbnail').terseBanner({
 
         <div class="container adaptive" id="anchor-5">
             <h2>自适应</h2>
-            <p>让图片自适应轮播的宽度,可以用来满屏显示图片（使用此功能时，缩略图将会被禁用）</p>
+            <p>让图片自适应轮播的宽度,可以用来满屏显示图片（使用此功能时，缩略图功能将会被禁用）</p>
             <div class="scale">
                 <span>改变轮播的宽度：</span>
                 <a>→ ←</a>
@@ -312,7 +337,7 @@ $('#thumbnail').terseBanner({
 
         <div class="container switch" id="anchor-7">
             <h2>切换</h2>
-            <p>可以在自定义的事件中切换轮播图片，给方法 terseBanner() 传递一个参数：'prev' | 'next' | [Number]</p>
+            <p>可以在自定义的事件中切换轮播图片，给方法 terseBanner() 传递一个参数：<b>'prev' | 'next' | [Number]</b></p>
             <div class="btn">
                 <a class="prev">prev</a>
                 <ul><li>1</li><li>2</li><li>3</li><li>4</li><li>5</li><li>6</li></ul>
