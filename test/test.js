@@ -14,6 +14,7 @@ $(function() {
 		$('#lazyload ul li img').each(function() {
 			$(this).attr('data-src', $(this).attr('data-src') + '?' + Date.now());
 		});
+		
 		$('#lazyload').terseBanner({
 			arrow: true,
 			adaptive: true

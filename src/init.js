@@ -133,8 +133,8 @@
 
 			$list.css('left', 0);
 			$item.css('float', 'left').first().show().siblings().hide();
-			$item.first().clone(true).addClass('first').hide().appendTo($list);
-			$item.last().clone(true).addClass('last').hide().prependTo($list);
+			$item.first().clone(true).addClass('first-clone').hide().appendTo($list);
+			$item.last().clone(true).addClass('last-clone').hide().prependTo($list);
 		}
 
 		// animation: fade
