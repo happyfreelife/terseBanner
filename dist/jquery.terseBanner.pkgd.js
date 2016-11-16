@@ -1,8 +1,8 @@
 /**
  * terseBanner
- * Version: 2.1.0
+ * Version: 2.1.1
  * URI: https://github.com/happyfreelife/terseBanner
- * Date: 2016-10-06
+ * Date: 2016-11-16
  **/
 
 /**
@@ -211,8 +211,8 @@
 
 			$list.css('left', 0);
 			$item.css('float', 'left').first().show().siblings().hide();
-			$item.first().clone(true).addClass('first').hide().appendTo($list);
-			$item.last().clone(true).addClass('last').hide().prependTo($list);
+			$item.first().clone(true).addClass('first-clone').hide().appendTo($list);
+			$item.last().clone(true).addClass('last-clone').hide().prependTo($list);
 		}
 
 		// animation: fade
@@ -1144,6 +1144,7 @@
 			options.after.call(self, self.$elem, self.$item, self.currentIndex);
 		}
 
+
 		function showVisibleItem() {
 			if (options.adaptive) {
 				$('img[data-src]', $item.eq(currentIndex)).attr('src', visibleItemImg);
@@ -1156,14 +1157,35 @@
 
 				img.src = visibleItemImg;
 
-				if (img.complete) {
-					afterCallback();
+				function loaded() {
+					/**
+					 * slide动画模式下，
+					 * 第一张和克隆之后添加到列表的最后，
+					 * 最后一张图片克隆之后添加到列表的最前，
+					 * 在它们的图片源文件加载完成之后，
+					 * 需要将列表前后同一张图片的两个列表项同步
+					 */
+					if (options.animation === 'slide') {
+						if (options.adaptive) {
+							$list.children().last().html($item.first().html());
+						}
+
+						$list.children().last().attr('style', function() {
+							return $item.first().attr('style');
+						})
+						.hide()
+						.data('origin', '');
+					}
+
 					$visibleItem.data('origin', '');
+
+					afterCallback();
+				}
+
+				if (img.complete) {
+					loaded();
 				} else {
-					img.onload = function() {
-						afterCallback();
-						$visibleItem.data('origin', '');
-					};
+					img.onload = loaded;
 				}
 			} else {
 				$visibleItem.data('origin', '');
@@ -1172,24 +1194,21 @@
 					$(this).remove();
 				});
 
+				if (options.animation === 'slide' &&
+					(currentIndex === -1 || currentIndex === self.len - 1))
+				{
+					if (options.adaptive) {
+						$list.children().first().html($item.last().html());
+					}
+					
+					$list.children().first().attr('style', function() {
+						return $item.last().attr('style');
+					})
+					.hide()
+					.data('origin', '');
+				}
+
 				afterCallback();
-			}
-
-			/**
-			 * slide动画模式下，
-			 * 第一张和克隆之后添加到列表的最后，
-			 * 最后一张图片克隆之后添加到列表的最前，
-			 * 在它们的图片源文件加载完成之后，
-			 * 需要将列表前后同一张图片的两个列表项同步
-			 */
-			if (options.animation === 'slide') {
-				if (!currentIndex) {
-					$list.children().last().html($item.first().html());
-				}
-
-				if (currentIndex === -1 || currentIndex === self.len - 1) {
-					$list.children().first().html($item.last().html());
-				}
 			}
 		}
 
