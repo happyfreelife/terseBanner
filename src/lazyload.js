@@ -39,8 +39,12 @@
 
 
 		function showVisibleItem() {
+			if (currentIndex === -1) {
+				$visibleItem = $list.children().first();
+			}
+
 			if (options.adaptive) {
-				$('img[data-src]', $item.eq(currentIndex)).attr('src', visibleItemImg);
+				$visibleItem.find('img[data-src]').attr('src', visibleItemImg);
 			} else {
 				$visibleItem.css('backgroundImage', 'url(' + visibleItemImg + ')');
 			}
@@ -87,18 +91,31 @@
 					$(this).remove();
 				});
 
-				if (options.animation === 'slide' &&
-					(currentIndex === -1 || currentIndex === self.len - 1))
-				{
-					if (options.adaptive) {
-						$list.children().first().html($item.last().html());
+				if (options.animation === 'slide') {
+					if (currentIndex === -1) {
+						if (options.adaptive) {
+							$item.last().html($list.children().first().html());
+						}
+						
+						$item.last().attr('style', function() {
+							return $list.children().first().attr('style');
+						})
+						.hide()
+						.data('origin', '');
+					}
+
+					if (currentIndex === self.len - 1) {
+						if (options.adaptive) {
+							$list.children().first().html($item.last().html());
+						}
+						
+						$list.children().first().attr('style', function() {
+							return $item.last().attr('style');
+						})
+						.hide()
+						.data('origin', '');
 					}
 					
-					$list.children().first().attr('style', function() {
-						return $item.last().attr('style');
-					})
-					.hide()
-					.data('origin', '');
 				}
 
 				afterCallback();
@@ -144,6 +161,10 @@
 
 			// 绑定图片加载完成的事件
 			var img = new Image();
+
+			if (currentIndex === -1) {
+				visibleItemImg = $item.last().data('origin');
+			}
 
 			img.src = visibleItemImg;
 

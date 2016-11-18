@@ -37,27 +37,25 @@
 			touchToLeft, // 触摸方向
 			touchDuration,  // 触摸持续时间
 			touchEndTime;   // 触摸结束时刻
-			
+
 		return {
 			widthChangeEvent: function() {
 				setInterval(function() {
-					if ($item.width() !== $banner.width()) {
-						$item.width($banner.width());
+					$item.width($banner.width());
 
-						if (options.adaptive) {
-							$list.height($item.filter(':visible').height());
-							$banner.height($list.height());
-						}
+					if (options.adaptive) {
+						$list.height($item.filter(':visible').height());
+						$banner.height($list.height());
+					}
 
-						if (options.animation === 'fade') {
-							$list.prev().children().width($banner.width());
-						}
+					if (options.animation === 'fade') {
+						$list.prev().children().width($banner.width());
+					}
 
-						if (options.arrow) {
-							self.$arrowBox.css('marginLeft', function() {
-								return -($(self).width() / 2);
-							});
-						}
+					if (options.arrow) {
+						self.$arrowBox.css('marginLeft', function() {
+							return -($(self).width() / 2);
+						});
 					}
 				}, 50);
 
@@ -109,10 +107,7 @@
 						$list.addClass('touching');
 					}
 
-					$list.css({
-						transform: 'translate3d(' + touchRange + 'px, 0, 0)',
-						'-webkit-transform': 'translate3d(' + touchRange + 'px, 0, 0)'
-					});
+					$list.css(Global.transformProperty, 'translate3d(' + touchRange + 'px, 0, 0)');
 
 					self.lazyload(self.currentIndex);
 				}
@@ -141,10 +136,7 @@
 						touchToLeft ? self.currentIndex-- : self.currentIndex++;
 					}
 
-					$list.removeClass('touching').css({
-						transform: listTransform,
-						'-webkit-transform': listTransform
-					});
+					$list.removeClass('touching').css(Global.transformProperty, listTransform);
 
 					setTimeout(function() {
 						self.animation.slideCallback();

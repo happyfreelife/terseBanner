@@ -1,8 +1,8 @@
 /**
  * terseBanner
- * Version: 2.1.1
+ * Version: 2.1.2
  * URI: https://github.com/happyfreelife/terseBanner
- * Date: 2016-11-16
+ * Date: 2016-11-18
  **/
 
 /**
@@ -33,6 +33,8 @@
 			var style = document.body.style || document.documentElement.style;
 			return style.transition !== undefined || style.WebkitTransition !== undefined;
 		}()),
+
+		transformProperty: typeof document.body.style.transform === 'string' ? 'transform' : 'WebkitTransform',
 
 		// 箭头 - 上一个
 		prevArrow: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADcAAABuCAMAAAC0hHtLAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyJpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMy1jMDExIDY2LjE0NTY2MSwgMjAxMi8wMi8wNi0xNDo1NjoyNyAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNiAoV2luZG93cykiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6QjdGOUJEQTlBRjU5MTFFNUFFQjJBQzRBNEM1MkYzMzEiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6QjdGOUJEQUFBRjU5MTFFNUFFQjJBQzRBNEM1MkYzMzEiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDpCN0Y5QkRBN0FGNTkxMUU1QUVCMkFDNEE0QzUyRjMzMSIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDpCN0Y5QkRBOEFGNTkxMUU1QUVCMkFDNEE0QzUyRjMzMSIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PhEdN5oAAAAGUExURf///////1V89WwAAAACdFJOU/8A5bcwSgAAARBJREFUeNq82EEOwDAIA8Hl/58OH4gizSG9R20D2Isbe7JThcfCt4UfGf5beCXhTYYFCOsWljvskrC5wp4MWzmcgHBwwnkLxzSc7lAUQi0JJSg79jp3Fa5QJ0N5DVU5FPPQA0LrCB0nNKrQ30JbDN00NOHQu0PLD0khBIyQS0KcCSkohKeQuUJUCwkvBMOQJ0MMDek1hN6GmfcnYvt38r1wHbju3Gfc1zxHPLesE6xLrIOsu6zz7CvsY+yb7NPMBcwhzD3MWcx1zJHMrczJzOW8B/DewXsO71W8x/HeyHsq78W8h/PezzkD5xqco3BuwzkR51Kcg3Huxjkf54qcY3Juyjkt58KcQzuUa86+zxFgAFs9FmHsomPPAAAAAElFTkSuQmCC',
@@ -202,11 +204,8 @@
 		// animation: slide
 		if (options.animation === 'slide') {
 			if (Global.isSupportTransition) {
-				$list.css({
-					transform: 'translate3d(0, 0, 0)',
-					'-webkit-transform': 'translate3d(0, 0, 0)',
-					transition: 'transform ' + options.duration + 'ms'
-				});
+				$list.css(Global.transformProperty, 'translate3d(0, 0, 0)');
+				$list.css(transition, 'transform ' + options.duration + 'ms');
 			}
 
 			$list.css('left', 0);
@@ -784,6 +783,7 @@
 				$list.css('left', '-100%');
 			}
 
+			// console.log($item.eq(self.currentIndex + 1));
 			$item.eq(self.currentIndex + 1).show();
 
 			if (Global.isSupportTransition) {
@@ -794,10 +794,7 @@
 						'translate3d(' + -$item.width() + 'px, 0, 0)' :
 						'translate3d(' + $item.width() + 'px, 0, 0)';
 
-					$list.css({
-						transform: listTransform,
-						'-webkit-transform': listTransform
-					});
+					$list.css(Global.transformProperty, listTransform);
 
 					setTimeout(self.animation.slideCallback, options.duration - 50);
 				}, 50);
@@ -885,14 +882,16 @@
 
 			$list.css({
 				left: 0,
-				'transition': 'none',
-				transform: 'translate3d(0, 0, 0)',
-				'-webkit-transform': 'translate3d(0, 0, 0)'
+				'transition': 'none'
 			});
+
+			$list.css(Global.transformProperty, 'translate3d(0, 0, 0)');
 
 			$item.eq(self.currentIndex + 1).show().siblings().hide();
 
-			$list.css('transition', 'transform ' + options.duration + 'ms');
+			setTimeout(function() {
+				$list.css('transition', 'transform ' + options.duration + 'ms');
+			}, 50);
 
 			if (!$item.eq(self.currentIndex).data('origin')) {
 				afterCallback();
@@ -976,27 +975,25 @@
 			touchToLeft, // 触摸方向
 			touchDuration,  // 触摸持续时间
 			touchEndTime;   // 触摸结束时刻
-			
+
 		return {
 			widthChangeEvent: function() {
 				setInterval(function() {
-					if ($item.width() !== $banner.width()) {
-						$item.width($banner.width());
+					$item.width($banner.width());
 
-						if (options.adaptive) {
-							$list.height($item.filter(':visible').height());
-							$banner.height($list.height());
-						}
+					if (options.adaptive) {
+						$list.height($item.filter(':visible').height());
+						$banner.height($list.height());
+					}
 
-						if (options.animation === 'fade') {
-							$list.prev().children().width($banner.width());
-						}
+					if (options.animation === 'fade') {
+						$list.prev().children().width($banner.width());
+					}
 
-						if (options.arrow) {
-							self.$arrowBox.css('marginLeft', function() {
-								return -($(self).width() / 2);
-							});
-						}
+					if (options.arrow) {
+						self.$arrowBox.css('marginLeft', function() {
+							return -($(self).width() / 2);
+						});
 					}
 				}, 50);
 
@@ -1048,10 +1045,7 @@
 						$list.addClass('touching');
 					}
 
-					$list.css({
-						transform: 'translate3d(' + touchRange + 'px, 0, 0)',
-						'-webkit-transform': 'translate3d(' + touchRange + 'px, 0, 0)'
-					});
+					$list.css(Global.transformProperty, 'translate3d(' + touchRange + 'px, 0, 0)');
 
 					self.lazyload(self.currentIndex);
 				}
@@ -1080,10 +1074,7 @@
 						touchToLeft ? self.currentIndex-- : self.currentIndex++;
 					}
 
-					$list.removeClass('touching').css({
-						transform: listTransform,
-						'-webkit-transform': listTransform
-					});
+					$list.removeClass('touching').css(Global.transformProperty, listTransform);
 
 					setTimeout(function() {
 						self.animation.slideCallback();
@@ -1146,8 +1137,12 @@
 
 
 		function showVisibleItem() {
+			if (currentIndex === -1) {
+				$visibleItem = $list.children().first();
+			}
+
 			if (options.adaptive) {
-				$('img[data-src]', $item.eq(currentIndex)).attr('src', visibleItemImg);
+				$visibleItem.find('img[data-src]').attr('src', visibleItemImg);
 			} else {
 				$visibleItem.css('backgroundImage', 'url(' + visibleItemImg + ')');
 			}
@@ -1194,18 +1189,31 @@
 					$(this).remove();
 				});
 
-				if (options.animation === 'slide' &&
-					(currentIndex === -1 || currentIndex === self.len - 1))
-				{
-					if (options.adaptive) {
-						$list.children().first().html($item.last().html());
+				if (options.animation === 'slide') {
+					if (currentIndex === -1) {
+						if (options.adaptive) {
+							$item.last().html($list.children().first().html());
+						}
+						
+						$item.last().attr('style', function() {
+							return $list.children().first().attr('style');
+						})
+						.hide()
+						.data('origin', '');
+					}
+
+					if (currentIndex === self.len - 1) {
+						if (options.adaptive) {
+							$list.children().first().html($item.last().html());
+						}
+						
+						$list.children().first().attr('style', function() {
+							return $item.last().attr('style');
+						})
+						.hide()
+						.data('origin', '');
 					}
 					
-					$list.children().first().attr('style', function() {
-						return $item.last().attr('style');
-					})
-					.hide()
-					.data('origin', '');
 				}
 
 				afterCallback();
@@ -1251,6 +1259,10 @@
 
 			// 绑定图片加载完成的事件
 			var img = new Image();
+
+			if (currentIndex === -1) {
+				visibleItemImg = $item.last().data('origin');
+			}
 
 			img.src = visibleItemImg;
 

@@ -61,6 +61,7 @@
 				$list.css('left', '-100%');
 			}
 
+			// console.log($item.eq(self.currentIndex + 1));
 			$item.eq(self.currentIndex + 1).show();
 
 			if (Global.isSupportTransition) {
@@ -71,10 +72,7 @@
 						'translate3d(' + -$item.width() + 'px, 0, 0)' :
 						'translate3d(' + $item.width() + 'px, 0, 0)';
 
-					$list.css({
-						transform: listTransform,
-						'-webkit-transform': listTransform
-					});
+					$list.css(Global.transformProperty, listTransform);
 
 					setTimeout(self.animation.slideCallback, options.duration - 50);
 				}, 50);
@@ -162,14 +160,16 @@
 
 			$list.css({
 				left: 0,
-				'transition': 'none',
-				transform: 'translate3d(0, 0, 0)',
-				'-webkit-transform': 'translate3d(0, 0, 0)'
+				'transition': 'none'
 			});
+
+			$list.css(Global.transformProperty, 'translate3d(0, 0, 0)');
 
 			$item.eq(self.currentIndex + 1).show().siblings().hide();
 
-			$list.css('transition', 'transform ' + options.duration + 'ms');
+			setTimeout(function() {
+				$list.css('transition', 'transform ' + options.duration + 'ms');
+			}, 50);
 
 			if (!$item.eq(self.currentIndex).data('origin')) {
 				afterCallback();

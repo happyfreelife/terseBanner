@@ -124,11 +124,8 @@
 		// animation: slide
 		if (options.animation === 'slide') {
 			if (Global.isSupportTransition) {
-				$list.css({
-					transform: 'translate3d(0, 0, 0)',
-					'-webkit-transform': 'translate3d(0, 0, 0)',
-					transition: 'transform ' + options.duration + 'ms'
-				});
+				$list.css(Global.transformProperty, 'translate3d(0, 0, 0)');
+				$list.css(transition, 'transform ' + options.duration + 'ms');
 			}
 
 			$list.css('left', 0);

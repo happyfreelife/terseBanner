@@ -1,6 +1,6 @@
 {
   "name": "terseBanner",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "uri": "https://github.com/happyfreelife/terseBanner",
   "devDependencies": {
     "grunt": "~0.4.5",
