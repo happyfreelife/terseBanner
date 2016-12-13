@@ -125,7 +125,7 @@
 		if (options.animation === 'slide') {
 			if (Global.isSupportTransition) {
 				$list.css(Global.transformProperty, 'translate3d(0, 0, 0)');
-				$list.css(transition, 'transform ' + options.duration + 'ms');
+				$list.css('transition', 'transform ' + options.duration + 'ms');
 			}
 
 			$list.css('left', 0);

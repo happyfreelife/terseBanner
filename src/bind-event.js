@@ -54,7 +54,7 @@
 
 					if (options.arrow) {
 						self.$arrowBox.css('marginLeft', function() {
-							return -($(self).width() / 2);
+							return -self.$elem.width() / 2;
 						});
 					}
 				}, 50);

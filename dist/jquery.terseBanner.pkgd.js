@@ -1,8 +1,8 @@
 /**
  * terseBanner
- * Version: 2.1.2
+ * Version: 2.1.3
  * URI: https://github.com/happyfreelife/terseBanner
- * Date: 2016-11-18
+ * Date: 2016-12-13
  **/
 
 /**
@@ -205,7 +205,7 @@
 		if (options.animation === 'slide') {
 			if (Global.isSupportTransition) {
 				$list.css(Global.transformProperty, 'translate3d(0, 0, 0)');
-				$list.css(transition, 'transform ' + options.duration + 'ms');
+				$list.css('transition', 'transform ' + options.duration + 'ms');
 			}
 
 			$list.css('left', 0);
@@ -992,7 +992,7 @@
 
 					if (options.arrow) {
 						self.$arrowBox.css('marginLeft', function() {
-							return -($(self).width() / 2);
+							return -self.$elem.width() / 2;
 						});
 					}
 				}, 50);
@@ -1375,7 +1375,7 @@
 				break;
 
 			default:
-				this.currentIndex = arguments[0] - 1;
+				this.currentIndex = arguments[0];
 				break;
 		}
 

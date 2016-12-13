@@ -99,7 +99,7 @@
 				break;
 
 			default:
-				this.currentIndex = arguments[0] - 1;
+				this.currentIndex = arguments[0];
 				break;
 		}
 
