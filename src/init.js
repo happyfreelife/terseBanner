@@ -35,11 +35,6 @@
 		this.isHovered = false;
 		this.isAnimated = false;
 
-		// 在移动端，动画模式只能是slide
-		if (Global.isSupportTouch) {
-			this.options.animation = 'slide';
-		}
-
 		var self = this,
 			$banner = this.$elem,
 			$list = this.$list,
@@ -59,7 +54,7 @@
 			userSelect: 'none'
 		});
 
-		$list.width(self.len * 2 * 100 + '%').wrap('<div class="tb-list"/>');
+		$list.width((self.len + 2) * 100 + '%').wrap('<div class="tb-list"/>');
 
 		// 自适应模式
 		if (options.adaptive) {
@@ -130,8 +125,8 @@
 
 			$list.css('left', 0);
 			$item.css('float', 'left').first().show().siblings().hide();
-			$item.first().clone(true).addClass('first-clone').hide().appendTo($list);
-			$item.last().clone(true).addClass('last-clone').hide().prependTo($list);
+			$item.first().clone(true).addClass('first-duplicate').hide().appendTo($list);
+			$item.last().clone(true).addClass('last-duplicate').hide().prependTo($list);
 		}
 
 		// animation: fade
@@ -146,6 +141,11 @@
 		// animation: fade || flash
 		if (options.animation === 'fade' || options.animation === 'flash') {
 			$item.first().siblings().css('opacity', 0);
+		}
+
+		if (!Global.isSupportTouch && $.isNumeric(options.auto) && options.auto > 0) {
+			self.useAuto = true;
+			self.setPlayTimer();
 		}
 
 		self.defaultStyle();

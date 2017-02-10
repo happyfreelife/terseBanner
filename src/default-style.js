@@ -44,7 +44,9 @@
 			'}\n' +
 
 			'.tb-arrow{\n' +
-			'    width: 95%;\n' +
+			'    position: absolute;\n' +
+			'    width: 96%;\n' +
+			'    left: 2%;\n' +
 			'}\n' +
 			'.tb-arrow a{\n' +
 			'    position: absolute;\n' +
@@ -62,6 +64,10 @@
 			'    max-height: 100%;\n' +
 			'}\n' +
 
+			'.tb-btn{\n' +
+			'    position: absolute;\n' +
+			'    bottom: 10px;\n' +
+			'}\n' +		
 			'.tb-btn a{\n' +
 			'    display: inline-block;\n' +
 			'    width: 10px;\n' +

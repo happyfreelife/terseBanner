@@ -116,7 +116,7 @@
 			var terseBanner = $(this).data('terseBanner');
 
 			if (!terseBanner) {
-				options = $.extend(true, {}, $.fn.terseBanner.defaults, typeof option === 'object' && option);
+				var options = $.extend(true, {}, $.fn.terseBanner.defaults, typeof option === 'object' && option);
 
 				$(this).data('terseBanner', (terseBanner = new Banner(this, options)));
 

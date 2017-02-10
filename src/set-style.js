@@ -57,27 +57,17 @@
 					});
 				}
 
-				if ($arrowBox.css('left') === 'auto' && $arrowBox.css('right') === 'auto') {
-					$arrowBox.css({
-						left: '50%',
-						marginLeft: -$arrowBox.width() / 2
-					});
-				}
-
 				$banner.append($arrowBox.css('position', 'absolute'));
 				break;
 
 			case 'btnBoxPos' :
-				if ($btnBox.css('top') === 'auto' && $btnBox.css('bottom') === 'auto') {
-					$btnBox.css('bottom', 10);
-				}
 				if ($btnBox.css('left') === 'auto' && $btnBox.css('right') === 'auto') {
 					$btnBox.css({
 						left: '50%',
 						marginLeft: -$btn.outerWidth(true) * $btn.length / 2
 					});
 				}
-				$banner.append($btnBox.css('position', 'absolute'));
+				$banner.append($btnBox);
 				break;
 
 			case 'thumb':

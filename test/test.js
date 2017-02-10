@@ -19,5 +19,7 @@ $(function() {
 			arrow: true,
 			adaptive: true
 		});
+
+		$('.banner').terseBanner();
 	});
 });

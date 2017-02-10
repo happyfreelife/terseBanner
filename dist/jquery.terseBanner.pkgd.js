@@ -1,8 +1,8 @@
 /**
  * terseBanner
- * Version: 2.1.3
+ * Version: 2.1.4
  * URI: https://github.com/happyfreelife/terseBanner
- * Date: 2016-12-13
+ * Date: 2017-02-10
  **/
 
 /**
@@ -115,11 +115,6 @@
 		this.isHovered = false;
 		this.isAnimated = false;
 
-		// 在移动端，动画模式只能是slide
-		if (Global.isSupportTouch) {
-			this.options.animation = 'slide';
-		}
-
 		var self = this,
 			$banner = this.$elem,
 			$list = this.$list,
@@ -139,7 +134,7 @@
 			userSelect: 'none'
 		});
 
-		$list.width(self.len * 2 * 100 + '%').wrap('<div class="tb-list"/>');
+		$list.width((self.len + 2) * 100 + '%').wrap('<div class="tb-list"/>');
 
 		// 自适应模式
 		if (options.adaptive) {
@@ -210,8 +205,8 @@
 
 			$list.css('left', 0);
 			$item.css('float', 'left').first().show().siblings().hide();
-			$item.first().clone(true).addClass('first-clone').hide().appendTo($list);
-			$item.last().clone(true).addClass('last-clone').hide().prependTo($list);
+			$item.first().clone(true).addClass('first-duplicate').hide().appendTo($list);
+			$item.last().clone(true).addClass('last-duplicate').hide().prependTo($list);
 		}
 
 		// animation: fade
@@ -226,6 +221,11 @@
 		// animation: fade || flash
 		if (options.animation === 'fade' || options.animation === 'flash') {
 			$item.first().siblings().css('opacity', 0);
+		}
+
+		if (!Global.isSupportTouch && $.isNumeric(options.auto) && options.auto > 0) {
+			self.useAuto = true;
+			self.setPlayTimer();
 		}
 
 		self.defaultStyle();
@@ -279,7 +279,9 @@
 			'}\n' +
 
 			'.tb-arrow{\n' +
-			'    width: 95%;\n' +
+			'    position: absolute;\n' +
+			'    width: 96%;\n' +
+			'    left: 2%;\n' +
 			'}\n' +
 			'.tb-arrow a{\n' +
 			'    position: absolute;\n' +
@@ -297,6 +299,10 @@
 			'    max-height: 100%;\n' +
 			'}\n' +
 
+			'.tb-btn{\n' +
+			'    position: absolute;\n' +
+			'    bottom: 10px;\n' +
+			'}\n' +		
 			'.tb-btn a{\n' +
 			'    display: inline-block;\n' +
 			'    width: 10px;\n' +
@@ -416,27 +422,17 @@
 					});
 				}
 
-				if ($arrowBox.css('left') === 'auto' && $arrowBox.css('right') === 'auto') {
-					$arrowBox.css({
-						left: '50%',
-						marginLeft: -$arrowBox.width() / 2
-					});
-				}
-
 				$banner.append($arrowBox.css('position', 'absolute'));
 				break;
 
 			case 'btnBoxPos' :
-				if ($btnBox.css('top') === 'auto' && $btnBox.css('bottom') === 'auto') {
-					$btnBox.css('bottom', 10);
-				}
 				if ($btnBox.css('left') === 'auto' && $btnBox.css('right') === 'auto') {
 					$btnBox.css({
 						left: '50%',
 						marginLeft: -$btn.outerWidth(true) * $btn.length / 2
 					});
 				}
-				$banner.append($btnBox.css('position', 'absolute'));
+				$banner.append($btnBox);
 				break;
 
 			case 'thumb':
@@ -967,14 +963,17 @@
 			$banner = this.$elem,
 			$list = this.$list,
 			$item = $list.children(),
-			touch,          // 触摸事件
-			touchStartTime, // 触摸开始时刻
-			touchStarX,     // 触摸开始的X坐标
-			touchMoveX,     // 触摸进行时的X坐标
-			touchRange,     // 触摸距离
-			touchToLeft, // 触摸方向
-			touchDuration,  // 触摸持续时间
-			touchEndTime;   // 触摸结束时刻
+			transformProperty = Global.transformProperty,
+			currentPosition, // 列表当前的位置
+			touch,           // 触摸事件
+			touchStartTime,  // 触摸开始时刻
+			touchStartX,     // 触摸开始的X坐标
+			touchStartY,     // 触摸开始的X坐标
+			touchRangeX,     // 触摸水平滑动距离
+			touchRangeY,     // 触摸垂直滑动距离
+			touchRange,
+			touchDirection,  // 触摸方向
+			touchDuration;   // 触摸持续时间
 
 		return {
 			widthChangeEvent: function() {
@@ -990,17 +989,13 @@
 						$list.prev().children().width($banner.width());
 					}
 
-					if (options.arrow) {
-						self.$arrowBox.css('marginLeft', function() {
-							return -self.$elem.width() / 2;
-						});
+					if (Global.isSupportTouch) {
+						
 					}
 				}, 50);
 
-				if ($.isNumeric(options.auto) && options.auto > 0) {
-					self.useAuto = true;
-					self.setPlayTimer();
-				}
+				// 移动端需要自适应
+				// ...
 
 				self.lazyload();
 			},
@@ -1008,13 +1003,24 @@
 			touchEvent: function() {
 				if (!Global.isSupportTouch) return;
 
+				// $list.css('transition', 'none');
+				$list.css({
+					'transition-property': 'transform',
+					'transition-duration': '0ms'
+				});
+				$list.css(transformProperty, 'translate3d(' + -$item.width() + 'px, 0, 0)');
+				$item.show();
+
+				currentPosition = -$item.width();
+
 				function touchStart (e)  {
 					e.preventDefault();
 					if (self.isAnimated) return;
 
 					touch = e.touches[0];
 					touchStartTime = Date.now();
-					touchStarX = touch.pageX - $banner.offset().left;
+					touchStartX = touch.pageX;
+					touchStartY = touch.pageY;
 				}
 
 				function touchMove (e) {
@@ -1022,65 +1028,86 @@
 					if (self.isAnimated) return;
 
 					touch = e.touches[0];
-					touchMoveX = touch.pageX - $banner.offset().left;
-					touchRange = touchMoveX - touchStarX;
+					touchRangeX = touch.pageX - touchStartX;
+					touchRangeY = touch.pageY - touchStartY;
+
+					// 触摸水平滑动距离 大于 触摸垂直滑动距离时执行滑动动画
+					if (Math.abs(touchRangeX) < Math.abs(touchRangeY)) return;
 
 					options.before.call(self, self.$elem, self.$item, self.currentIndex);
 
-					if (!$list.hasClass('touching')) {
-						if (touchRange < 0) {
-							touchToLeft = true;
-							self.currentIndex++;
-						} else if (touchRange > 0) {
-							touchToLeft = false;
-							self.currentIndex--;
-						} else return;
-
-						if (touchToLeft === false) {
-							$list.css('left', '-100%');
-						}
-
-						$item.eq(self.currentIndex + 1).show();
-
-						$list.addClass('touching');
+					if (touchRangeX < 0) {
+						touchDirection = 'left';
+					} else if (touchRangeX > 0) {
+						touchDirection = 'right';
 					}
 
-					$list.css(Global.transformProperty, 'translate3d(' + touchRange + 'px, 0, 0)');
+					$list.css(transformProperty, 'translate3d(' + (currentPosition + touchRangeX) + 'px, 0, 0)');
 
 					self.lazyload(self.currentIndex);
 				}
 
 				function touchEnd (e) {
 					e.preventDefault();
-					if (self.isAnimated || !touchRange) return;
+					if (self.isAnimated) return;
 					self.isAnimated = true;
 
-					touchEndTime = Date.now();
-					touchDuration = touchEndTime - touchStartTime;
+					touchDuration = Date.now() - touchStartTime;
 
 					var listTransform;
 
-					// 触摸速度足够或触摸距离超过轮播宽度的一半列表滑动
-					if (touchDuration < 300 || Math.abs(touchRange) >= $item.width() / 2) {
-						listTransform = touchToLeft ? 'translate3d(' + -$item.width() + 'px, 0, 0)' :
-						'translate3d(' + $item.width() + 'px, 0, 0)';
+					// 触摸停留时间小于300ms 或者
+					// 触摸水平距离超过轮播宽度的一半时切换到下一个元素
+					if (touchDuration < 300 || Math.abs(touchRangeX) >= $item.width() / 2) {
+						$list.css('transition-duration', '200ms');
+
+						if (touchDirection === 'left') {
+							listTransform = 'translate3d(' + (currentPosition - $item.width()) + 'px, 0, 0)';
+							self.currentIndex++;
+							currentPosition -= $item.width();
+						} else {
+							listTransform = 'translate3d(' + (currentPosition + $item.width()) + 'px, 0, 0)';
+							self.currentIndex--;
+							currentPosition += $item.width();
+						}
+
+						$list.css(transformProperty, listTransform);
+
+						self.currentIndex =
+						self.currentIndex === -1 ? self.len - 1 :
+						self.currentIndex === self.len ? 0 : self.currentIndex;
 
 						self.activeBtnAndThumb();
 					}
 
-					// 触摸速度过低并且触摸距离不超过banner宽度的一半，列表回拉
-					if (touchDuration > 300 && Math.abs(touchRange) < $item.width() / 2) {
-						listTransform = 'translate3d(0, 0, 0)';
-						touchToLeft ? self.currentIndex-- : self.currentIndex++;
+					// 触摸停留时间大于300ms 并且
+					// 触摸水平距离小于轮播宽度的一半时回退到当前元素
+					if (touchDuration >= 300 && Math.abs(touchRangeX) < $item.width() / 2) {
+						$list.css('transition-duration', '200ms');
+
+						listTransform = 'translate3d(' + currentPosition + 'px, 0, 0)';
+						self.currentIndex--;
+
+						$list.css(transformProperty, listTransform);
 					}
 
-					$list.removeClass('touching').css(Global.transformProperty, listTransform);
-
 					setTimeout(function() {
-						self.animation.slideCallback();
-					}, options.duration);
+						$list.css('transition-duration', '0ms');
 
-					touchRange = 0;
+						self.isAnimated = false;
+
+						// 切换到第一个元素时
+						if (!currentPosition) {
+							currentPosition = -$item.width() * self.len;
+							$list.css(transformProperty, 'translate3d(' + currentPosition + 'px, 0, 0)');
+						}
+
+						// 切换到最后一个元素时
+						if (currentPosition === -$item.width() * (self.len + 1)) {
+							currentPosition = -$item.width();
+							$list.css(transformProperty, 'translate3d(' + currentPosition + 'px, 0, 0)');
+						}
+					}, 200);
 				}
 
 				$banner[0].addEventListener('touchstart', touchStart, false);
@@ -1392,7 +1419,7 @@
 			var terseBanner = $(this).data('terseBanner');
 
 			if (!terseBanner) {
-				options = $.extend(true, {}, $.fn.terseBanner.defaults, typeof option === 'object' && option);
+				var options = $.extend(true, {}, $.fn.terseBanner.defaults, typeof option === 'object' && option);
 
 				$(this).data('terseBanner', (terseBanner = new Banner(this, options)));
 
