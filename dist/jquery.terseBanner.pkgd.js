@@ -1,8 +1,8 @@
 /**
  * terseBanner
- * Version: 2.1.4
+ * Version: 2.1.5
  * URI: https://github.com/happyfreelife/terseBanner
- * Date: 2017-02-10
+ * Date: 2017-02-13
  **/
 
 /**
@@ -143,7 +143,7 @@
 			}
 
 			setTimeout(function() {
-				$list.height($banner.height());
+				// $list.height($banner.height());
 			}, 50);
 
 			$item.each(function() {
@@ -402,7 +402,13 @@
 			case 'arrow' :
 				if ($arrow.css('backgroundImage') === 'none') {
 					if (!$arrow.height()) {
-						$arrow.height(parseInt($banner.height() * 0.1));
+						var bannerHeight = Math.max(
+							$banner.height(),
+							$.isNumeric(parseInt($banner.css('maxHeight'))) ? parseInt($banner.css('maxHeight')) : 0,
+							$.isNumeric(parseInt($banner.css('minHeight'))) ? parseInt($banner.css('minHeight')) : 0
+						);
+
+						$arrow.height(parseInt(bannerHeight * 0.1));
 					}
 
 					$arrow.filter('.prev').html('<img src="' + Global.prevArrow + '">');
@@ -568,7 +574,7 @@
 				self.setStyle('arrowBoxPos');
 
 				self.$arrow.on({
-					click: function() {
+					'click.terseBanner': function() {
 						if (self.isAnimated) return;
 
 						beforeCallback();
@@ -579,7 +585,7 @@
 					},
 
 					// 阻止连续点击箭头按钮时选中按钮
-					selectstart: function() {
+					'selectstart.terseBanner': function() {
 						return false;
 					}
 				});
@@ -614,14 +620,13 @@
 
 				if (!Global.isMobile) {
 					self.$btn.on(
-						self.options.useHover ? 'mouseenter' : 'click',
+						self.options.useHover ?
+							'mouseenter.terseBanner' : 'click.terseBanner',
 						function() {
 							if (self.isAnimated) return;
 
 							beforeCallback();
-
 							self.currentIndex = $(this).index();
-							
 							self.play();
 						}
 					);
@@ -656,7 +661,7 @@
 				self.$thumbBox = $('.tb-thumb', $banner);
 				self.$thumbSlideBtn = $('.tb-thumb a', $banner);
 				self.$thumbList = $('.tb-thumb dl', $banner);
-				self.$thumb =$('.tb-thumb dl dd', $banner);
+				self.$thumb = $('.tb-thumb dl dd', $banner);
 
 				self.setStyle('thumb');
 				self.setStyle('thumbSlideBtn');
@@ -666,7 +671,8 @@
 				self.$thumb.first().addClass('active');
 
 				self.$thumb.on(
-					self.options.useHover ? 'mouseenter' : 'click',
+					self.options.useHover ?
+						'mouseenter.terseBanner' : 'click.terseBanner',
 					function() {
 						if (self.isAnimated) return;
 
@@ -677,7 +683,7 @@
 				);
 
 				self.$thumbSlideBtn.on({
-					click: function() {
+					'click.terseBanner': function() {
 						if ($(this).hasClass('disabled')) return;
 
 						var thumbVisible,
@@ -705,7 +711,7 @@
 					},
 
 					// 阻止连续点击箭头按钮时选中按钮
-					selectstart: function() {
+					'selectstart.terseBanner': function() {
 						return false;
 					}
 				});
@@ -779,7 +785,6 @@
 				$list.css('left', '-100%');
 			}
 
-			// console.log($item.eq(self.currentIndex + 1));
 			$item.eq(self.currentIndex + 1).show();
 
 			if (Global.isSupportTransition) {
@@ -833,9 +838,7 @@
 
 			self.activeBtnAndThumb();
 
-			if (!$item.eq(self.currentIndex).data('origin')) {
-				afterCallback();
-			}
+			afterCallback();
 		};
 
 		animation.thumbListSlide = function() {
@@ -889,9 +892,7 @@
 				$list.css('transition', 'transform ' + options.duration + 'ms');
 			}, 50);
 
-			if (!$item.eq(self.currentIndex).data('origin')) {
-				afterCallback();
-			}
+			afterCallback();
 
 			if (self.useAuto && !self.isHovered) {
 				self.setPlayTimer();
@@ -908,9 +909,7 @@
 
 			$item.eq(self.currentIndex).siblings().css('opacity', 0);
 
-			if (!$item.eq(self.currentIndex).data('origin')) {
-				afterCallback();
-			}
+			afterCallback();
 
 			if (self.useAuto && !self.isHovered) {
 				self.setPlayTimer();
@@ -920,9 +919,7 @@
 		setTimeout(function() {
 			options.before.call(self, self.$elem, self.$item, 0);
 
-			if (!self.currentIndex && !$item.eq(self.currentIndex).data('origin')) {
-				afterCallback();
-			}
+			afterCallback();
 		}, 50);
 
 		self.bindEvent().widthChangeEvent();
@@ -964,6 +961,7 @@
 			$list = this.$list,
 			$item = $list.children(),
 			transformProperty = Global.transformProperty,
+			transformValue,
 			currentPosition, // 列表当前的位置
 			touch,           // 触摸事件
 			touchStartTime,  // 触摸开始时刻
@@ -975,27 +973,25 @@
 			touchDirection,  // 触摸方向
 			touchDuration;   // 触摸持续时间
 
+		var getCurrentPosition = function() {
+			return parseInt($list.attr('style').match(/translate3d\((-?\d+)px/)[1]);
+		};
+
 		return {
 			widthChangeEvent: function() {
 				setInterval(function() {
 					$item.width($banner.width());
 
-					if (options.adaptive) {
-						$list.height($item.filter(':visible').height());
-						$banner.height($list.height());
-					}
-
 					if (options.animation === 'fade') {
 						$list.prev().children().width($banner.width());
 					}
 
-					if (Global.isSupportTouch) {
-						
+					if (Global.isSupportTouch && !self.touching) {
+						$list.css(transformProperty, 'translate3d(' + -$item.width() * (self.currentIndex + 1) + 'px, 0, 0)');
+
+						currentPosition = getCurrentPosition();
 					}
 				}, 50);
-
-				// 移动端需要自适应
-				// ...
 
 				self.lazyload();
 			},
@@ -1003,7 +999,6 @@
 			touchEvent: function() {
 				if (!Global.isSupportTouch) return;
 
-				// $list.css('transition', 'none');
 				$list.css({
 					'transition-property': 'transform',
 					'transition-duration': '0ms'
@@ -1011,16 +1006,18 @@
 				$list.css(transformProperty, 'translate3d(' + -$item.width() + 'px, 0, 0)');
 				$item.show();
 
-				currentPosition = -$item.width();
-
 				function touchStart (e)  {
 					e.preventDefault();
 					if (self.isAnimated) return;
+
+					self.touching = true;
 
 					touch = e.touches[0];
 					touchStartTime = Date.now();
 					touchStartX = touch.pageX;
 					touchStartY = touch.pageY;
+
+					currentPosition = getCurrentPosition();
 				}
 
 				function touchMove (e) {
@@ -1054,24 +1051,21 @@
 
 					touchDuration = Date.now() - touchStartTime;
 
-					var listTransform;
-
 					// 触摸停留时间小于300ms 或者
 					// 触摸水平距离超过轮播宽度的一半时切换到下一个元素
 					if (touchDuration < 300 || Math.abs(touchRangeX) >= $item.width() / 2) {
-						$list.css('transition-duration', '200ms');
-
 						if (touchDirection === 'left') {
-							listTransform = 'translate3d(' + (currentPosition - $item.width()) + 'px, 0, 0)';
+							transformValue = 'translate3d(' + (currentPosition - $item.width()) + 'px, 0, 0)';
 							self.currentIndex++;
-							currentPosition -= $item.width();
 						} else {
-							listTransform = 'translate3d(' + (currentPosition + $item.width()) + 'px, 0, 0)';
+							transformValue = 'translate3d(' + (currentPosition + $item.width()) + 'px, 0, 0)';
 							self.currentIndex--;
-							currentPosition += $item.width();
 						}
 
-						$list.css(transformProperty, listTransform);
+						$list.css('transition-duration', '200ms');
+						$list.css(transformProperty, transformValue);
+
+						currentPosition = getCurrentPosition();
 
 						self.currentIndex =
 						self.currentIndex === -1 ? self.len - 1 :
@@ -1083,12 +1077,9 @@
 					// 触摸停留时间大于300ms 并且
 					// 触摸水平距离小于轮播宽度的一半时回退到当前元素
 					if (touchDuration >= 300 && Math.abs(touchRangeX) < $item.width() / 2) {
+						transformValue = 'translate3d(' + currentPosition + 'px, 0, 0)';
 						$list.css('transition-duration', '200ms');
-
-						listTransform = 'translate3d(' + currentPosition + 'px, 0, 0)';
-						self.currentIndex--;
-
-						$list.css(transformProperty, listTransform);
+						$list.css(transformProperty, transformValue);
 					}
 
 					setTimeout(function() {
@@ -1107,6 +1098,8 @@
 							currentPosition = -$item.width();
 							$list.css(transformProperty, 'translate3d(' + currentPosition + 'px, 0, 0)');
 						}
+
+						self.touching = false;
 					}, 200);
 				}
 
@@ -1117,11 +1110,6 @@
 		};
 	};
 }));
-
-
-
-
-
 
 
 
@@ -1158,11 +1146,6 @@
 
 		if (!visibleItemImg) return;
 
-		function afterCallback() {
-			options.after.call(self, self.$elem, self.$item, self.currentIndex);
-		}
-
-
 		function showVisibleItem() {
 			if (currentIndex === -1) {
 				$visibleItem = $list.children().first();
@@ -1179,11 +1162,11 @@
 
 				img.src = visibleItemImg;
 
-				function loaded() {
+				var loaded = function() {
 					/**
 					 * slide动画模式下，
-					 * 第一张和克隆之后添加到列表的最后，
-					 * 最后一张图片克隆之后添加到列表的最前，
+					 * 第一个列表项复制之后添加到列表的最后，
+					 * 最后一个列表项复制之后添加到列表的最前，
 					 * 在它们的图片源文件加载完成之后，
 					 * 需要将列表前后同一张图片的两个列表项同步
 					 */
@@ -1200,9 +1183,7 @@
 					}
 
 					$visibleItem.data('origin', '');
-
-					afterCallback();
-				}
+				};
 
 				if (img.complete) {
 					loaded();
@@ -1212,8 +1193,12 @@
 			} else {
 				$visibleItem.data('origin', '');
 
-				$banner.find('.tb-loading').fadeOut(400, function() {
+				$visibleItem.find('.tb-loading').fadeOut(300, function() {
 					$(this).remove();
+
+					setTimeout(function() {
+						$list.height('auto');
+					}, 50);
 				});
 
 				if (options.animation === 'slide') {
@@ -1221,29 +1206,33 @@
 						if (options.adaptive) {
 							$item.last().html($list.children().first().html());
 						}
-						
+
 						$item.last().attr('style', function() {
 							return $list.children().first().attr('style');
 						})
-						.hide()
-						.data('origin', '');
+						.show()
+						.data('origin', '')
+						.find('.tb-loading').fadeOut(300, function() {
+							$(this).remove();
+						});
 					}
 
 					if (currentIndex === self.len - 1) {
 						if (options.adaptive) {
-							$list.children().first().html($item.last().html());
+							// 加载动画需要300ms之后移除
+							// 如果不设置延时会把加载动画的代码也复制到新的列表第一个元素中
+							setTimeout(function() {
+								$list.children().first().html($item.last().html());
+							}, 350);
 						}
-						
+
 						$list.children().first().attr('style', function() {
 							return $item.last().attr('style');
 						})
 						.hide()
 						.data('origin', '');
 					}
-					
 				}
-
-				afterCallback();
 			}
 		}
 
@@ -1260,7 +1249,7 @@
 			}
 
 			// 添加loading动画
-			var $loading = 
+			var $loading =
 				'<div class="tb-loading">' +
 					'<img src="' + Global.loadingImage + '">' +
 				'</div>';
@@ -1273,8 +1262,16 @@
 
 			$('.tb-loading').css({
 				background: loadingBackground,
-				height: $banner.height()
+				height: function() {
+					return Math.max(
+						$banner.height(),
+						$.isNumeric(parseInt($banner.css('maxHeight'))) ? parseInt($banner.css('maxHeight')) : 0,
+						$.isNumeric(parseInt($banner.css('minHeight'))) ? parseInt($banner.css('minHeight')) : 0
+					);
+				}
 			});
+
+			$list.height($('.tb-loading').height());
 
 			$('.tb-loading img').css('top', function() {
 				return ($banner.height() - $(this).height()) / 2;
@@ -1357,11 +1354,11 @@
 			self.play();
 		}, self.options.auto);
 
-		self.$elem.off('mouseenter');
-		self.$elem.off('mouseleave');
+		self.$elem.off('mouseenter.terseBanner');
+		self.$elem.off('mouseleave.terseBanner');
 		self.$elem.on({
-			mouseenter: clear,
-			mouseleave: reset
+			'mouseenter.terseBanner': clear,
+			'mouseleave.terseBanner': reset
 		});
 	};
 
@@ -1392,6 +1389,7 @@
 		}
 
 		this.options.before.call(this, this.$elem, this.$item, this.currentIndex);
+		
 		switch (arguments[0]) {
 			case 'prev':
 				this.currentIndex--;

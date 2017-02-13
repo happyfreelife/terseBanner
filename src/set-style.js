@@ -37,7 +37,13 @@
 			case 'arrow' :
 				if ($arrow.css('backgroundImage') === 'none') {
 					if (!$arrow.height()) {
-						$arrow.height(parseInt($banner.height() * 0.1));
+						var bannerHeight = Math.max(
+							$banner.height(),
+							$.isNumeric(parseInt($banner.css('maxHeight'))) ? parseInt($banner.css('maxHeight')) : 0,
+							$.isNumeric(parseInt($banner.css('minHeight'))) ? parseInt($banner.css('minHeight')) : 0
+						);
+
+						$arrow.height(parseInt(bannerHeight * 0.1));
 					}
 
 					$arrow.filter('.prev').html('<img src="' + Global.prevArrow + '">');

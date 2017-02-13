@@ -56,7 +56,7 @@
 				self.setStyle('arrowBoxPos');
 
 				self.$arrow.on({
-					click: function() {
+					'click.terseBanner': function() {
 						if (self.isAnimated) return;
 
 						beforeCallback();
@@ -67,7 +67,7 @@
 					},
 
 					// 阻止连续点击箭头按钮时选中按钮
-					selectstart: function() {
+					'selectstart.terseBanner': function() {
 						return false;
 					}
 				});
@@ -102,14 +102,13 @@
 
 				if (!Global.isMobile) {
 					self.$btn.on(
-						self.options.useHover ? 'mouseenter' : 'click',
+						self.options.useHover ?
+							'mouseenter.terseBanner' : 'click.terseBanner',
 						function() {
 							if (self.isAnimated) return;
 
 							beforeCallback();
-
 							self.currentIndex = $(this).index();
-							
 							self.play();
 						}
 					);
@@ -144,7 +143,7 @@
 				self.$thumbBox = $('.tb-thumb', $banner);
 				self.$thumbSlideBtn = $('.tb-thumb a', $banner);
 				self.$thumbList = $('.tb-thumb dl', $banner);
-				self.$thumb =$('.tb-thumb dl dd', $banner);
+				self.$thumb = $('.tb-thumb dl dd', $banner);
 
 				self.setStyle('thumb');
 				self.setStyle('thumbSlideBtn');
@@ -154,7 +153,8 @@
 				self.$thumb.first().addClass('active');
 
 				self.$thumb.on(
-					self.options.useHover ? 'mouseenter' : 'click',
+					self.options.useHover ?
+						'mouseenter.terseBanner' : 'click.terseBanner',
 					function() {
 						if (self.isAnimated) return;
 
@@ -165,7 +165,7 @@
 				);
 
 				self.$thumbSlideBtn.on({
-					click: function() {
+					'click.terseBanner': function() {
 						if ($(this).hasClass('disabled')) return;
 
 						var thumbVisible,
@@ -193,7 +193,7 @@
 					},
 
 					// 阻止连续点击箭头按钮时选中按钮
-					selectstart: function() {
+					'selectstart.terseBanner': function() {
 						return false;
 					}
 				});

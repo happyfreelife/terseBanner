@@ -63,7 +63,7 @@
 			}
 
 			setTimeout(function() {
-				$list.height($banner.height());
+				// $list.height($banner.height());
 			}, 50);
 
 			$item.each(function() {

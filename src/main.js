@@ -54,11 +54,11 @@
 			self.play();
 		}, self.options.auto);
 
-		self.$elem.off('mouseenter');
-		self.$elem.off('mouseleave');
+		self.$elem.off('mouseenter.terseBanner');
+		self.$elem.off('mouseleave.terseBanner');
 		self.$elem.on({
-			mouseenter: clear,
-			mouseleave: reset
+			'mouseenter.terseBanner': clear,
+			'mouseleave.terseBanner': reset
 		});
 	};
 
@@ -89,6 +89,7 @@
 		}
 
 		this.options.before.call(this, this.$elem, this.$item, this.currentIndex);
+		
 		switch (arguments[0]) {
 			case 'prev':
 				this.currentIndex--;

@@ -33,11 +33,6 @@
 
 		if (!visibleItemImg) return;
 
-		function afterCallback() {
-			options.after.call(self, self.$elem, self.$item, self.currentIndex);
-		}
-
-
 		function showVisibleItem() {
 			if (currentIndex === -1) {
 				$visibleItem = $list.children().first();
@@ -54,11 +49,11 @@
 
 				img.src = visibleItemImg;
 
-				function loaded() {
+				var loaded = function() {
 					/**
 					 * slide动画模式下，
-					 * 第一张和克隆之后添加到列表的最后，
-					 * 最后一张图片克隆之后添加到列表的最前，
+					 * 第一个列表项复制之后添加到列表的最后，
+					 * 最后一个列表项复制之后添加到列表的最前，
 					 * 在它们的图片源文件加载完成之后，
 					 * 需要将列表前后同一张图片的两个列表项同步
 					 */
@@ -75,9 +70,7 @@
 					}
 
 					$visibleItem.data('origin', '');
-
-					afterCallback();
-				}
+				};
 
 				if (img.complete) {
 					loaded();
@@ -87,8 +80,12 @@
 			} else {
 				$visibleItem.data('origin', '');
 
-				$banner.find('.tb-loading').fadeOut(400, function() {
+				$visibleItem.find('.tb-loading').fadeOut(300, function() {
 					$(this).remove();
+
+					setTimeout(function() {
+						$list.height('auto');
+					}, 50);
 				});
 
 				if (options.animation === 'slide') {
@@ -96,29 +93,33 @@
 						if (options.adaptive) {
 							$item.last().html($list.children().first().html());
 						}
-						
+
 						$item.last().attr('style', function() {
 							return $list.children().first().attr('style');
 						})
-						.hide()
-						.data('origin', '');
+						.show()
+						.data('origin', '')
+						.find('.tb-loading').fadeOut(300, function() {
+							$(this).remove();
+						});
 					}
 
 					if (currentIndex === self.len - 1) {
 						if (options.adaptive) {
-							$list.children().first().html($item.last().html());
+							// 加载动画需要300ms之后移除
+							// 如果不设置延时会把加载动画的代码也复制到新的列表第一个元素中
+							setTimeout(function() {
+								$list.children().first().html($item.last().html());
+							}, 350);
 						}
-						
+
 						$list.children().first().attr('style', function() {
 							return $item.last().attr('style');
 						})
 						.hide()
 						.data('origin', '');
 					}
-					
 				}
-
-				afterCallback();
 			}
 		}
 
@@ -135,7 +136,7 @@
 			}
 
 			// 添加loading动画
-			var $loading = 
+			var $loading =
 				'<div class="tb-loading">' +
 					'<img src="' + Global.loadingImage + '">' +
 				'</div>';
@@ -148,8 +149,16 @@
 
 			$('.tb-loading').css({
 				background: loadingBackground,
-				height: $banner.height()
+				height: function() {
+					return Math.max(
+						$banner.height(),
+						$.isNumeric(parseInt($banner.css('maxHeight'))) ? parseInt($banner.css('maxHeight')) : 0,
+						$.isNumeric(parseInt($banner.css('minHeight'))) ? parseInt($banner.css('minHeight')) : 0
+					);
+				}
 			});
+
+			$list.height($('.tb-loading').height());
 
 			$('.tb-loading img').css('top', function() {
 				return ($banner.height() - $(this).height()) / 2;

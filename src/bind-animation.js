@@ -61,7 +61,6 @@
 				$list.css('left', '-100%');
 			}
 
-			// console.log($item.eq(self.currentIndex + 1));
 			$item.eq(self.currentIndex + 1).show();
 
 			if (Global.isSupportTransition) {
@@ -115,9 +114,7 @@
 
 			self.activeBtnAndThumb();
 
-			if (!$item.eq(self.currentIndex).data('origin')) {
-				afterCallback();
-			}
+			afterCallback();
 		};
 
 		animation.thumbListSlide = function() {
@@ -171,9 +168,7 @@
 				$list.css('transition', 'transform ' + options.duration + 'ms');
 			}, 50);
 
-			if (!$item.eq(self.currentIndex).data('origin')) {
-				afterCallback();
-			}
+			afterCallback();
 
 			if (self.useAuto && !self.isHovered) {
 				self.setPlayTimer();
@@ -190,9 +185,7 @@
 
 			$item.eq(self.currentIndex).siblings().css('opacity', 0);
 
-			if (!$item.eq(self.currentIndex).data('origin')) {
-				afterCallback();
-			}
+			afterCallback();
 
 			if (self.useAuto && !self.isHovered) {
 				self.setPlayTimer();
@@ -202,9 +195,7 @@
 		setTimeout(function() {
 			options.before.call(self, self.$elem, self.$item, 0);
 
-			if (!self.currentIndex && !$item.eq(self.currentIndex).data('origin')) {
-				afterCallback();
-			}
+			afterCallback();
 		}, 50);
 
 		self.bindEvent().widthChangeEvent();

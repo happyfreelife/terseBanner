@@ -30,6 +30,7 @@
 			$list = this.$list,
 			$item = $list.children(),
 			transformProperty = Global.transformProperty,
+			transformValue,
 			currentPosition, // 列表当前的位置
 			touch,           // 触摸事件
 			touchStartTime,  // 触摸开始时刻
@@ -41,27 +42,25 @@
 			touchDirection,  // 触摸方向
 			touchDuration;   // 触摸持续时间
 
+		var getCurrentPosition = function() {
+			return parseInt($list.attr('style').match(/translate3d\((-?\d+)px/)[1]);
+		};
+
 		return {
 			widthChangeEvent: function() {
 				setInterval(function() {
 					$item.width($banner.width());
 
-					if (options.adaptive) {
-						$list.height($item.filter(':visible').height());
-						$banner.height($list.height());
-					}
-
 					if (options.animation === 'fade') {
 						$list.prev().children().width($banner.width());
 					}
 
-					if (Global.isSupportTouch) {
-						
+					if (Global.isSupportTouch && !self.touching) {
+						$list.css(transformProperty, 'translate3d(' + -$item.width() * (self.currentIndex + 1) + 'px, 0, 0)');
+
+						currentPosition = getCurrentPosition();
 					}
 				}, 50);
-
-				// 移动端需要自适应
-				// ...
 
 				self.lazyload();
 			},
@@ -69,7 +68,6 @@
 			touchEvent: function() {
 				if (!Global.isSupportTouch) return;
 
-				// $list.css('transition', 'none');
 				$list.css({
 					'transition-property': 'transform',
 					'transition-duration': '0ms'
@@ -77,16 +75,18 @@
 				$list.css(transformProperty, 'translate3d(' + -$item.width() + 'px, 0, 0)');
 				$item.show();
 
-				currentPosition = -$item.width();
-
 				function touchStart (e)  {
 					e.preventDefault();
 					if (self.isAnimated) return;
+
+					self.touching = true;
 
 					touch = e.touches[0];
 					touchStartTime = Date.now();
 					touchStartX = touch.pageX;
 					touchStartY = touch.pageY;
+
+					currentPosition = getCurrentPosition();
 				}
 
 				function touchMove (e) {
@@ -120,24 +120,21 @@
 
 					touchDuration = Date.now() - touchStartTime;
 
-					var listTransform;
-
 					// 触摸停留时间小于300ms 或者
 					// 触摸水平距离超过轮播宽度的一半时切换到下一个元素
 					if (touchDuration < 300 || Math.abs(touchRangeX) >= $item.width() / 2) {
-						$list.css('transition-duration', '200ms');
-
 						if (touchDirection === 'left') {
-							listTransform = 'translate3d(' + (currentPosition - $item.width()) + 'px, 0, 0)';
+							transformValue = 'translate3d(' + (currentPosition - $item.width()) + 'px, 0, 0)';
 							self.currentIndex++;
-							currentPosition -= $item.width();
 						} else {
-							listTransform = 'translate3d(' + (currentPosition + $item.width()) + 'px, 0, 0)';
+							transformValue = 'translate3d(' + (currentPosition + $item.width()) + 'px, 0, 0)';
 							self.currentIndex--;
-							currentPosition += $item.width();
 						}
 
-						$list.css(transformProperty, listTransform);
+						$list.css('transition-duration', '200ms');
+						$list.css(transformProperty, transformValue);
+
+						currentPosition = getCurrentPosition();
 
 						self.currentIndex =
 						self.currentIndex === -1 ? self.len - 1 :
@@ -149,12 +146,9 @@
 					// 触摸停留时间大于300ms 并且
 					// 触摸水平距离小于轮播宽度的一半时回退到当前元素
 					if (touchDuration >= 300 && Math.abs(touchRangeX) < $item.width() / 2) {
+						transformValue = 'translate3d(' + currentPosition + 'px, 0, 0)';
 						$list.css('transition-duration', '200ms');
-
-						listTransform = 'translate3d(' + currentPosition + 'px, 0, 0)';
-						self.currentIndex--;
-
-						$list.css(transformProperty, listTransform);
+						$list.css(transformProperty, transformValue);
 					}
 
 					setTimeout(function() {
@@ -173,6 +167,8 @@
 							currentPosition = -$item.width();
 							$list.css(transformProperty, 'translate3d(' + currentPosition + 'px, 0, 0)');
 						}
+
+						self.touching = false;
 					}, 200);
 				}
 
@@ -183,8 +179,3 @@
 		};
 	};
 }));
-
-
-
-
-
