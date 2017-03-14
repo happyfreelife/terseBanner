@@ -1,8 +1,8 @@
 /**
  * terseBanner
- * Version: 2.1.5
+ * Version: 2.1.6
  * URI: https://github.com/happyfreelife/terseBanner
- * Date: 2017-02-13
+ * Date: 2017-03-14
  **/
 
 /**
@@ -142,9 +142,9 @@
 				$banner.css('maxWidth', '100%');
 			}
 
-			setTimeout(function() {
+			// setTimeout(function() {
 				// $list.height($banner.height());
-			}, 50);
+			// }, 50);
 
 			$item.each(function() {
 				var $img = $(this).children('img'),
@@ -183,7 +183,7 @@
 
 		$item.width($banner.width());
 
-		if (self.len <= 1) return;
+		// if (self.len < 1) return;
 
 		// 获取图片缩略图的路径
 		try {
@@ -211,7 +211,7 @@
 
 		// animation: fade
 		if (options.animation === 'fade') {
-			$list.before($list.clone(true).css({
+			$list.before($list.clone(true).addClass('fade-duplicate').css({
 				position: 'absolute',
 				top: 0,
 				left: 0
@@ -716,9 +716,8 @@
 					}
 				});
 
-
 				self.bindAnimation();
-			},
+			}
 		};
 	};
 }));
@@ -760,6 +759,11 @@
 			thumbVisible,
 			thumbListLeft,
 			animation = this.animation = {};
+
+		// 单张图片时，移除不必要的元素
+		if (self.len === 1) {
+			$banner.find('.tb-arrow, .tb-btn, .tb-thumb, [class$="duplicate"]').remove();
+		}
 
 		function afterCallback() {
 			options.after.call(self, self.$elem, self.$item, self.currentIndex);
@@ -1170,7 +1174,7 @@
 					 * 在它们的图片源文件加载完成之后，
 					 * 需要将列表前后同一张图片的两个列表项同步
 					 */
-					if (options.animation === 'slide') {
+					if (options.animation === 'slide' && self.len > 1) {
 						if (options.adaptive) {
 							$list.children().last().html($item.first().html());
 						}
@@ -1201,7 +1205,7 @@
 					}, 50);
 				});
 
-				if (options.animation === 'slide') {
+				if (options.animation === 'slide' && self.len > 1) {
 					if (currentIndex === -1) {
 						if (options.adaptive) {
 							$item.last().html($list.children().first().html());
@@ -1327,9 +1331,10 @@
 	Banner.prototype.play = function() {
 		this.activeIndex = this.currentIndex;
 
-		this.animation[this.options.animation]();
-
-		this.lazyload(this.currentIndex);
+		if (this.len > 1) {
+			this.animation[this.options.animation]();
+			this.lazyload(this.currentIndex);
+		}
 	};
 
 	// 自动轮播定时器

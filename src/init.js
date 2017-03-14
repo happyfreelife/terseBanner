@@ -62,9 +62,9 @@
 				$banner.css('maxWidth', '100%');
 			}
 
-			setTimeout(function() {
+			// setTimeout(function() {
 				// $list.height($banner.height());
-			}, 50);
+			// }, 50);
 
 			$item.each(function() {
 				var $img = $(this).children('img'),
@@ -103,7 +103,7 @@
 
 		$item.width($banner.width());
 
-		if (self.len <= 1) return;
+		// if (self.len < 1) return;
 
 		// 获取图片缩略图的路径
 		try {
@@ -131,7 +131,7 @@
 
 		// animation: fade
 		if (options.animation === 'fade') {
-			$list.before($list.clone(true).css({
+			$list.before($list.clone(true).addClass('fade-duplicate').css({
 				position: 'absolute',
 				top: 0,
 				left: 0

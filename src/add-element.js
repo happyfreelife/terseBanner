@@ -198,9 +198,8 @@
 					}
 				});
 
-
 				self.bindAnimation();
-			},
+			}
 		};
 	};
 }));

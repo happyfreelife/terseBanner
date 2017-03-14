@@ -37,6 +37,11 @@
 			thumbListLeft,
 			animation = this.animation = {};
 
+		// 单张图片时，移除不必要的元素
+		if (self.len === 1) {
+			$banner.find('.tb-arrow, .tb-btn, .tb-thumb, [class$="duplicate"]').remove();
+		}
+
 		function afterCallback() {
 			options.after.call(self, self.$elem, self.$item, self.currentIndex);
 		}

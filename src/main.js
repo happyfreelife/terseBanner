@@ -27,9 +27,10 @@
 	Banner.prototype.play = function() {
 		this.activeIndex = this.currentIndex;
 
-		this.animation[this.options.animation]();
-
-		this.lazyload(this.currentIndex);
+		if (this.len > 1) {
+			this.animation[this.options.animation]();
+			this.lazyload(this.currentIndex);
+		}
 	};
 
 	// 自动轮播定时器

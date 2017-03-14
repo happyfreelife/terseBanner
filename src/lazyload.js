@@ -57,7 +57,7 @@
 					 * 在它们的图片源文件加载完成之后，
 					 * 需要将列表前后同一张图片的两个列表项同步
 					 */
-					if (options.animation === 'slide') {
+					if (options.animation === 'slide' && self.len > 1) {
 						if (options.adaptive) {
 							$list.children().last().html($item.first().html());
 						}
@@ -88,7 +88,7 @@
 					}, 50);
 				});
 
-				if (options.animation === 'slide') {
+				if (options.animation === 'slide' && self.len > 1) {
 					if (currentIndex === -1) {
 						if (options.adaptive) {
 							$item.last().html($list.children().first().html());
