@@ -51,6 +51,10 @@
 				setInterval(function() {
 					$item.width($banner.width());
 
+					if (Global.isSupportTouch) {
+						$list.width($item.width() * (self.len + 2));
+					}
+
 					if (options.animation === 'fade') {
 						$list.prev().children().width($banner.width());
 					}
@@ -72,11 +76,13 @@
 					'transition-property': 'transform',
 					'transition-duration': '0ms'
 				});
-				$list.css(transformProperty, 'translate3d(' + -$item.width() + 'px, 0, 0)');
-				$item.show();
+				setTimeout(function() {
+					$list.width($item.width() * (self.len + 2));
+					$list.css(transformProperty, 'translate3d(' + -$item.width() + 'px, 0, 0)');
+					$item.show();
+				}, 50);
 
 				function touchStart (e)  {
-					e.preventDefault();
 					if (self.isAnimated) return;
 
 					self.touching = true;
@@ -90,14 +96,13 @@
 				}
 
 				function touchMove (e) {
-					e.preventDefault();
 					if (self.isAnimated) return;
 
 					touch = e.touches[0];
 					touchRangeX = touch.pageX - touchStartX;
 					touchRangeY = touch.pageY - touchStartY;
 
-					// 触摸水平滑动距离 大于 触摸垂直滑动距离时执行滑动动画
+					// 触摸水平滑动距离 小于 触摸垂直滑动距离时不执行滑动动画
 					if (Math.abs(touchRangeX) < Math.abs(touchRangeY)) return;
 
 					options.before.call(self, self.$elem, self.$item, self.currentIndex);
@@ -114,8 +119,13 @@
 				}
 
 				function touchEnd (e) {
+					if (self.isAnimated ||
+						!touchRangeX ||
+						Math.abs(touchRangeX) < Math.abs(touchRangeY)
+					) return;
+
 					e.preventDefault();
-					if (self.isAnimated) return;
+
 					self.isAnimated = true;
 
 					touchDuration = Date.now() - touchStartTime;
@@ -169,6 +179,7 @@
 						}
 
 						self.touching = false;
+						touchRangeX = 0;
 					}, 200);
 				}
 

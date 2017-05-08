@@ -62,10 +62,6 @@
 				$banner.css('maxWidth', '100%');
 			}
 
-			// setTimeout(function() {
-				// $list.height($banner.height());
-			// }, 50);
-
 			$item.each(function() {
 				var $img = $(this).children('img'),
 					src = $img.attr('src') || $img.attr('data-src');
@@ -102,8 +98,6 @@
 		}
 
 		$item.width($banner.width());
-
-		// if (self.len < 1) return;
 
 		// 获取图片缩略图的路径
 		try {
