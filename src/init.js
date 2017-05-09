@@ -26,6 +26,9 @@
 	}
 }(window, function (jQuery, window, document, Global, Banner) {
 	Banner.prototype.init = function() {
+		// 添加元素的默认样式
+		this.defaultStyle();
+
 		this.$list = this.$elem.children().first();
 		this.$item = this.$list.children();
 		this.len = this.$item.length;
@@ -141,8 +144,6 @@
 			self.useAuto = true;
 			self.setPlayTimer();
 		}
-
-		self.defaultStyle();
 
 		self.addElement().arrow();
 	};

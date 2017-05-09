@@ -35,9 +35,10 @@ td,th{padding:0}
 .main .container:first-child{opacity: 1;}
 .main h2{width: 960px;margin-bottom: 10px;font-weight: bold;font-size: 18px;color: #333;}
 .main p{width: 960px;line-height: 24px;margin-bottom: 5px;font-size: 14px;}
+.main p + .code{float: left;width: 100%;}
 .main .box{width: 960px;overflow: hidden;}
 .main .banner{float: left;width: 960px;height: 540px;margin-right: 10px;}
-.main .code{float: left;width: calc(100% - 970px);}
+.main .banner + .code{float: left;width: calc(100% - 970px);}
 .main pre{padding: 2px;border: 1px solid #23241f;}
 .main pre .hljs{font: 14px/1.4 "Consolas";}
 @media (max-width: 1580px){.main .code{width: 960px;margin-top: 5px;}}
@@ -72,12 +73,12 @@ td,th{padding:0}
 .lazyload .reload{position: absolute;top: 35px;left: 860px;width: 100px;line-height: 24px;background: #333;cursor: pointer;color: #fff;text-align: center;}
 .lazyload .reload:hover{background: #09c;}
 
-.switch .btn{position: absolute;top: 35px;left: 668px;width: 292px;}
-.switch .btn a{float: left;line-height: 24px;padding: 0 10px;background: #333;cursor: pointer;font-size: 14px;color: #fff;}
-.switch .btn ul{float: left;margin: 0 15px;}
-.switch .btn ul li{float: left;width: 24px;line-height: 24px;background: #333;font-size: 14px;color: #fff;text-align: center;margin: 0 2px;cursor: pointer;}
-.switch .btn a:hover,
-.switch .btn ul li:hover{background: #09c;}
+.play .btn{position: absolute;top: 35px;left: 668px;width: 292px;}
+.play .btn a{float: left;line-height: 24px;padding: 0 10px;background: #333;cursor: pointer;font-size: 14px;color: #fff;}
+.play .btn ul{float: left;margin: 0 14px;}
+.play .btn ul li{float: left;width: 24px;line-height: 24px;background: #333;font-size: 14px;color: #fff;text-align: center;margin: 0 2px;cursor: pointer;}
+.play .btn a:hover,
+.play .btn ul li:hover{background: #09c;}
 
 .callback ul li em{position: absolute;top: -120px;left: 50%;width: 120px;font: bold 50px/120px "Microsoft YaHei";margin-left: -60px;background: rgba(0, 0, 0, .9);color: #fff;text-align: center;-webkit-transition: all .6s;transition: all .6s;}
 

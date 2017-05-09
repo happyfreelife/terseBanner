@@ -256,17 +256,17 @@ $(function() {
 
 
 	// 方法
-	$('#switch').terseBanner();
-	$('.switch .btn .prev').click(function() {
-		$('#switch').terseBanner('prev');
+	$('#play').terseBanner();
+	$('.play .btn .prev').click(function() {
+		$('#play').terseBanner('prev');
 	});
 
-	$('.switch .btn .next').click(function() {
-		$('#switch').terseBanner('next');
+	$('.play .btn .next').click(function() {
+		$('#play').terseBanner('next');
 	});
 
-	$('.switch .btn ul li').click(function() {
-		$('#switch').terseBanner(parseInt($(this).text()));
+	$('.play .btn ul li').click(function() {
+		$('#play').terseBanner(parseInt($(this).text()));
 	});
 
 
@@ -275,7 +275,7 @@ $(function() {
 		arrow: true,
 		init: function ($banner, $item) {
 			$item.each(function(i) {
-				$(this).append('<em>' + (i + 1) +'</em>');
+				$(this).append('<em>' + i +'</em>');
 			});
 		},
 		before: function ($banner, $item, currentIndex) {

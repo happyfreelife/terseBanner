@@ -66,10 +66,10 @@
 
 			'.tb-btn{\n' +
 			'    position: absolute;\n' +
-			'    bottom: 10px;\n' +
+			'    bottom: 20px;\n' +
 			'}\n' +		
 			'.tb-btn a{\n' +
-			'    display: inline-block;\n' +
+			'    float: left;\n' +
 			'    width: 10px;\n' +
 			'    height: 10px;\n' +
 			'    margin: 0 5px;\n' +
@@ -83,7 +83,7 @@
 
 			'.tb-thumb{\n' +
 			'    position: absolute;\n' +
-			'    bottom: 10px;\n' +
+			'    bottom: 20px;\n' +
 			'    left: 0;\n' +
 			'    width: 100%;\n' +
 			'    overflow: hidden;\n' +

@@ -56,23 +56,17 @@
 				break;
 
 			case 'arrowBoxPos' :
-				if ($arrowBox.css('top') === 'auto' && $arrowBox.css('bottom') === 'auto') {
-					$arrowBox.css({
-						top: '50%',
-						marginTop: -$arrow.outerHeight() / 2
-					});
-				}
-
-				$banner.append($arrowBox.css('position', 'absolute'));
+				$arrowBox.css({
+					top: '50%',
+					marginTop: -$arrow.outerHeight() / 2
+				});
 				break;
 
 			case 'btnBoxPos' :
-				if ($btnBox.css('left') === 'auto' && $btnBox.css('right') === 'auto') {
-					$btnBox.css({
-						left: '50%',
-						marginLeft: -$btn.outerWidth(true) * $btn.length / 2
-					});
-				}
+				$btnBox.css({
+					left: '50%',
+					marginLeft: -$btn.outerWidth(true) * $btn.length / 2
+				});
 				$banner.append($btnBox);
 				break;
 

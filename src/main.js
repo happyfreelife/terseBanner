@@ -82,7 +82,7 @@
 	};
 
 	// 切换轮播图片
-	Banner.prototype.switchTo = function() {
+	Banner.prototype.playTo = function() {
 		if (this.isAnimated) return;
 
 		if ($.isNumeric(arguments[0]) && (arguments[0] < 0 || arguments[0] > this.len)) {
@@ -125,11 +125,11 @@
 				terseBanner.init();
 			} else {
 				if (option === 'prev') {
-					terseBanner.switchTo.call(terseBanner, 'prev');
+					terseBanner.playTo.call(terseBanner, 'prev');
 				} else if (option === 'next') {
-					terseBanner.switchTo.call(terseBanner, 'next');
+					terseBanner.playTo.call(terseBanner, 'next');
 				} else if ($.isNumeric(option)) {
-					terseBanner.switchTo.call(terseBanner, option);
+					terseBanner.playTo.call(terseBanner, option);
 				}
 			}
 		});
@@ -143,7 +143,7 @@
 		animation: 'slide', // 动画模式: ['none', 'fade', 'flash' 'slide']
 		adaptive : false,   // 图片宽度自适应
 		useHover : false,   // 导航按钮和缩略图支持hover事件触发动画
-		arrow    : false,   // 导航箭头
+		arrow    : false,   // 切换箭头
 		btn      : true,    // 导航按钮: [true, false, 'ol']
 		auto     : 5000,    // 自动轮播: [为0时禁用此功能]
 		duration : 800,     // 动画速度

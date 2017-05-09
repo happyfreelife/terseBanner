@@ -8,10 +8,7 @@ $(function() {
 	
 	define(['main'], function() {
 		$('#simple').terseBanner({
-			arrow: true,
-			after: function($banner, $item, currentIndex) {
-				console.log(currentIndex);
-			}
+			arrow: true
 		});
 
 		$('#lazyload ul li img').each(function() {
@@ -21,12 +18,9 @@ $(function() {
 		$('#lazyload').terseBanner({
 			arrow: true,
 			adaptive: true,
-			auto: 0,
-			// after: function($banner, $item, currentIndex) {
-			// 	console.log(currentIndex);
-			// }
+			auto: 0
 		});
 
-		$('.banner').terseBanner();
+		$('#touch').terseBanner();
 	});
 });
