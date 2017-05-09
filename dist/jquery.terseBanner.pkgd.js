@@ -1,8 +1,8 @@
 /**
  * terseBanner
- * Version: 2.1.0
+ * Version: 2.1.8
  * URI: https://github.com/happyfreelife/terseBanner
- * Date: 2016-10-06
+ * Date: 2017-05-09
  **/
 
 /**
@@ -33,6 +33,8 @@
 			var style = document.body.style || document.documentElement.style;
 			return style.transition !== undefined || style.WebkitTransition !== undefined;
 		}()),
+
+		transformProperty: typeof document.body.style.transform === 'string' ? 'transform' : 'WebkitTransform',
 
 		// 箭头 - 上一个
 		prevArrow: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADcAAABuCAMAAAC0hHtLAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyJpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMy1jMDExIDY2LjE0NTY2MSwgMjAxMi8wMi8wNi0xNDo1NjoyNyAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNiAoV2luZG93cykiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6QjdGOUJEQTlBRjU5MTFFNUFFQjJBQzRBNEM1MkYzMzEiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6QjdGOUJEQUFBRjU5MTFFNUFFQjJBQzRBNEM1MkYzMzEiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDpCN0Y5QkRBN0FGNTkxMUU1QUVCMkFDNEE0QzUyRjMzMSIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDpCN0Y5QkRBOEFGNTkxMUU1QUVCMkFDNEE0QzUyRjMzMSIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PhEdN5oAAAAGUExURf///////1V89WwAAAACdFJOU/8A5bcwSgAAARBJREFUeNq82EEOwDAIA8Hl/58OH4gizSG9R20D2Isbe7JThcfCt4UfGf5beCXhTYYFCOsWljvskrC5wp4MWzmcgHBwwnkLxzSc7lAUQi0JJSg79jp3Fa5QJ0N5DVU5FPPQA0LrCB0nNKrQ30JbDN00NOHQu0PLD0khBIyQS0KcCSkohKeQuUJUCwkvBMOQJ0MMDek1hN6GmfcnYvt38r1wHbju3Gfc1zxHPLesE6xLrIOsu6zz7CvsY+yb7NPMBcwhzD3MWcx1zJHMrczJzOW8B/DewXsO71W8x/HeyHsq78W8h/PezzkD5xqco3BuwzkR51Kcg3Huxjkf54qcY3Juyjkt58KcQzuUa86+zxFgAFs9FmHsomPPAAAAAElFTkSuQmCC',
@@ -104,6 +106,9 @@
 	}
 }(window, function (jQuery, window, document, Global, Banner) {
 	Banner.prototype.init = function() {
+		// 添加元素的默认样式
+		this.defaultStyle();
+
 		this.$list = this.$elem.children().first();
 		this.$item = this.$list.children();
 		this.len = this.$item.length;
@@ -112,11 +117,6 @@
 		this.latestIndex = 0;
 		this.isHovered = false;
 		this.isAnimated = false;
-
-		// 在移动端，动画模式只能是slide
-		if (Global.isSupportTouch) {
-			this.options.animation = 'slide';
-		}
 
 		var self = this,
 			$banner = this.$elem,
@@ -137,17 +137,13 @@
 			userSelect: 'none'
 		});
 
-		$list.width(self.len * 2 * 100 + '%').wrap('<div class="tb-list"/>');
+		$list.width((self.len + 2) * 100 + '%').wrap('<div class="tb-list"/>');
 
 		// 自适应模式
 		if (options.adaptive) {
 			if ($banner.css('maxWidth') === 'none') {
 				$banner.css('maxWidth', '100%');
 			}
-
-			setTimeout(function() {
-				$list.height($banner.height());
-			}, 50);
 
 			$item.each(function() {
 				var $img = $(this).children('img'),
@@ -186,8 +182,6 @@
 
 		$item.width($banner.width());
 
-		if (self.len <= 1) return;
-
 		// 获取图片缩略图的路径
 		try {
 			$item.each(function() {
@@ -202,22 +196,19 @@
 		// animation: slide
 		if (options.animation === 'slide') {
 			if (Global.isSupportTransition) {
-				$list.css({
-					transform: 'translate3d(0, 0, 0)',
-					'-webkit-transform': 'translate3d(0, 0, 0)',
-					transition: 'transform ' + options.duration + 'ms'
-				});
+				$list.css(Global.transformProperty, 'translate3d(0, 0, 0)');
+				$list.css('transition', 'transform ' + options.duration + 'ms');
 			}
 
 			$list.css('left', 0);
 			$item.css('float', 'left').first().show().siblings().hide();
-			$item.first().clone(true).addClass('first').hide().appendTo($list);
-			$item.last().clone(true).addClass('last').hide().prependTo($list);
+			$item.first().clone(true).addClass('first-duplicate').hide().appendTo($list);
+			$item.last().clone(true).addClass('last-duplicate').hide().prependTo($list);
 		}
 
 		// animation: fade
 		if (options.animation === 'fade') {
-			$list.before($list.clone(true).css({
+			$list.before($list.clone(true).addClass('fade-duplicate').css({
 				position: 'absolute',
 				top: 0,
 				left: 0
@@ -229,7 +220,10 @@
 			$item.first().siblings().css('opacity', 0);
 		}
 
-		self.defaultStyle();
+		if (!Global.isSupportTouch && $.isNumeric(options.auto) && options.auto > 0) {
+			self.useAuto = true;
+			self.setPlayTimer();
+		}
 
 		self.addElement().arrow();
 	};
@@ -280,7 +274,9 @@
 			'}\n' +
 
 			'.tb-arrow{\n' +
-			'    width: 95%;\n' +
+			'    position: absolute;\n' +
+			'    width: 96%;\n' +
+			'    left: 2%;\n' +
 			'}\n' +
 			'.tb-arrow a{\n' +
 			'    position: absolute;\n' +
@@ -298,8 +294,12 @@
 			'    max-height: 100%;\n' +
 			'}\n' +
 
+			'.tb-btn{\n' +
+			'    position: absolute;\n' +
+			'    bottom: 20px;\n' +
+			'}\n' +		
 			'.tb-btn a{\n' +
-			'    display: inline-block;\n' +
+			'    float: left;\n' +
 			'    width: 10px;\n' +
 			'    height: 10px;\n' +
 			'    margin: 0 5px;\n' +
@@ -313,7 +313,7 @@
 
 			'.tb-thumb{\n' +
 			'    position: absolute;\n' +
-			'    bottom: 10px;\n' +
+			'    bottom: 20px;\n' +
 			'    left: 0;\n' +
 			'    width: 100%;\n' +
 			'    overflow: hidden;\n' +
@@ -397,7 +397,13 @@
 			case 'arrow' :
 				if ($arrow.css('backgroundImage') === 'none') {
 					if (!$arrow.height()) {
-						$arrow.height(parseInt($banner.height() * 0.1));
+						var bannerHeight = Math.max(
+							$banner.height(),
+							$.isNumeric(parseInt($banner.css('maxHeight'))) ? parseInt($banner.css('maxHeight')) : 0,
+							$.isNumeric(parseInt($banner.css('minHeight'))) ? parseInt($banner.css('minHeight')) : 0
+						);
+
+						$arrow.height(parseInt(bannerHeight * 0.1));
 					}
 
 					$arrow.filter('.prev').html('<img src="' + Global.prevArrow + '">');
@@ -410,34 +416,18 @@
 				break;
 
 			case 'arrowBoxPos' :
-				if ($arrowBox.css('top') === 'auto' && $arrowBox.css('bottom') === 'auto') {
-					$arrowBox.css({
-						top: '50%',
-						marginTop: -$arrow.outerHeight() / 2
-					});
-				}
-
-				if ($arrowBox.css('left') === 'auto' && $arrowBox.css('right') === 'auto') {
-					$arrowBox.css({
-						left: '50%',
-						marginLeft: -$arrowBox.width() / 2
-					});
-				}
-
-				$banner.append($arrowBox.css('position', 'absolute'));
+				$arrowBox.css({
+					top: '50%',
+					marginTop: -$arrow.outerHeight() / 2
+				});
 				break;
 
 			case 'btnBoxPos' :
-				if ($btnBox.css('top') === 'auto' && $btnBox.css('bottom') === 'auto') {
-					$btnBox.css('bottom', 10);
-				}
-				if ($btnBox.css('left') === 'auto' && $btnBox.css('right') === 'auto') {
-					$btnBox.css({
-						left: '50%',
-						marginLeft: -$btn.outerWidth(true) * $btn.length / 2
-					});
-				}
-				$banner.append($btnBox.css('position', 'absolute'));
+				$btnBox.css({
+					left: '50%',
+					marginLeft: -$btn.outerWidth(true) * $btn.length / 2
+				});
+				$banner.append($btnBox);
 				break;
 
 			case 'thumb':
@@ -573,7 +563,7 @@
 				self.setStyle('arrowBoxPos');
 
 				self.$arrow.on({
-					click: function() {
+					'click.terseBanner': function() {
 						if (self.isAnimated) return;
 
 						beforeCallback();
@@ -584,7 +574,7 @@
 					},
 
 					// 阻止连续点击箭头按钮时选中按钮
-					selectstart: function() {
+					'selectstart.terseBanner': function() {
 						return false;
 					}
 				});
@@ -619,14 +609,13 @@
 
 				if (!Global.isMobile) {
 					self.$btn.on(
-						self.options.useHover ? 'mouseenter' : 'click',
+						self.options.useHover ?
+							'mouseenter.terseBanner' : 'click.terseBanner',
 						function() {
 							if (self.isAnimated) return;
 
 							beforeCallback();
-
 							self.currentIndex = $(this).index();
-							
 							self.play();
 						}
 					);
@@ -661,7 +650,7 @@
 				self.$thumbBox = $('.tb-thumb', $banner);
 				self.$thumbSlideBtn = $('.tb-thumb a', $banner);
 				self.$thumbList = $('.tb-thumb dl', $banner);
-				self.$thumb =$('.tb-thumb dl dd', $banner);
+				self.$thumb = $('.tb-thumb dl dd', $banner);
 
 				self.setStyle('thumb');
 				self.setStyle('thumbSlideBtn');
@@ -671,7 +660,8 @@
 				self.$thumb.first().addClass('active');
 
 				self.$thumb.on(
-					self.options.useHover ? 'mouseenter' : 'click',
+					self.options.useHover ?
+						'mouseenter.terseBanner' : 'click.terseBanner',
 					function() {
 						if (self.isAnimated) return;
 
@@ -682,7 +672,7 @@
 				);
 
 				self.$thumbSlideBtn.on({
-					click: function() {
+					'click.terseBanner': function() {
 						if ($(this).hasClass('disabled')) return;
 
 						var thumbVisible,
@@ -710,14 +700,13 @@
 					},
 
 					// 阻止连续点击箭头按钮时选中按钮
-					selectstart: function() {
+					'selectstart.terseBanner': function() {
 						return false;
 					}
 				});
 
-
 				self.bindAnimation();
-			},
+			}
 		};
 	};
 }));
@@ -760,6 +749,11 @@
 			thumbListLeft,
 			animation = this.animation = {};
 
+		// 单张图片时，移除不必要的元素
+		if (self.len === 1) {
+			$banner.find('.tb-arrow, .tb-btn, .tb-thumb, [class$="duplicate"]').remove();
+		}
+
 		function afterCallback() {
 			options.after.call(self, self.$elem, self.$item, self.currentIndex);
 		}
@@ -794,10 +788,7 @@
 						'translate3d(' + -$item.width() + 'px, 0, 0)' :
 						'translate3d(' + $item.width() + 'px, 0, 0)';
 
-					$list.css({
-						transform: listTransform,
-						'-webkit-transform': listTransform
-					});
+					$list.css(Global.transformProperty, listTransform);
 
 					setTimeout(self.animation.slideCallback, options.duration - 50);
 				}, 50);
@@ -840,9 +831,7 @@
 
 			self.activeBtnAndThumb();
 
-			if (!$item.eq(self.currentIndex).data('origin')) {
-				afterCallback();
-			}
+			afterCallback();
 		};
 
 		animation.thumbListSlide = function() {
@@ -885,18 +874,18 @@
 
 			$list.css({
 				left: 0,
-				'transition': 'none',
-				transform: 'translate3d(0, 0, 0)',
-				'-webkit-transform': 'translate3d(0, 0, 0)'
+				'transition': 'none'
 			});
+
+			$list.css(Global.transformProperty, 'translate3d(0, 0, 0)');
 
 			$item.eq(self.currentIndex + 1).show().siblings().hide();
 
-			$list.css('transition', 'transform ' + options.duration + 'ms');
+			setTimeout(function() {
+				$list.css('transition', 'transform ' + options.duration + 'ms');
+			}, 50);
 
-			if (!$item.eq(self.currentIndex).data('origin')) {
-				afterCallback();
-			}
+			afterCallback();
 
 			if (self.useAuto && !self.isHovered) {
 				self.setPlayTimer();
@@ -913,9 +902,7 @@
 
 			$item.eq(self.currentIndex).siblings().css('opacity', 0);
 
-			if (!$item.eq(self.currentIndex).data('origin')) {
-				afterCallback();
-			}
+			afterCallback();
 
 			if (self.useAuto && !self.isHovered) {
 				self.setPlayTimer();
@@ -925,9 +912,7 @@
 		setTimeout(function() {
 			options.before.call(self, self.$elem, self.$item, 0);
 
-			if (!self.currentIndex && !$item.eq(self.currentIndex).data('origin')) {
-				afterCallback();
-			}
+			afterCallback();
 		}, 50);
 
 		self.bindEvent().widthChangeEvent();
@@ -968,42 +953,42 @@
 			$banner = this.$elem,
 			$list = this.$list,
 			$item = $list.children(),
-			touch,          // 触摸事件
-			touchStartTime, // 触摸开始时刻
-			touchStarX,     // 触摸开始的X坐标
-			touchMoveX,     // 触摸进行时的X坐标
-			touchRange,     // 触摸距离
-			touchToLeft, // 触摸方向
-			touchDuration,  // 触摸持续时间
-			touchEndTime;   // 触摸结束时刻
-			
+			transformProperty = Global.transformProperty,
+			transformValue,
+			currentPosition, // 列表当前的位置
+			touch,           // 触摸事件
+			touchStartTime,  // 触摸开始时刻
+			touchStartX,     // 触摸开始的X坐标
+			touchStartY,     // 触摸开始的X坐标
+			touchRangeX,     // 触摸水平滑动距离
+			touchRangeY,     // 触摸垂直滑动距离
+			touchRange,
+			touchDirection,  // 触摸方向
+			touchDuration;   // 触摸持续时间
+
+		var getCurrentPosition = function() {
+			return parseInt($list.attr('style').match(/translate3d\((-?\d+)px/)[1]);
+		};
+
 		return {
 			widthChangeEvent: function() {
 				setInterval(function() {
-					if ($item.width() !== $banner.width()) {
-						$item.width($banner.width());
+					$item.width($banner.width());
 
-						if (options.adaptive) {
-							$list.height($item.filter(':visible').height());
-							$banner.height($list.height());
-						}
+					if (Global.isSupportTouch) {
+						$list.width($item.width() * (self.len + 2));
+					}
 
-						if (options.animation === 'fade') {
-							$list.prev().children().width($banner.width());
-						}
+					if (options.animation === 'fade') {
+						$list.prev().children().width($banner.width());
+					}
 
-						if (options.arrow) {
-							self.$arrowBox.css('marginLeft', function() {
-								return -($(self).width() / 2);
-							});
-						}
+					if (Global.isSupportTouch && !self.touching) {
+						$list.css(transformProperty, 'translate3d(' + -$item.width() * (self.currentIndex + 1) + 'px, 0, 0)');
+
+						currentPosition = getCurrentPosition();
 					}
 				}, 50);
-
-				if ($.isNumeric(options.auto) && options.auto > 0) {
-					self.useAuto = true;
-					self.setPlayTimer();
-				}
 
 				self.lazyload();
 			},
@@ -1011,85 +996,115 @@
 			touchEvent: function() {
 				if (!Global.isSupportTouch) return;
 
+				$list.css({
+					'transition-property': 'transform',
+					'transition-duration': '0ms'
+				});
+				setTimeout(function() {
+					$list.width($item.width() * (self.len + 2));
+					$list.css(transformProperty, 'translate3d(' + -$item.width() + 'px, 0, 0)');
+					$item.show();
+				}, 50);
+
 				function touchStart (e)  {
-					e.preventDefault();
 					if (self.isAnimated) return;
+
+					self.touching = true;
 
 					touch = e.touches[0];
 					touchStartTime = Date.now();
-					touchStarX = touch.pageX - $banner.offset().left;
+					touchStartX = touch.pageX;
+					touchStartY = touch.pageY;
+
+					currentPosition = getCurrentPosition();
 				}
 
 				function touchMove (e) {
-					e.preventDefault();
 					if (self.isAnimated) return;
 
 					touch = e.touches[0];
-					touchMoveX = touch.pageX - $banner.offset().left;
-					touchRange = touchMoveX - touchStarX;
+					touchRangeX = touch.pageX - touchStartX;
+					touchRangeY = touch.pageY - touchStartY;
+
+					// 触摸水平滑动距离 小于 触摸垂直滑动距离时不执行滑动动画
+					if (Math.abs(touchRangeX) < Math.abs(touchRangeY)) return;
 
 					options.before.call(self, self.$elem, self.$item, self.currentIndex);
 
-					if (!$list.hasClass('touching')) {
-						if (touchRange < 0) {
-							touchToLeft = true;
-							self.currentIndex++;
-						} else if (touchRange > 0) {
-							touchToLeft = false;
-							self.currentIndex--;
-						} else return;
-
-						if (touchToLeft === false) {
-							$list.css('left', '-100%');
-						}
-
-						$item.eq(self.currentIndex + 1).show();
-
-						$list.addClass('touching');
+					if (touchRangeX < 0) {
+						touchDirection = 'left';
+					} else if (touchRangeX > 0) {
+						touchDirection = 'right';
 					}
 
-					$list.css({
-						transform: 'translate3d(' + touchRange + 'px, 0, 0)',
-						'-webkit-transform': 'translate3d(' + touchRange + 'px, 0, 0)'
-					});
+					$list.css(transformProperty, 'translate3d(' + (currentPosition + touchRangeX) + 'px, 0, 0)');
 
 					self.lazyload(self.currentIndex);
 				}
 
 				function touchEnd (e) {
+					if (self.isAnimated ||
+						!touchRangeX ||
+						Math.abs(touchRangeX) < Math.abs(touchRangeY)
+					) return;
+
 					e.preventDefault();
-					if (self.isAnimated || !touchRange) return;
+
 					self.isAnimated = true;
 
-					touchEndTime = Date.now();
-					touchDuration = touchEndTime - touchStartTime;
+					touchDuration = Date.now() - touchStartTime;
 
-					var listTransform;
+					// 触摸停留时间小于300ms 或者
+					// 触摸水平距离超过轮播宽度的一半时切换到下一个元素
+					if (touchDuration < 300 || Math.abs(touchRangeX) >= $item.width() / 2) {
+						if (touchDirection === 'left') {
+							transformValue = 'translate3d(' + (currentPosition - $item.width()) + 'px, 0, 0)';
+							self.currentIndex++;
+						} else {
+							transformValue = 'translate3d(' + (currentPosition + $item.width()) + 'px, 0, 0)';
+							self.currentIndex--;
+						}
 
-					// 触摸速度足够或触摸距离超过轮播宽度的一半列表滑动
-					if (touchDuration < 300 || Math.abs(touchRange) >= $item.width() / 2) {
-						listTransform = touchToLeft ? 'translate3d(' + -$item.width() + 'px, 0, 0)' :
-						'translate3d(' + $item.width() + 'px, 0, 0)';
+						$list.css('transition-duration', '200ms');
+						$list.css(transformProperty, transformValue);
+
+						currentPosition = getCurrentPosition();
+
+						self.currentIndex =
+						self.currentIndex === -1 ? self.len - 1 :
+						self.currentIndex === self.len ? 0 : self.currentIndex;
 
 						self.activeBtnAndThumb();
 					}
 
-					// 触摸速度过低并且触摸距离不超过banner宽度的一半，列表回拉
-					if (touchDuration > 300 && Math.abs(touchRange) < $item.width() / 2) {
-						listTransform = 'translate3d(0, 0, 0)';
-						touchToLeft ? self.currentIndex-- : self.currentIndex++;
+					// 触摸停留时间大于300ms 并且
+					// 触摸水平距离小于轮播宽度的一半时回退到当前元素
+					if (touchDuration >= 300 && Math.abs(touchRangeX) < $item.width() / 2) {
+						transformValue = 'translate3d(' + currentPosition + 'px, 0, 0)';
+						$list.css('transition-duration', '200ms');
+						$list.css(transformProperty, transformValue);
 					}
 
-					$list.removeClass('touching').css({
-						transform: listTransform,
-						'-webkit-transform': listTransform
-					});
-
 					setTimeout(function() {
-						self.animation.slideCallback();
-					}, options.duration);
+						$list.css('transition-duration', '0ms');
 
-					touchRange = 0;
+						self.isAnimated = false;
+
+						// 切换到第一个元素时
+						if (!currentPosition) {
+							currentPosition = -$item.width() * self.len;
+							$list.css(transformProperty, 'translate3d(' + currentPosition + 'px, 0, 0)');
+						}
+
+						// 切换到最后一个元素时
+						if (currentPosition === -$item.width() * (self.len + 1)) {
+							currentPosition = -$item.width();
+							$list.css(transformProperty, 'translate3d(' + currentPosition + 'px, 0, 0)');
+						}
+
+						self.touching = false;
+						touchRangeX = 0;
+					}, 200);
 				}
 
 				$banner[0].addEventListener('touchstart', touchStart, false);
@@ -1099,11 +1114,6 @@
 		};
 	};
 }));
-
-
-
-
-
 
 
 
@@ -1140,13 +1150,13 @@
 
 		if (!visibleItemImg) return;
 
-		function afterCallback() {
-			options.after.call(self, self.$elem, self.$item, self.currentIndex);
-		}
-
 		function showVisibleItem() {
+			if (currentIndex === -1) {
+				$visibleItem = $list.children().first();
+			}
+
 			if (options.adaptive) {
-				$('img[data-src]', $item.eq(currentIndex)).attr('src', visibleItemImg);
+				$visibleItem.find('img[data-src]').attr('src', visibleItemImg);
 			} else {
 				$visibleItem.css('backgroundImage', 'url(' + visibleItemImg + ')');
 			}
@@ -1156,39 +1166,76 @@
 
 				img.src = visibleItemImg;
 
-				if (img.complete) {
-					afterCallback();
+				var loaded = function() {
+					/**
+					 * slide动画模式下，
+					 * 第一个列表项复制之后添加到列表的最后，
+					 * 最后一个列表项复制之后添加到列表的最前，
+					 * 在它们的图片源文件加载完成之后，
+					 * 需要将列表前后同一张图片的两个列表项同步
+					 */
+					if (options.animation === 'slide' && self.len > 1) {
+						if (options.adaptive) {
+							$list.children().last().html($item.first().html());
+						}
+
+						$list.children().last().attr('style', function() {
+							return $item.first().attr('style');
+						})
+						.hide()
+						.data('origin', '');
+					}
+
 					$visibleItem.data('origin', '');
+				};
+
+				if (img.complete) {
+					loaded();
 				} else {
-					img.onload = function() {
-						afterCallback();
-						$visibleItem.data('origin', '');
-					};
+					img.onload = loaded;
 				}
 			} else {
 				$visibleItem.data('origin', '');
 
-				$banner.find('.tb-loading').fadeOut(400, function() {
+				$visibleItem.find('.tb-loading').fadeOut(300, function() {
 					$(this).remove();
+
+					setTimeout(function() {
+						$list.height('auto');
+					}, 50);
 				});
 
-				afterCallback();
-			}
+				if (options.animation === 'slide' && self.len > 1) {
+					if (currentIndex === -1) {
+						if (options.adaptive) {
+							$item.last().html($list.children().first().html());
+						}
 
-			/**
-			 * slide动画模式下，
-			 * 第一张和克隆之后添加到列表的最后，
-			 * 最后一张图片克隆之后添加到列表的最前，
-			 * 在它们的图片源文件加载完成之后，
-			 * 需要将列表前后同一张图片的两个列表项同步
-			 */
-			if (options.animation === 'slide') {
-				if (!currentIndex) {
-					$list.children().last().html($item.first().html());
-				}
+						$item.last().attr('style', function() {
+							return $list.children().first().attr('style');
+						})
+						.show()
+						.data('origin', '')
+						.find('.tb-loading').fadeOut(300, function() {
+							$(this).remove();
+						});
+					}
 
-				if (currentIndex === -1 || currentIndex === self.len - 1) {
-					$list.children().first().html($item.last().html());
+					if (currentIndex === self.len - 1) {
+						if (options.adaptive) {
+							// 加载动画需要300ms之后移除
+							// 如果不设置延时会把加载动画的代码也复制到新的列表第一个元素中
+							setTimeout(function() {
+								$list.children().first().html($item.last().html());
+							}, 350);
+						}
+
+						$list.children().first().attr('style', function() {
+							return $item.last().attr('style');
+						})
+						.hide()
+						.data('origin', '');
+					}
 				}
 			}
 		}
@@ -1206,7 +1253,7 @@
 			}
 
 			// 添加loading动画
-			var $loading = 
+			var $loading =
 				'<div class="tb-loading">' +
 					'<img src="' + Global.loadingImage + '">' +
 				'</div>';
@@ -1219,8 +1266,16 @@
 
 			$('.tb-loading').css({
 				background: loadingBackground,
-				height: $banner.height()
+				height: function() {
+					return Math.max(
+						$banner.height(),
+						$.isNumeric(parseInt($banner.css('maxHeight'))) ? parseInt($banner.css('maxHeight')) : 0,
+						$.isNumeric(parseInt($banner.css('minHeight'))) ? parseInt($banner.css('minHeight')) : 0
+					);
+				}
 			});
+
+			$list.height($('.tb-loading').height());
 
 			$('.tb-loading img').css('top', function() {
 				return ($banner.height() - $(this).height()) / 2;
@@ -1232,6 +1287,10 @@
 
 			// 绑定图片加载完成的事件
 			var img = new Image();
+
+			if (currentIndex === -1) {
+				visibleItemImg = $item.last().data('origin');
+			}
 
 			img.src = visibleItemImg;
 
@@ -1272,9 +1331,10 @@
 	Banner.prototype.play = function() {
 		this.activeIndex = this.currentIndex;
 
-		this.animation[this.options.animation]();
-
-		this.lazyload(this.currentIndex);
+		if (this.len > 1) {
+			this.animation[this.options.animation]();
+			this.lazyload(this.currentIndex);
+		}
 	};
 
 	// 自动轮播定时器
@@ -1299,11 +1359,11 @@
 			self.play();
 		}, self.options.auto);
 
-		self.$elem.off('mouseenter');
-		self.$elem.off('mouseleave');
+		self.$elem.off('mouseenter.terseBanner');
+		self.$elem.off('mouseleave.terseBanner');
 		self.$elem.on({
-			mouseenter: clear,
-			mouseleave: reset
+			'mouseenter.terseBanner': clear,
+			'mouseleave.terseBanner': reset
 		});
 	};
 
@@ -1326,7 +1386,7 @@
 	};
 
 	// 切换轮播图片
-	Banner.prototype.switchTo = function() {
+	Banner.prototype.playTo = function() {
 		if (this.isAnimated) return;
 
 		if ($.isNumeric(arguments[0]) && (arguments[0] < 0 || arguments[0] > this.len)) {
@@ -1334,6 +1394,7 @@
 		}
 
 		this.options.before.call(this, this.$elem, this.$item, this.currentIndex);
+		
 		switch (arguments[0]) {
 			case 'prev':
 				this.currentIndex--;
@@ -1344,7 +1405,7 @@
 				break;
 
 			default:
-				this.currentIndex = arguments[0] - 1;
+				this.currentIndex = arguments[0];
 				break;
 		}
 
@@ -1361,18 +1422,18 @@
 			var terseBanner = $(this).data('terseBanner');
 
 			if (!terseBanner) {
-				options = $.extend(true, {}, $.fn.terseBanner.defaults, typeof option === 'object' && option);
+				var options = $.extend(true, {}, $.fn.terseBanner.defaults, typeof option === 'object' && option);
 
 				$(this).data('terseBanner', (terseBanner = new Banner(this, options)));
 
 				terseBanner.init();
 			} else {
 				if (option === 'prev') {
-					terseBanner.switchTo.call(terseBanner, 'prev');
+					terseBanner.playTo.call(terseBanner, 'prev');
 				} else if (option === 'next') {
-					terseBanner.switchTo.call(terseBanner, 'next');
+					terseBanner.playTo.call(terseBanner, 'next');
 				} else if ($.isNumeric(option)) {
-					terseBanner.switchTo.call(terseBanner, option);
+					terseBanner.playTo.call(terseBanner, option);
 				}
 			}
 		});
@@ -1386,7 +1447,7 @@
 		animation: 'slide', // 动画模式: ['none', 'fade', 'flash' 'slide']
 		adaptive : false,   // 图片宽度自适应
 		useHover : false,   // 导航按钮和缩略图支持hover事件触发动画
-		arrow    : false,   // 导航箭头
+		arrow    : false,   // 切换箭头
 		btn      : true,    // 导航按钮: [true, false, 'ol']
 		auto     : 5000,    // 自动轮播: [为0时禁用此功能]
 		duration : 800,     // 动画速度

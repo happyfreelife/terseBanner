@@ -23,7 +23,7 @@
 
         <div class="btn">
             <a href="https://github.com/happyfreelife/terseBanner" class="github" target="_blank">See it on GitHub</a>
-            <a href="https://github.com/happyfreelife/terseBanner/archive/v2.1.0.zip" class="download">Download<sub>2.1.0</sub></a>
+            <a href="https://github.com/happyfreelife/terseBanner/archive/v2.1.8.zip" class="download">Download<sub>2.1.8</sub></a>
         </div>
     </div>
     <!-- side:end -->
@@ -335,15 +335,15 @@ $('#thumbnail').terseBanner({
             </div>
         </div>
 
-        <div class="container switch" id="anchor-7">
+        <div class="container play" id="anchor-7">
             <h2>切换</h2>
             <p>可以在自定义的事件中切换轮播图片，给方法 terseBanner() 传递一个参数：<b>'prev' | 'next' | [Number]</b></p>
             <div class="btn">
                 <a class="prev">prev</a>
-                <ul><li>1</li><li>2</li><li>3</li><li>4</li><li>5</li><li>6</li></ul>
+                <ul><li>0</li><li>1</li><li>2</li><li>3</li><li>4</li><li>5</li></ul>
                 <a class="next">next</a>
             </div>
-            <div class="banner" id="switch">
+            <div class="banner" id="play">
                 <ul>
                     <li><img src="img/banner-1.jpg"></li>
                     <li><img src="img/banner-2.jpg"></li>
@@ -355,16 +355,16 @@ $('#thumbnail').terseBanner({
             </div>
             <div class="code">
 <pre><code>
-$('.switch .btn .prev').click(function() {
-    $('#switch').terseBanner('prev');
+$('.play .btn .prev').click(function() {
+    $('#play').terseBanner('prev');
 });
 
-$('.switch .btn .next').click(function() {
-    $('#switch').terseBanner('next');
+$('.play .btn .next').click(function() {
+    $('#play').terseBanner('next');
 });
 
-$('.switch .btn ul li').click(function() {
-    $('#switch').terseBanner(parseInt($(this).text()));
+$('.play .btn ul li').click(function() {
+    $('#play').terseBanner(parseInt($(this).text()));
 });
 </code></pre>
             </div>
@@ -390,7 +390,7 @@ $('#callback').terseBanner({
     arrow: true,
     init: function ($banner, $item) {
         $item.each(function(i) {
-            $(this).append('&lt;em&gt;' + (i + 1) +'&lt;/e&gt;>');
+            $(this).append('&lt;em&gt;' + i +'&lt;/e&gt;>');
         });
     },
     before: function ($banner, $item, currentIndex) {
@@ -447,7 +447,7 @@ $('#callback').terseBanner({
                         <td>[Boolean]</td>
                         <td></td>
                         <td>false</td>
-                        <td>显示导航箭头</td>
+                        <td>显示切换箭头</td>
                     </tr>
                     <tr>
                         <td>btn</td>
@@ -468,7 +468,7 @@ $('#callback').terseBanner({
                         <td>[Number]</td>
                         <td>正整数</td>
                         <td>800</td>
-                        <td>动画速度[毫秒]</td>
+                        <td>动画速度[毫秒]（移动端自动设置为250ms）</td>
                     </tr>
                     <tr>
                         <td>init</td>
