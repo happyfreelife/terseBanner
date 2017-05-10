@@ -147,7 +147,7 @@
 		btn      : true,    // 导航按钮: [true, false, 'ol']
 		auto     : 5000,    // 自动轮播: [为0时禁用此功能]
 		duration : 800,     // 动画速度
-		init     : $.noop,  // 轮播初始化时执行的回调函数
+		init     : $.noop,  // 轮播初始化完成时执行的回调函数
 		before   : $.noop,  // 动画开始时执行的回调函数
 		after    : $.noop,  // 动画完成时执行的回调函数
 		thumb    : { }      // 缩略图

@@ -197,12 +197,9 @@
 			}
 		};
 
-		setTimeout(function() {
-			options.before.call(self, self.$elem, self.$item, 0);
-
-			afterCallback();
-		}, 50);
-
+		// 轮播初始化完成时调用的函数
+		options.init.call(self, self.$elem, self.$item, 0);
+		
 		self.bindEvent().widthChangeEvent();
 		self.bindEvent().touchEvent();
 	};

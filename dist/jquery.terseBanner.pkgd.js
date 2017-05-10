@@ -1,8 +1,8 @@
 /**
  * terseBanner
- * Version: 2.1.8
+ * Version: 2.1.9
  * URI: https://github.com/happyfreelife/terseBanner
- * Date: 2017-05-09
+ * Date: 2017-05-10
  **/
 
 /**
@@ -125,8 +125,6 @@
 			options = this.options,
 			thumbArr = [],
 			regExp = new RegExp('\\?thumb=(.*\\.(gif|jpg|jpeg|png))$');
-
-		options.init.call(self, $banner, $item);
 
 		if ($banner.css('position') === 'static') {
 			$banner.css('position', 'relative');
@@ -909,12 +907,9 @@
 			}
 		};
 
-		setTimeout(function() {
-			options.before.call(self, self.$elem, self.$item, 0);
-
-			afterCallback();
-		}, 50);
-
+		// 轮播初始化完成时调用的函数
+		options.init.call(self, self.$elem, self.$item, 0);
+		
 		self.bindEvent().widthChangeEvent();
 		self.bindEvent().touchEvent();
 	};
@@ -1029,7 +1024,10 @@
 					// 触摸水平滑动距离 小于 触摸垂直滑动距离时不执行滑动动画
 					if (Math.abs(touchRangeX) < Math.abs(touchRangeY)) return;
 
-					options.before.call(self, self.$elem, self.$item, self.currentIndex);
+					if (touchRangeX && !self.beforeUsed) {
+						options.before.call(self, self.$elem, self.$item, self.currentIndex);
+						self.beforeUsed = true;
+					}
 
 					if (touchRangeX < 0) {
 						touchDirection = 'left';
@@ -1102,8 +1100,11 @@
 							$list.css(transformProperty, 'translate3d(' + currentPosition + 'px, 0, 0)');
 						}
 
+						options.after.call(self, self.$elem, self.$item, self.currentIndex);
+
 						self.touching = false;
 						touchRangeX = 0;
+						self.beforeUsed = false;
 					}, 200);
 				}
 
@@ -1451,7 +1452,7 @@
 		btn      : true,    // 导航按钮: [true, false, 'ol']
 		auto     : 5000,    // 自动轮播: [为0时禁用此功能]
 		duration : 800,     // 动画速度
-		init     : $.noop,  // 轮播初始化时执行的回调函数
+		init     : $.noop,  // 轮播初始化完成时执行的回调函数
 		before   : $.noop,  // 动画开始时执行的回调函数
 		after    : $.noop,  // 动画完成时执行的回调函数
 		thumb    : { }      // 缩略图

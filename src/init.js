@@ -46,8 +46,6 @@
 			thumbArr = [],
 			regExp = new RegExp('\\?thumb=(.*\\.(gif|jpg|jpeg|png))$');
 
-		options.init.call(self, $banner, $item);
-
 		if ($banner.css('position') === 'static') {
 			$banner.css('position', 'relative');
 		}

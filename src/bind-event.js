@@ -105,7 +105,10 @@
 					// 触摸水平滑动距离 小于 触摸垂直滑动距离时不执行滑动动画
 					if (Math.abs(touchRangeX) < Math.abs(touchRangeY)) return;
 
-					options.before.call(self, self.$elem, self.$item, self.currentIndex);
+					if (touchRangeX && !self.beforeUsed) {
+						options.before.call(self, self.$elem, self.$item, self.currentIndex);
+						self.beforeUsed = true;
+					}
 
 					if (touchRangeX < 0) {
 						touchDirection = 'left';
@@ -178,8 +181,11 @@
 							$list.css(transformProperty, 'translate3d(' + currentPosition + 'px, 0, 0)');
 						}
 
+						options.after.call(self, self.$elem, self.$item, self.currentIndex);
+
 						self.touching = false;
 						touchRangeX = 0;
+						self.beforeUsed = false;
 					}, 200);
 				}
 
