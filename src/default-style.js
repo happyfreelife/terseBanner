@@ -86,6 +86,8 @@
 			'    bottom: 20px;\n' +
 			'    left: 0;\n' +
 			'    width: 100%;\n' +
+			'}\n' +
+			'.tb-thumb > div{' +
 			'    overflow: hidden;\n' +
 			'}\n' +
 			'.tb-thumb a{\n' +

@@ -23,9 +23,11 @@ $(function() {
 
 		$('#touch').terseBanner({
 			after: function($banner, $item, currentIndex) {
-				console.log('after: ' + currentIndex);
 				
 			}
+		});
+		$(document).click(function() {
+			$('#touch').terseBanner('next');
 		});
 	});
 });

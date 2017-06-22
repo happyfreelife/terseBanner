@@ -1,8 +1,8 @@
 /**
  * terseBanner
- * Version: 2.1.9
+ * Version: 2.2.1
  * URI: https://github.com/happyfreelife/terseBanner
- * Date: 2017-05-10
+ * Date: 2017-06-22
  **/
 
 /**
@@ -314,6 +314,8 @@
 			'    bottom: 20px;\n' +
 			'    left: 0;\n' +
 			'    width: 100%;\n' +
+			'}\n' +
+			'.tb-thumb > div{' +
 			'    overflow: hidden;\n' +
 			'}\n' +
 			'.tb-thumb a{\n' +
@@ -452,7 +454,10 @@
 				break;
 
 			case 'thumbSlideBtn':
-				$thumbSlideBtn.css('top', ($thumbList.height() - $thumbSlideBtn.height()) / 2);
+				$thumbSlideBtn.css({
+					top: '50%',
+					marginTop: -$thumbSlideBtn.height() / 2
+				});
 				break;
 
 			case 'thumbList':
@@ -639,7 +644,7 @@
 
 				$banner.append(
 					'<div class="tb-thumb">' +
-						'<dl>' + str + '</dl>' +
+						'<div><dl>' + str + '</dl></div>' +
 						'<a class="prev disabled"></a>' +
 						'<a class="next"></a>' +
 					'</div>'
@@ -1036,8 +1041,6 @@
 					}
 
 					$list.css(transformProperty, 'translate3d(' + (currentPosition + touchRangeX) + 'px, 0, 0)');
-
-					self.lazyload(self.currentIndex);
 				}
 
 				function touchEnd (e) {
@@ -1046,7 +1049,7 @@
 						Math.abs(touchRangeX) < Math.abs(touchRangeY)
 					) return;
 
-					e.preventDefault();
+					if (e) e.preventDefault();
 
 					self.isAnimated = true;
 
@@ -1105,12 +1108,28 @@
 						self.touching = false;
 						touchRangeX = 0;
 						self.beforeUsed = false;
+
+						self.lazyload(self.currentIndex);
 					}, 200);
 				}
 
 				$banner[0].addEventListener('touchstart', touchStart, false);
 				$banner[0].addEventListener('touchmove', touchMove, false);
 				$banner[0].addEventListener('touchend', touchEnd, false);
+
+				self.slideToPrev = function() {
+					touchRangeX = $item.width() / 2;
+					touchRangeY = 0;
+					touchDirection = 'right';
+					touchEnd();
+				};
+
+				self.slideToNext = function() {
+					touchRangeX = $item.width() / 2;
+					touchRangeY = 0;
+					touchDirection = 'left';
+					touchEnd();
+				};
 			}
 		};
 	};
@@ -1398,19 +1417,30 @@
 		
 		switch (arguments[0]) {
 			case 'prev':
-				this.currentIndex--;
+				if(!Global.isSupportTouch) {
+					this.currentIndex--;
+					this.play();
+				} else {
+					this.slideToPrev();
+				}
 				break;
 
 			case 'next':
-				this.currentIndex++;
+				if(!Global.isSupportTouch) {
+					this.currentIndex++;
+					this.play();
+				} else {
+					this.slideToNext();
+				}
 				break;
 
 			default:
-				this.currentIndex = arguments[0];
+				if(!Global.isSupportTouch) {
+					this.currentIndex = arguments[0];
+					this.play();
+				}
 				break;
 		}
-
-		this.play();
 	};
 
 

@@ -94,7 +94,10 @@
 				break;
 
 			case 'thumbSlideBtn':
-				$thumbSlideBtn.css('top', ($thumbList.height() - $thumbSlideBtn.height()) / 2);
+				$thumbSlideBtn.css({
+					top: '50%',
+					marginTop: -$thumbSlideBtn.height() / 2
+				});
 				break;
 
 			case 'thumbList':

@@ -134,7 +134,7 @@
 
 				$banner.append(
 					'<div class="tb-thumb">' +
-						'<dl>' + str + '</dl>' +
+						'<div><dl>' + str + '</dl></div>' +
 						'<a class="prev disabled"></a>' +
 						'<a class="next"></a>' +
 					'</div>'

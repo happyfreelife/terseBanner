@@ -117,8 +117,6 @@
 					}
 
 					$list.css(transformProperty, 'translate3d(' + (currentPosition + touchRangeX) + 'px, 0, 0)');
-
-					self.lazyload(self.currentIndex);
 				}
 
 				function touchEnd (e) {
@@ -127,7 +125,7 @@
 						Math.abs(touchRangeX) < Math.abs(touchRangeY)
 					) return;
 
-					e.preventDefault();
+					if (e) e.preventDefault();
 
 					self.isAnimated = true;
 
@@ -186,12 +184,28 @@
 						self.touching = false;
 						touchRangeX = 0;
 						self.beforeUsed = false;
+
+						self.lazyload(self.currentIndex);
 					}, 200);
 				}
 
 				$banner[0].addEventListener('touchstart', touchStart, false);
 				$banner[0].addEventListener('touchmove', touchMove, false);
 				$banner[0].addEventListener('touchend', touchEnd, false);
+
+				self.slideToPrev = function() {
+					touchRangeX = $item.width() / 2;
+					touchRangeY = 0;
+					touchDirection = 'right';
+					touchEnd();
+				};
+
+				self.slideToNext = function() {
+					touchRangeX = $item.width() / 2;
+					touchRangeY = 0;
+					touchDirection = 'left';
+					touchEnd();
+				};
 			}
 		};
 	};

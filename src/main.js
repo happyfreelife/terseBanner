@@ -93,19 +93,30 @@
 		
 		switch (arguments[0]) {
 			case 'prev':
-				this.currentIndex--;
+				if(!Global.isSupportTouch) {
+					this.currentIndex--;
+					this.play();
+				} else {
+					this.slideToPrev();
+				}
 				break;
 
 			case 'next':
-				this.currentIndex++;
+				if(!Global.isSupportTouch) {
+					this.currentIndex++;
+					this.play();
+				} else {
+					this.slideToNext();
+				}
 				break;
 
 			default:
-				this.currentIndex = arguments[0];
+				if(!Global.isSupportTouch) {
+					this.currentIndex = arguments[0];
+					this.play();
+				}
 				break;
 		}
-
-		this.play();
 	};
 
 
