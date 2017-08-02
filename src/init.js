@@ -1,30 +1,7 @@
 
-
-/**
- * 轮播初始化
- */
-;(function (window, factory) {
-	if (typeof define === 'function' && define.amd) {
-		define([
-			'global',
-			'banner',
-			'default-style',
-			'add-element'
-		], function (Global, Banner) {
-			return factory($, window, document, Global, Banner);
-		});
-	} else if (typeof exports !== 'undefined') {
-		module.exports = factory($, window, document,
-			require('global'),
-			require('banner'),
-			require('default-style'),
-			require('add-element')
-		);
-	} else {
-		window.terseBanner = window.terseBanner || {};
-		factory($, window, document, window.terseBanner.Global, window.terseBanner.Banner);
-	}
-}(window, function (jQuery, window, document, Global, Banner) {
+	/**
+	 * 轮播初始化
+	 */
 	Banner.prototype.init = function() {
 		// 添加元素的默认样式
 		this.defaultStyle();
@@ -145,4 +122,3 @@
 
 		self.addElement().arrow();
 	};
-}));

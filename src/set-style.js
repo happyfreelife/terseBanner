@@ -1,26 +1,7 @@
 
-
-/**
- * 设置轮播元素的样式
- */
-;(function (window, factory) {
-	if (typeof define === 'function' && define.amd) {
-		define([
-			'global',
-			'banner'
-		], function (Global, Banner) {
-			return factory($, window, document, Global, Banner);
-		});
-	} else if (typeof exports !== 'undefined') {
-		module.exports = factory($, window, document,
-			require('global'),
-			require('banner')
-		);
-	} else {
-		window.terseBanner = window.terseBanner || {};
-		factory($, window, document, window.terseBanner.Global, window.terseBanner.Banner);
-	}
-}(window, function (jQuery, window, document, Global, Banner) {
+	/**
+	 * 设置轮播元素的样式
+	 */
 	Banner.prototype.setStyle = function(elem) {
 		var options = this.options,
 			$banner = this.$elem,
@@ -144,6 +125,3 @@
 				break;
 		}
 	};
-}));
-
-

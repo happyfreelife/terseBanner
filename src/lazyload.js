@@ -1,26 +1,7 @@
 
-
-/**
- * 图片延迟加载
- */
-;(function (window, factory) {
-	if (typeof define === 'function' && define.amd) {
-		define([
-			'global',
-			'banner'
-		], function (Global, Banner) {
-			return factory($, window, document, Global, Banner);
-		});
-	} else if (typeof exports !== 'undefined') {
-		module.exports = factory($, window, document,
-			require('global'),
-			require('banner')
-		);
-	} else {
-		window.terseBanner = window.terseBanner || {};
-		factory($, window, document, window.terseBanner.Global, window.terseBanner.Banner);
-	}
-}(window, function (jQuery, window, document, Global, Banner) {
+	/**
+	 * 图片延迟加载
+	 */
 	Banner.prototype.lazyload = function() {
 		var self = this,
 			options = this.options,
@@ -184,4 +165,3 @@
 			}
 		}
 	};
-}));

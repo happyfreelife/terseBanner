@@ -11,9 +11,10 @@ module.exports = function(grunt) {
 						' * Version: <%= pkg.version %>\n' +
 						' * URI: <%= pkg.uri %>\n' +
 						' * Date: <%= grunt.template.today("yyyy-mm-dd") %>\n' +
-						' **/'
+						' **/\n'
 				},
 				src: [
+					'src/wrap-begin.js',
 					'src/global.js',
 					'src/banner.js',
 					'src/init.js',
@@ -23,7 +24,8 @@ module.exports = function(grunt) {
 					'src/bind-animation.js',
 					'src/bind-event.js',
 					'src/lazyload.js',
-					'src/main.js'
+					'src/main.js',
+					'src/wrap-end.js'
 				],
 				dest: 'dist/jquery.<%= pkg.name %>.pkgd.js',
 			}

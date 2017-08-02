@@ -1,28 +1,7 @@
 
-
-/**
- * Plugin main method
- */
-;(function (window, factory) {
-	if (typeof define === 'function' && define.amd) {
-		define([
-			'global',
-			'banner',
-			'init'
-		], function (Global, Banner) {
-			return factory($, window, document, Global, Banner);
-		});
-	} else if (typeof exports !== 'undefined') {
-		module.exports = factory($, window, document,
-			require('global'),
-			require('banner'),
-			require('init')
-		);
-	} else {
-		window.terseBanner = window.terseBanner || {};
-		factory($, window, document, window.terseBanner.Global, window.terseBanner.Banner);
-	}
-}(window, function (jQuery, window, document, Global, Banner) {
+	/**
+	 * Plugin main method
+	 */
 	// 播放
 	Banner.prototype.play = function() {
 		this.activeIndex = this.currentIndex;
@@ -163,4 +142,3 @@
 		after    : $.noop,  // 动画完成时执行的回调函数
 		thumb    : { }      // 缩略图
 	};
-}));

@@ -1,30 +1,7 @@
 
-
-/**
- * 自动添加轮播必须的元素
- */
-;(function (window, factory) {
-	if (typeof define === 'function' && define.amd) {
-		define([
-			'global',
-			'banner',
-			'set-style',
-			'bind-animation'
-		], function (Global, Banner) {
-			return factory($, window, document, Global, Banner);
-		});
-	} else if (typeof exports !== 'undefined') {
-		module.exports = factory($, window, document,
-			require('global'),
-			require('banner'),
-			require('set-style'),
-			require('bind-animation')
-		);
-	} else {
-		window.terseBanner = window.terseBanner || {};
-		factory($, window, document, window.terseBanner.Global, window.terseBanner.Banner);
-	}
-}(window, function (jQuery, window, document, Global, Banner) {
+	/**
+	 * 自动添加轮播必须的元素
+	 */
 	Banner.prototype.addElement = function() {
 		var self = this,
 			$banner = this.$elem,
@@ -202,4 +179,3 @@
 			}
 		};
 	};
-}));

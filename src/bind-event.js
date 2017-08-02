@@ -1,28 +1,7 @@
 
-
-/**
- * 绑定事件
- */
-;(function (window, factory) {
-	if (typeof define === 'function' && define.amd) {
-		define([
-			'global',
-			'banner',
-			'lazyload'
-		], function (Global, Banner) {
-			return factory($, window, document, Global, Banner);
-		});
-	} else if (typeof exports !== 'undefined') {
-		module.exports = factory($, window, document,
-			require('global'),
-			require('banner'),
-			require('lazyload')
-		);
-	} else {
-		window.terseBanner = window.terseBanner || {};
-		factory($, window, document, window.terseBanner.Global, window.terseBanner.Banner);
-	}
-}(window, function (jQuery, window, document, Global, Banner) {
+	/**
+	 * 绑定事件
+	 */
 	Banner.prototype.bindEvent = function() {
 		var self = this,
 			options = self.options,
@@ -209,4 +188,3 @@
 			}
 		};
 	};
-}));

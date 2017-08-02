@@ -1,28 +1,7 @@
 
-
-/**
- * 绑定动画
- */
-;(function (window, factory) {
-	if (typeof define === 'function' && define.amd) {
-		define([
-			'global',
-			'banner',
-			'bind-event'
-		], function (Global, Banner) {
-			return factory($, window, document, Global, Banner);
-		});
-	} else if (typeof exports !== 'undefined') {
-		module.exports = factory($, window, document,
-			require('global'),
-			require('banner'),
-			require('bind-event')
-		);
-	} else {
-		window.terseBanner = window.terseBanner || {};
-		factory($, window, document, window.terseBanner.Global, window.terseBanner.Banner);
-	}
-}(window, function (jQuery, window, document, Global, Banner) {
+	/**
+	 * 绑定动画
+	 */
 	Banner.prototype.bindAnimation = function() {
 		var self = this,
 			options = this.options,
@@ -203,6 +182,3 @@
 		self.bindEvent().widthChangeEvent();
 		self.bindEvent().touchEvent();
 	};
-}));
-
-
