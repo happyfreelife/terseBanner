@@ -2,7 +2,7 @@
 	/**
 	 * 写入轮播元素的默认样式
 	 */
-	Banner.prototype.defaultStyle = function() {
+	Banner.prototype.stylesheet = function() {
 		var style =
 			'.tb-list,\n' +
 			'.tb-list > *,\n' +

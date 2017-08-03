@@ -27,8 +27,8 @@
 						$arrow.height(parseInt(bannerHeight * 0.1));
 					}
 
-					$arrow.filter('.prev').html('<img src="' + Global.prevArrow + '">');
-					$arrow.filter('.next').html('<img src="' + Global.nextArrow + '">');
+					$arrow.filter('.prev').html('<img src="' + Util.prevArrow + '">');
+					$arrow.filter('.next').html('<img src="' + Util.nextArrow + '">');
 
 					$arrow.find('img').on('dragstart', function() {
 						return false;
@@ -114,12 +114,12 @@
 				} else {
 					$thumbSlideBtn.filter('.prev').css({
 						left: options.thumb.gap,
-						backgroundImage: 'url(' + Global.prevThumbBtn + ')'
+						backgroundImage: 'url(' + Util.prevThumbBtn + ')'
 					});
 
 					$thumbSlideBtn.filter('.next').css({
 						right: options.thumb.gap,
-						backgroundImage: 'url(' + Global.nextThumbBtn + ')'
+						backgroundImage: 'url(' + Util.nextThumbBtn + ')'
 					});
 				}
 				break;

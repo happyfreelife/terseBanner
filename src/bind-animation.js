@@ -47,7 +47,7 @@
 
 			$item.eq(self.currentIndex + 1).show();
 
-			if (Global.isSupportTransition) {
+			if (Util.isSupportTransition) {
 				setTimeout(function() {
 					self.isAnimated = true;
 
@@ -55,23 +55,22 @@
 						'translate3d(' + -$item.width() + 'px, 0, 0)' :
 						'translate3d(' + $item.width() + 'px, 0, 0)';
 
-					$list.css(Global.transformProperty, listTransform);
+					$list.css(Util.transform, listTransform);
 
-					setTimeout(self.animation.slideCallback, options.duration - 50);
+					setTimeout(self.animation.slideCallback, options.speed - 50);
 				}, 50);
-			}
-
-			if (!Global.isSupportTransition) {
+			} else {
 				self.isAnimated = true;
 
 				$list.animate({
 					left: slidToLeft? '-100%' : 0
-				}, options.duration, self.animation.slideCallback);
+				}, options.speed, self.animation.slideCallback);
 			}
 
 			self.activeBtnAndThumb();
 		};
 
+		animation.flash = 
 		animation.fade = function() {
 			handleCurrentIndex();
 
@@ -79,22 +78,24 @@
 
 			$list.css('left', -self.currentIndex * 100 + '%');
 
-			$item.eq(self.currentIndex).animate({
-				opacity: 1
-			}, {
-				duration: options.duration * 0.8,
-				complete: self.animation.fadeCallback
-			});
+			if (Util.isSupportTransition) {
+				$item.eq(self.currentIndex).css('opacity', 1);	
+				setTimeout(self.animation.fadeCallback, options.speed);	
+			} else {
+				$item.eq(self.currentIndex).animate({ opacity: 1 }, {
+					speed: options.speed * 0.8,
+					complete: self.animation.fadeCallback
+				});
+			}
 
 			self.activeBtnAndThumb();
 		};
-
-		animation.flash = animation.fade;
 
 		animation.none = function() {
 			handleCurrentIndex();
 
 			$item.eq(self.currentIndex).show().siblings().hide();
+			$item.eq(self.currentIndex).addClass('active').siblings().removeClass('active');
 
 			self.activeBtnAndThumb();
 
@@ -141,15 +142,16 @@
 
 			$list.css({
 				left: 0,
-				'transition': 'none'
+				transition: 'none'
 			});
 
-			$list.css(Global.transformProperty, 'translate3d(0, 0, 0)');
+			$list.css(Util.transform, 'translate3d(0, 0, 0)');
 
 			$item.eq(self.currentIndex + 1).show().siblings().hide();
+			$item.eq(self.currentIndex + 1).addClass('active').siblings().removeClass('active');
 
 			setTimeout(function() {
-				$list.css('transition', 'transform ' + options.duration + 'ms');
+				$list.css('transition', 'transform ' + options.speed + 'ms');
 			}, 50);
 
 			afterCallback();
@@ -168,6 +170,7 @@
 			}
 
 			$item.eq(self.currentIndex).siblings().css('opacity', 0);
+			$item.eq(self.currentIndex).addClass('active').siblings().removeClass('active');
 
 			afterCallback();
 
@@ -179,6 +182,5 @@
 		// 轮播初始化完成时调用的函数
 		options.init.call(self, self.$elem, self.$item, 0);
 		
-		self.bindEvent().widthChangeEvent();
-		self.bindEvent().touchEvent();
+		self.touch();
 	};

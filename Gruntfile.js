@@ -15,14 +15,14 @@ module.exports = function(grunt) {
 				},
 				src: [
 					'src/wrap-begin.js',
-					'src/global.js',
+					'src/util.js',
 					'src/banner.js',
+					'src/stylesheet.js',
 					'src/init.js',
-					'src/default-style.js',
 					'src/set-style.js',
 					'src/add-element.js',
 					'src/bind-animation.js',
-					'src/bind-event.js',
+					'src/touch.js',
 					'src/lazyload.js',
 					'src/main.js',
 					'src/wrap-end.js'

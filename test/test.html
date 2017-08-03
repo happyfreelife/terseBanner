@@ -1,39 +1,80 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>test</title>
+	<title>terseBanner test</title>
 	<meta charset="utf-8">
 	<style>
 		*{margin: 0;padding: 0;}
 		img{border: none;}
 		ul, ol{list-style: none;}
-		.banner{width: 960px;margin: 20px auto;overflow: hidden;}
-		#simple{height: 540px;}
-		#lazyload{/*max-*/height: 540px;}
+		.anchor{position: fixed;top: 10px;left: 10px;width: 160px;}
+		.anchor a{display: block;font: 14px/40px "Verdana";margin-bottom: 10px;background: #333;color: #fff;text-align: center;text-decoration: none;}
+		.anchor a:hover{background: #000;}
+		.container{width: 960px;margin: 0 auto;}
+		h2{font: 30px/30px "Verdana";color: #333;margin-top: 70px;}
+		.banner{width: 960px;margin: 20px auto;overflow: hidden;height: 540px;}
 	</style>
 </head>
 <body>
-	<div class="banner" id="simple">
-		<div>
-			<a><img data-src="img/banner-1.jpg"></a>
-			<a><img data-src="img/banner-2.jpg"></a>
-			<a><img data-src="img/banner-3.jpg"></a>
-			<a><img data-src="img/banner-4.jpg"></a>
+	<div class="anchor">
+		<a href="#slide">animation - slide</a>
+		<a href="#fade">animation - fade</a>
+		<a href="#flash">animation - flash</a>
+		<a href="#none">animation - none</a>
+		<a href="#lazyload">lazyload</a>
+	</div>
+	<div class="container">
+		<h2>animation - slide</h2>
+		<div class="banner" id="slide">
+			<div>
+				<a><img src="img/banner-1.jpg"></a>
+				<a><img src="img/banner-2.jpg"></a>
+				<a><img src="img/banner-3.jpg"></a>
+				<a><img src="img/banner-4.jpg"></a>
+			</div>
+		</div>
+
+		<h2>animation - fade</h2>
+		<div class="banner" id="fade">
+			<div>
+				<a><img src="img/banner-1.jpg"></a>
+				<a><img src="img/banner-2.jpg"></a>
+				<a><img src="img/banner-3.jpg"></a>
+				<a><img src="img/banner-4.jpg"></a>
+			</div>
+		</div>
+
+		<h2>animation - flash</h2>
+		<div class="banner" id="flash">
+			<div>
+				<a><img src="img/banner-1.jpg"></a>
+				<a><img src="img/banner-2.jpg"></a>
+				<a><img src="img/banner-3.jpg"></a>
+				<a><img src="img/banner-4.jpg"></a>
+			</div>
+		</div>
+
+		<h2>animation - none</h2>
+		<div class="banner" id="none">
+			<div>
+				<a><img src="img/banner-1.jpg"></a>
+				<a><img src="img/banner-2.jpg"></a>
+				<a><img src="img/banner-3.jpg"></a>
+				<a><img src="img/banner-4.jpg"></a>
+			</div>
+		</div>
+
+		<h2>lazyload</h2>
+		<div class="banner" id="lazyload">
+			<ul>
+				<li><img data-src="http://desk.fd.zol-img.com.cn/t_s1920x1080c5/g5/M00/05/02/ChMkJ1bxATiIVlzmAAlJIHaXmLkAAOTUgN32YEACUk4716.jpg"></li>
+				<li><img data-src="http://desk.fd.zol-img.com.cn/t_s1920x1080c5/g5/M00/05/02/ChMkJ1bxATaIevuuABYRrSzYfikAAOTUgI7dk0AFhHF290.jpg"></li>
+				<li><img data-src="http://desk.fd.zol-img.com.cn/t_s1920x1080c5/g5/M00/05/02/ChMkJ1bxATyIHmOaAA427DMtOHcAAOTUwGiFqgADjcE489.jpg"></li>
+				<li><img data-src="http://desk.fd.zol-img.com.cn/t_s1920x1080c5/g5/M00/05/02/ChMkJlbxAUCIMqKdAAMVx51HXogAAOTUwP6tOQAAxXf894.jpg"></li>
+				<li><img data-src="http://desk.fd.zol-img.com.cn/t_s1920x1080c5/g5/M00/05/02/ChMkJlbxATqIBOwbAAt1D9lCvKkAAOTUwB9S5IAC3Un823.jpg"></li>
+			</ul>
 		</div>
 	</div>
-	<br><br><br>
-	<!-- <div class="banner" id="lazyload">
-		<ul>
-			<li><img data-src="http://desk.fd.zol-img.com.cn/t_s1920x1080c5/g5/M00/05/02/ChMkJ1bxATiIVlzmAAlJIHaXmLkAAOTUgN32YEACUk4716.jpg"></li>
-			<li><img data-src="http://desk.fd.zol-img.com.cn/t_s1920x1080c5/g5/M00/05/02/ChMkJ1bxATaIevuuABYRrSzYfikAAOTUgI7dk0AFhHF290.jpg"></li>
-			<li><img data-src="http://desk.fd.zol-img.com.cn/t_s1920x1080c5/g5/M00/05/02/ChMkJ1bxATyIHmOaAA427DMtOHcAAOTUwGiFqgADjcE489.jpg"></li>
-			<li><img data-src="http://desk.fd.zol-img.com.cn/t_s1920x1080c5/g5/M00/05/02/ChMkJlbxAUCIMqKdAAMVx51HXogAAOTUwP6tOQAAxXf894.jpg"></li>
-			<li><img data-src="http://desk.fd.zol-img.com.cn/t_s1920x1080c5/g5/M00/05/02/ChMkJlbxATqIBOwbAAt1D9lCvKkAAOTUwB9S5IAC3Un823.jpg"></li>
-		</ul>
-	</div>
-	<br><br><br> -->
 </body>
-<!-- <script type="text/javascript" src="http://cdn.bootcss.com/jquery/1.9.1/jquery.min.js"></script> -->
-<!-- <script type="text/javascript" src="../lib/jquery-1.11.3.min.js"></script> -->
 <script type="text/javascript" src="../lib/require.js" data-main="test.js"></script>
 </html>

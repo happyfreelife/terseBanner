@@ -7,19 +7,25 @@ requirejs.config({
 
 define([
 	'jquery',
-	'global',
+	'util',
 	'banner',
+	'stylesheet',
 	'init',
-	'default-style',
 	'set-style',
 	'add-element',
 	'bind-animation',
-	'bind-event',
+	'touch',
 	'lazyload',
 	'main'
 ], function($) {
-	$('#simple').terseBanner({
-		arrow: true
+	$('.banner[id!="lazyload"]').each(function() {
+		var animation = this.id;
+
+		$(this).terseBanner({
+			arrow: true,
+			animation: animation || 'slide',
+			useHover: true
+		});
 	});
 
 	$('#lazyload ul li img').each(function() {
@@ -32,12 +38,10 @@ define([
 		auto: 0
 	});
 
-	$('#touch').terseBanner({
-		after: function($banner, $item, currentIndex) {
-			
-		}
-	});
-	$(document).click(function() {
-		$('#touch').terseBanner('next');
+
+	$('#touch').terseBanner();
+
+	$('#touch button').click(function() {
+		$('#touch').terseBanner(this.className);
 	});
 });

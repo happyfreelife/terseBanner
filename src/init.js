@@ -4,7 +4,7 @@
 	 */
 	Banner.prototype.init = function() {
 		// 添加元素的默认样式
-		this.defaultStyle();
+		this.stylesheet();
 
 		this.$list = this.$elem.children().first();
 		this.$item = this.$list.children();
@@ -31,8 +31,6 @@
 			tapHighlightColor: 'transparent',
 			userSelect: 'none'
 		});
-
-		$list.width((self.len + 2) * 100 + '%').wrap('<div class="tb-list"/>');
 
 		// 自适应模式
 		if (options.adaptive) {
@@ -63,19 +61,21 @@
 				var $img = $(this).children('img'),
 					src = $img.attr('src') || $img.attr('data-src');
 
-				if ($img.attr('data-src')) {
-					$(this).data('origin', src);
-				} else {
-					$(this).css('backgroundImage', 'url(' + src + ')');
+				if ($img.length) {
+					if ($img.attr('data-src')) {
+						$(this).data('origin', src);
+					} else {
+						$(this).css('backgroundImage', 'url(' + src + ')');
+					}
+
+					$(this).data('thumb', src);
+
+					$img.remove();
 				}
 
-				$(this).data('thumb', src).height($banner.height());
-
-				$img.remove();
+				$(this).height($banner.height());
 			});
 		}
-
-		$item.width($banner.width());
 
 		// 获取图片缩略图的路径
 		try {
@@ -88,11 +88,21 @@
 			});
 		} catch (e) {}
 
+		// 设置内部元素的结构和宽度
+		$list.wrap('<div class="tb-list"/>');
+		$list.width((self.len + 2) * 100 + '%');
+		$item.width($banner.width());
+
+		// 触屏模式下，动画只能是'slide'
+		if (Util.isSupportTouch) {
+			options.animation = 'slide';
+		}
+
 		// animation: slide
 		if (options.animation === 'slide') {
-			if (Global.isSupportTransition) {
-				$list.css(Global.transformProperty, 'translate3d(0, 0, 0)');
-				$list.css('transition', 'transform ' + options.duration + 'ms');
+			if (Util.isSupportTransition) {
+				$list.css(Util.transform, 'translate3d(0, 0, 0)');
+				$list.css('transition', 'transform ' + options.speed + 'ms');
 			}
 
 			$list.css('left', 0);
@@ -101,24 +111,44 @@
 			$item.last().clone(true).addClass('last-duplicate').hide().prependTo($list);
 		}
 
+		// animation: fade || flash
+		if (options.animation === 'fade' || options.animation === 'flash') {
+			if (Util.isSupportTransition) {
+				$item.css('transition', 'opacity ' + options.speed + 'ms');
+			}
+
+			$item.first().siblings().css('opacity', 0);
+		}
+
 		// animation: fade
 		if (options.animation === 'fade') {
-			$list.before($list.clone(true).addClass('fade-duplicate').css({
+			$list.before($list.clone(true).addClass('fade-bottom').css({
 				position: 'absolute',
 				top: 0,
 				left: 0
 			}));
 		}
-
-		// animation: fade || flash
-		if (options.animation === 'fade' || options.animation === 'flash') {
-			$item.first().siblings().css('opacity', 0);
-		}
-
-		if (!Global.isSupportTouch && $.isNumeric(options.auto) && options.auto > 0) {
+		
+		if (!Util.isSupportTouch && $.isNumeric(options.auto) && options.auto > 0) {
 			self.useAuto = true;
 			self.setPlayTimer();
 		}
+
+		// Banner的宽度改变时，列表和元素自动修正宽度
+		setInterval(function() {
+			$item.width($banner.width());
+
+			if (Util.isSupportTouch) {
+				$list.width($item.width() * (self.len + 2));
+			}
+
+			if (options.animation === 'fade') {
+				$list.prev().children().width($banner.width());
+			}
+		}, 50);
+
+		// 使用延迟加载的方法加载banner的第一张图片
+		self.lazyload();
 
 		self.addElement().arrow();
 	};

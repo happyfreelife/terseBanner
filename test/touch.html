@@ -1,12 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>terseBanner test</title>
+	<title>terseBanner touch test</title>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 	<meta name="format-detection" content="telephone=no, email=no, adress=no">
-	<meta name="keywords" content="">
-	<meta name="description" content="">
 	<style>
 		*{margin: 0;padding: 0;}
 		img{border: none;}
@@ -19,6 +17,9 @@
 		.banner ul li.item-3{background: #0000a0;}
 		.banner ul li.item-4{background: #808000;}
 		.banner ul li.item-5{background: #ff00ff;}
+		.banner button{position: absolute;top: 50%;width: 50px;line-height: 50px;background: rgba(0, 0, 0, .8);color: #fff;text-align: center;outline: none;border: none;}
+		.banner button.prev{left: 0;}
+		.banner button.next{right: 0;}
 	</style>
 </head>
 <body>
@@ -30,8 +31,9 @@
 			<li class="item-4">Page 4</li>
 			<li class="item-5">Page 5</li>
 		</ul>
+		<button class="prev">prev</button>
+		<button class="next">next</button>
 	</div>
 </body>
-<script type="text/javascript" src="../lib/jquery-1.11.3.min.js"></script>
 <script type="text/javascript" src="../lib/require.js" data-main="test.js"></script>
 </html>

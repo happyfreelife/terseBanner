@@ -119,7 +119,7 @@
 			// 添加loading动画
 			var $loading =
 				'<div class="tb-loading">' +
-					'<img src="' + Global.loadingImage + '">' +
+					'<img src="' + Util.loadingImage + '">' +
 				'</div>';
 
 			$visibleItem.append($loading);

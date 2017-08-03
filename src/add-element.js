@@ -14,7 +14,7 @@
 
 		return {
 			arrow: function() {
-				if (!options.arrow || Global.isMobile) {
+				if (!options.arrow || Util.isMobile) {
 					self.addElement().btn();
 					return;
 				}
@@ -59,7 +59,7 @@
 				}
 
 				for (var i = 0, item = ''; i < self.len; i++) {
-					item += '<a><i></i></a>';
+					item += '<a></a>';
 				}
 				$banner.append($('<div class="tb-btn"/>').append(item));
 
@@ -70,25 +70,14 @@
 
 				self.setStyle('btnBoxPos');
 
-				// 导航按钮中添加序列数字
-				if (options.btn === 'ol') {
-					self.$btn.find('i').each(function(index) {
-						$(this).text(index + 1);
+				if (!Util.isMobile) {
+					self.$btn.on('click.terseBanner', function() {
+						if (self.isAnimated) return;
+
+						beforeCallback();
+						self.currentIndex = $(this).index();
+						self.play();
 					});
-				}
-
-				if (!Global.isMobile) {
-					self.$btn.on(
-						self.options.useHover ?
-							'mouseenter.terseBanner' : 'click.terseBanner',
-						function() {
-							if (self.isAnimated) return;
-
-							beforeCallback();
-							self.currentIndex = $(this).index();
-							self.play();
-						}
-					);
 				}
 
 				self.addElement().thumb();
@@ -129,17 +118,13 @@
 
 				self.$thumb.first().addClass('active');
 
-				self.$thumb.on(
-					self.options.useHover ?
-						'mouseenter.terseBanner' : 'click.terseBanner',
-					function() {
-						if (self.isAnimated) return;
+				self.$thumb.on('click.terseBanner', function() {
+					if (self.isAnimated) return;
 
-						beforeCallback();
-						self.currentIndex = $(this).index();
-						self.play();
-					}
-				);
+					beforeCallback();
+					self.currentIndex = $(this).index();
+					self.play();
+				});
 
 				self.$thumbSlideBtn.on({
 					'click.terseBanner': function() {
