@@ -105,7 +105,7 @@
 			'    margin-left: -20px;\n' +
 			'}\n';
 
-		if (!$('#tb-default-style').length) {
-			$('head').append('<style id="tb-default-style">\n' + style + '</style>');
+		if (!$('#tb-stylesheet').length) {
+			$('head').append('<style id="tb-stylesheet">\n' + style + '</style>');
 		}
 	};

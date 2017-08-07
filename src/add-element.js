@@ -3,19 +3,19 @@
 	 * 自动添加轮播必须的元素
 	 */
 	Banner.prototype.addElement = function() {
-		var self = this,
+		var s = this,
+			o = this.option,
 			$banner = this.$elem,
-			$list = this.$list,
-			options = this.options;
+			$list = this.$list;
 
 		function beforeCallback() {
-			options.before.call(self, self.$elem, self.$item, self.currentIndex);
+			o.before.call(s, s.$elem, s.$item, s.currentIndex);
 		}
 
 		return {
 			arrow: function() {
-				if (!options.arrow || Util.isMobile) {
-					self.addElement().btn();
+				if (!o.arrow || Util.isMobile) {
+					s.addElement().btn();
 					return;
 				}
 
@@ -26,21 +26,21 @@
 					'</div>'
 				);
 
-				self.$arrowBox = $('.tb-arrow', $banner);
-				self.$arrow = $('.tb-arrow a', $banner);
+				s.$arrowBox = $('.tb-arrow', $banner);
+				s.$arrow = $('.tb-arrow a', $banner);
 
-				self.setStyle('arrow');
-				self.setStyle('arrowBoxPos');
+				s.setStyle('arrow');
+				s.setStyle('arrowBoxPos');
 
-				self.$arrow.on({
+				s.$arrow.on({
 					'click.terseBanner': function() {
-						if (self.isAnimated) return;
+						if (s.isAnimated) return;
 
 						beforeCallback();
 
-						$(this).hasClass('prev') ? self.currentIndex-- : self.currentIndex++;
+						$(this).hasClass('prev') ? s.currentIndex-- : s.currentIndex++;
 						
-						self.play();
+						s.play();
 					},
 
 					// 阻止连续点击箭头按钮时选中按钮
@@ -49,52 +49,52 @@
 					}
 				});
 
-				self.addElement().btn();
+				s.addElement().btn();
 			},
 
 			btn: function() {
-				if (!options.btn) {
-					self.addElement().thumb();
+				if (!o.btn) {
+					s.addElement().thumb();
 					return;
 				}
 
-				for (var i = 0, item = ''; i < self.len; i++) {
+				for (var i = 0, item = ''; i < s.len; i++) {
 					item += '<a></a>';
 				}
 				$banner.append($('<div class="tb-btn"/>').append(item));
 
-				self.$btnBox = $('.tb-btn', $banner);
-				self.$btn = $('.tb-btn a', $banner);
+				s.$btnBox = $('.tb-btn', $banner);
+				s.$btn = $('.tb-btn a', $banner);
 
-				self.$btn.first().addClass('active');
+				s.$btn.first().addClass('active');
 
-				self.setStyle('btnBoxPos');
+				s.setStyle('btnBoxPos');
 
 				if (!Util.isMobile) {
-					self.$btn.on('click.terseBanner', function() {
-						if (self.isAnimated) return;
+					s.$btn.on('click.terseBanner', function() {
+						if (s.isAnimated) return;
 
 						beforeCallback();
-						self.currentIndex = $(this).index();
-						self.play();
+						s.currentIndex = $(this).index();
+						s.play();
 					});
 				}
 
-				self.addElement().thumb();
+				s.addElement().thumb();
 			},
 
 			thumb: function() {
-				if (!(typeof options.thumb === 'object' &&
-					parseInt(options.thumb.width) > 0 &&
-					parseInt(options.thumb.height) > 0 &&
-					parseInt(options.thumb.gap) >= 0))
+				if (!(typeof o.thumb === 'object' &&
+					parseInt(o.thumb.width) > 0 &&
+					parseInt(o.thumb.height) > 0 &&
+					parseInt(o.thumb.gap) >= 0))
 				{
-					self.bindAnimation();
+					s.bindAnimation();
 					return;
 				}
 
-				for (var i = 0, str = '', thumb; i < self.len; i++) {
-					thumb = self.thumbArr[i];
+				for (var i = 0, str = '', thumb; i < s.len; i++) {
+					thumb = s.thumbArr[i];
 					str += '<dd><img src="' + thumb + '"></dd>';
 				}
 
@@ -106,39 +106,39 @@
 					'</div>'
 				);
 
-				self.$thumbBox = $('.tb-thumb', $banner);
-				self.$thumbSlideBtn = $('.tb-thumb a', $banner);
-				self.$thumbList = $('.tb-thumb dl', $banner);
-				self.$thumb = $('.tb-thumb dl dd', $banner);
+				s.$thumbBox = $('.tb-thumb', $banner);
+				s.$thumbSlideBtn = $('.tb-thumb a', $banner);
+				s.$thumbList = $('.tb-thumb dl', $banner);
+				s.$thumb = $('.tb-thumb dl dd', $banner);
 
-				self.setStyle('thumb');
-				self.setStyle('thumbSlideBtn');
-				self.setStyle('thumbList');
-				self.setStyle('thumbBox');
+				s.setStyle('thumb');
+				s.setStyle('thumbSlideBtn');
+				s.setStyle('thumbList');
+				s.setStyle('thumbBox');
 
-				self.$thumb.first().addClass('active');
+				s.$thumb.first().addClass('active');
 
-				self.$thumb.on('click.terseBanner', function() {
-					if (self.isAnimated) return;
+				s.$thumb.on('click.terseBanner', function() {
+					if (s.isAnimated) return;
 
 					beforeCallback();
-					self.currentIndex = $(this).index();
-					self.play();
+					s.currentIndex = $(this).index();
+					s.play();
 				});
 
-				self.$thumbSlideBtn.on({
+				s.$thumbSlideBtn.on({
 					'click.terseBanner': function() {
 						if ($(this).hasClass('disabled')) return;
 
 						var thumbVisible,
 							thumbListOffset,
-							$thumbBox = self.$thumbBox,
-							$thumbList = self.$thumbList,
-							$thumb = self.$thumb,
+							$thumbBox = s.$thumbBox,
+							$thumbList = s.$thumbList,
+							$thumb = s.$thumb,
 							thumbListLeft = parseInt($thumbList.css('left'));
 
-						if ($.isNumeric(self.options.thumb.visible)) {
-							thumbVisible = Math.min(self.options.thumb.visible,
+						if ($.isNumeric(s.o.thumb.visible)) {
+							thumbVisible = Math.min(s.o.thumb.visible,
 							parseInt($banner.width() / $thumb.outerWidth(true)));
 						} else {
 							thumbVisible = parseInt($banner.width() / $thumb.outerWidth(true));
@@ -151,7 +151,7 @@
 							$thumbBox.width() - $thumbList.width());
 						}
 
-						self.animation.thumbListSlide(thumbListOffset);
+						s.animation.thumbListSlide(thumbListOffset);
 					},
 
 					// 阻止连续点击箭头按钮时选中按钮
@@ -160,7 +160,7 @@
 					}
 				});
 
-				self.bindAnimation();
+				s.bindAnimation();
 			}
 		};
 	};

@@ -1,8 +1,8 @@
 /**
  * terseBanner
- * Version: 2.2.3
+ * Version: 2.2.4
  * URI: https://github.com/happyfreelife/terseBanner
- * Date: 2017-08-03
+ * Date: 2017-08-07
  **/
 ;(function (window, factory) {
 	if (typeof define === 'function' && define.amd) {
@@ -31,7 +31,7 @@
 		// 是否支持CSS3动画过渡
 		isSupportTransition: (function () {
 			var style = document.body.style || document.documentElement.style;
-			return style.transition !== undefined || style.WebkitTransition !== undefined;
+			return style.transition !== undefined || style.webkitTransition !== undefined;
 		}()),
 
 		transform: typeof document.body.style.transform === 'string' ? 'transform' : 'webkitTransform',
@@ -56,9 +56,9 @@
 	/**
 	 * Plugin construct function
 	 */
-	function Banner(elem, options) {
+	function Banner(elem, option) {
 		this.$elem = $(elem);
-		this.options = options;
+		this.option = option;
 	}
 
 
@@ -168,8 +168,8 @@
 			'    margin-left: -20px;\n' +
 			'}\n';
 
-		if (!$('#tb-default-style').length) {
-			$('head').append('<style id="tb-default-style">\n' + style + '</style>');
+		if (!$('#tb-stylesheet').length) {
+			$('head').append('<style id="tb-stylesheet">\n' + style + '</style>');
 		}
 	};
 
@@ -178,25 +178,26 @@
 	 * 轮播初始化
 	 */
 	Banner.prototype.init = function() {
-		// 添加元素的默认样式
-		this.stylesheet();
+		var s = this;
 
-		this.$list = this.$elem.children().first();
-		this.$item = this.$list.children();
-		this.len = this.$item.length;
-		this.currentIndex = 0;
-		this.activeIndex = 0;
-		this.latestIndex = 0;
-		this.isHovered = false;
-		this.isAnimated = false;
+		s.$list = s.$elem.children().first();
+		s.$item = s.$list.children();
+		s.len = s.$item.length;
+		s.currentIndex = 0;
+		s.activeIndex = 0;
+		s.latestIndex = 0;
+		s.isHovered = false;
+		s.isAnimated = false;
 
-		var self = this,
-			$banner = this.$elem,
-			$list = this.$list,
-			$item = this.$item,
-			options = this.options,
+		var o = s.option,
+			$banner = s.$elem,
+			$list = s.$list,
+			$item = s.$item,
 			thumbArr = [],
 			regExp = new RegExp('\\?thumb=(.*\\.(gif|jpg|jpeg|png))$');
+
+		// 写入默认样式
+		s.stylesheet();
 
 		if ($banner.css('position') === 'static') {
 			$banner.css('position', 'relative');
@@ -208,7 +209,7 @@
 		});
 
 		// 自适应模式
-		if (options.adaptive) {
+		if (o.adaptive) {
 			if ($banner.css('maxWidth') === 'none') {
 				$banner.css('maxWidth', '100%');
 			}
@@ -231,7 +232,7 @@
 		}
 
 		// 标准模式
-		if (!options.adaptive) {
+		if (!o.adaptive) {
 			$item.each(function() {
 				var $img = $(this).children('img'),
 					src = $img.attr('src') || $img.attr('data-src');
@@ -259,25 +260,25 @@
 
 				thumbArr.push(thumb.match(regExp) ? thumb.match(regExp)[1] : thumb);
 
-				self.thumbArr = thumbArr;
+				s.thumbArr = thumbArr;
 			});
 		} catch (e) {}
 
 		// 设置内部元素的结构和宽度
 		$list.wrap('<div class="tb-list"/>');
-		$list.width((self.len + 2) * 100 + '%');
+		$list.width((s.len + 2) * 100 + '%');
 		$item.width($banner.width());
 
 		// 触屏模式下，动画只能是'slide'
 		if (Util.isSupportTouch) {
-			options.animation = 'slide';
+			o.animation = 'slide';
 		}
 
 		// animation: slide
-		if (options.animation === 'slide') {
+		if (o.animation === 'slide') {
 			if (Util.isSupportTransition) {
 				$list.css(Util.transform, 'translate3d(0, 0, 0)');
-				$list.css('transition', 'transform ' + options.speed + 'ms');
+				$list.css('transition', 'transform ' + o.speed + 'ms');
 			}
 
 			$list.css('left', 0);
@@ -287,16 +288,16 @@
 		}
 
 		// animation: fade || flash
-		if (options.animation === 'fade' || options.animation === 'flash') {
+		if (o.animation === 'fade' || o.animation === 'flash') {
 			if (Util.isSupportTransition) {
-				$item.css('transition', 'opacity ' + options.speed + 'ms');
+				$item.css('transition', 'opacity ' + o.speed + 'ms');
 			}
 
 			$item.first().siblings().css('opacity', 0);
 		}
 
 		// animation: fade
-		if (options.animation === 'fade') {
+		if (o.animation === 'fade') {
 			$list.before($list.clone(true).addClass('fade-bottom').css({
 				position: 'absolute',
 				top: 0,
@@ -304,28 +305,26 @@
 			}));
 		}
 		
-		if (!Util.isSupportTouch && $.isNumeric(options.auto) && options.auto > 0) {
-			self.useAuto = true;
-			self.setPlayTimer();
+		if (!Util.isSupportTouch && $.isNumeric(o.auto) && o.auto > 0) {
+			s.useAuto = true;
+			s.setPlayTimer();
 		}
 
-		// Banner的宽度改变时，列表和元素自动修正宽度
-		setInterval(function() {
-			$item.width($banner.width());
-
-			if (Util.isSupportTouch) {
-				$list.width($item.width() * (self.len + 2));
-			}
-
-			if (options.animation === 'fade') {
-				$list.prev().children().width($banner.width());
-			}
-		}, 50);
+		// Banner的宽度改变时，列表和列表项自动更改宽度
+		if (!Util.isSupportTouch) {
+			setInterval(function() {
+				$item.width($banner.width());
+	
+				if (o.animation === 'fade') {
+					$list.prev().children().width($banner.width());
+				}
+			}, 50);
+		}
 
 		// 使用延迟加载的方法加载banner的第一张图片
-		self.lazyload();
+		s.lazyload();
 
-		self.addElement().arrow();
+		s.addElement().arrow();
 	};
 
 
@@ -333,16 +332,17 @@
 	 * 设置轮播元素的样式
 	 */
 	Banner.prototype.setStyle = function(elem) {
-		var options = this.options,
-			$banner = this.$elem,
-			$arrow = this.$arrow,
-			$arrowBox = this.$arrowBox,
-			$btn = this.$btn,
-			$btnBox = this.$btnBox,
-			$thumb = this.$thumb,
-			$thumbList = this.$thumbList,
-			$thumbSlideBtn = this.$thumbSlideBtn,
-			$thumbBox = this.$thumbBox;
+		var s = this,
+			o = s.option,
+			$banner = s.$elem,
+			$arrow = s.$arrow,
+			$arrowBox = s.$arrowBox,
+			$btn = s.$btn,
+			$btnBox = s.$btnBox,
+			$thumb = s.$thumb,
+			$thumbList = s.$thumbList,
+			$thumbSlideBtn = s.$thumbSlideBtn,
+			$thumbBox = s.$thumbBox;
 
 		switch (elem) {
 			case 'arrow' :
@@ -397,9 +397,9 @@
 				});
 
 				$thumb.css({
-					width: options.thumb.width,
-					height: options.thumb.height,
-					marginRight: options.thumb.gap
+					width: o.thumb.width,
+					height: o.thumb.height,
+					marginRight: o.thumb.gap
 				});
 				$thumb.last().css('marginRight', 0);
 				break;
@@ -414,7 +414,7 @@
 			case 'thumbList':
 				$thumbList.css({
 					left: 0,
-					width: $thumb.outerWidth(true) * $thumb.length - options.thumb.gap
+					width: $thumb.outerWidth(true) * $thumb.length - o.thumb.gap
 				});
 				break;
 
@@ -423,14 +423,14 @@
 					thumbBoxWidth,
 					thumbWidth = $thumb.outerWidth(true);
 
-				if ($.isNumeric(options.thumb.visible)) {
-					thumbVisible = Math.min(options.thumb.visible,
+				if ($.isNumeric(o.thumb.visible)) {
+					thumbVisible = Math.min(o.thumb.visible,
 					parseInt($banner.width() / thumbWidth));
 				} else {
 					thumbVisible = parseInt($banner.width() / thumbWidth);
 				}
 
-				thumbBoxWidth = thumbWidth * thumbVisible - options.thumb.gap;
+				thumbBoxWidth = thumbWidth * thumbVisible - o.thumb.gap;
 
 				$thumbBox.css({
 					left: '50%',
@@ -443,12 +443,12 @@
 					$thumbSlideBtn.hide();
 				} else {
 					$thumbSlideBtn.filter('.prev').css({
-						left: options.thumb.gap,
+						left: o.thumb.gap,
 						backgroundImage: 'url(' + Util.prevThumbBtn + ')'
 					});
 
 					$thumbSlideBtn.filter('.next').css({
-						right: options.thumb.gap,
+						right: o.thumb.gap,
 						backgroundImage: 'url(' + Util.nextThumbBtn + ')'
 					});
 				}
@@ -461,19 +461,19 @@
 	 * 自动添加轮播必须的元素
 	 */
 	Banner.prototype.addElement = function() {
-		var self = this,
+		var s = this,
+			o = this.option,
 			$banner = this.$elem,
-			$list = this.$list,
-			options = this.options;
+			$list = this.$list;
 
 		function beforeCallback() {
-			options.before.call(self, self.$elem, self.$item, self.currentIndex);
+			o.before.call(s, s.$elem, s.$item, s.currentIndex);
 		}
 
 		return {
 			arrow: function() {
-				if (!options.arrow || Util.isMobile) {
-					self.addElement().btn();
+				if (!o.arrow || Util.isMobile) {
+					s.addElement().btn();
 					return;
 				}
 
@@ -484,21 +484,21 @@
 					'</div>'
 				);
 
-				self.$arrowBox = $('.tb-arrow', $banner);
-				self.$arrow = $('.tb-arrow a', $banner);
+				s.$arrowBox = $('.tb-arrow', $banner);
+				s.$arrow = $('.tb-arrow a', $banner);
 
-				self.setStyle('arrow');
-				self.setStyle('arrowBoxPos');
+				s.setStyle('arrow');
+				s.setStyle('arrowBoxPos');
 
-				self.$arrow.on({
+				s.$arrow.on({
 					'click.terseBanner': function() {
-						if (self.isAnimated) return;
+						if (s.isAnimated) return;
 
 						beforeCallback();
 
-						$(this).hasClass('prev') ? self.currentIndex-- : self.currentIndex++;
+						$(this).hasClass('prev') ? s.currentIndex-- : s.currentIndex++;
 						
-						self.play();
+						s.play();
 					},
 
 					// 阻止连续点击箭头按钮时选中按钮
@@ -507,52 +507,52 @@
 					}
 				});
 
-				self.addElement().btn();
+				s.addElement().btn();
 			},
 
 			btn: function() {
-				if (!options.btn) {
-					self.addElement().thumb();
+				if (!o.btn) {
+					s.addElement().thumb();
 					return;
 				}
 
-				for (var i = 0, item = ''; i < self.len; i++) {
+				for (var i = 0, item = ''; i < s.len; i++) {
 					item += '<a></a>';
 				}
 				$banner.append($('<div class="tb-btn"/>').append(item));
 
-				self.$btnBox = $('.tb-btn', $banner);
-				self.$btn = $('.tb-btn a', $banner);
+				s.$btnBox = $('.tb-btn', $banner);
+				s.$btn = $('.tb-btn a', $banner);
 
-				self.$btn.first().addClass('active');
+				s.$btn.first().addClass('active');
 
-				self.setStyle('btnBoxPos');
+				s.setStyle('btnBoxPos');
 
 				if (!Util.isMobile) {
-					self.$btn.on('click.terseBanner', function() {
-						if (self.isAnimated) return;
+					s.$btn.on('click.terseBanner', function() {
+						if (s.isAnimated) return;
 
 						beforeCallback();
-						self.currentIndex = $(this).index();
-						self.play();
+						s.currentIndex = $(this).index();
+						s.play();
 					});
 				}
 
-				self.addElement().thumb();
+				s.addElement().thumb();
 			},
 
 			thumb: function() {
-				if (!(typeof options.thumb === 'object' &&
-					parseInt(options.thumb.width) > 0 &&
-					parseInt(options.thumb.height) > 0 &&
-					parseInt(options.thumb.gap) >= 0))
+				if (!(typeof o.thumb === 'object' &&
+					parseInt(o.thumb.width) > 0 &&
+					parseInt(o.thumb.height) > 0 &&
+					parseInt(o.thumb.gap) >= 0))
 				{
-					self.bindAnimation();
+					s.bindAnimation();
 					return;
 				}
 
-				for (var i = 0, str = '', thumb; i < self.len; i++) {
-					thumb = self.thumbArr[i];
+				for (var i = 0, str = '', thumb; i < s.len; i++) {
+					thumb = s.thumbArr[i];
 					str += '<dd><img src="' + thumb + '"></dd>';
 				}
 
@@ -564,39 +564,39 @@
 					'</div>'
 				);
 
-				self.$thumbBox = $('.tb-thumb', $banner);
-				self.$thumbSlideBtn = $('.tb-thumb a', $banner);
-				self.$thumbList = $('.tb-thumb dl', $banner);
-				self.$thumb = $('.tb-thumb dl dd', $banner);
+				s.$thumbBox = $('.tb-thumb', $banner);
+				s.$thumbSlideBtn = $('.tb-thumb a', $banner);
+				s.$thumbList = $('.tb-thumb dl', $banner);
+				s.$thumb = $('.tb-thumb dl dd', $banner);
 
-				self.setStyle('thumb');
-				self.setStyle('thumbSlideBtn');
-				self.setStyle('thumbList');
-				self.setStyle('thumbBox');
+				s.setStyle('thumb');
+				s.setStyle('thumbSlideBtn');
+				s.setStyle('thumbList');
+				s.setStyle('thumbBox');
 
-				self.$thumb.first().addClass('active');
+				s.$thumb.first().addClass('active');
 
-				self.$thumb.on('click.terseBanner', function() {
-					if (self.isAnimated) return;
+				s.$thumb.on('click.terseBanner', function() {
+					if (s.isAnimated) return;
 
 					beforeCallback();
-					self.currentIndex = $(this).index();
-					self.play();
+					s.currentIndex = $(this).index();
+					s.play();
 				});
 
-				self.$thumbSlideBtn.on({
+				s.$thumbSlideBtn.on({
 					'click.terseBanner': function() {
 						if ($(this).hasClass('disabled')) return;
 
 						var thumbVisible,
 							thumbListOffset,
-							$thumbBox = self.$thumbBox,
-							$thumbList = self.$thumbList,
-							$thumb = self.$thumb,
+							$thumbBox = s.$thumbBox,
+							$thumbList = s.$thumbList,
+							$thumb = s.$thumb,
 							thumbListLeft = parseInt($thumbList.css('left'));
 
-						if ($.isNumeric(self.options.thumb.visible)) {
-							thumbVisible = Math.min(self.options.thumb.visible,
+						if ($.isNumeric(s.o.thumb.visible)) {
+							thumbVisible = Math.min(s.o.thumb.visible,
 							parseInt($banner.width() / $thumb.outerWidth(true)));
 						} else {
 							thumbVisible = parseInt($banner.width() / $thumb.outerWidth(true));
@@ -609,7 +609,7 @@
 							$thumbBox.width() - $thumbList.width());
 						}
 
-						self.animation.thumbListSlide(thumbListOffset);
+						s.animation.thumbListSlide(thumbListOffset);
 					},
 
 					// 阻止连续点击箭头按钮时选中按钮
@@ -618,7 +618,7 @@
 					}
 				});
 
-				self.bindAnimation();
+				s.bindAnimation();
 			}
 		};
 	};
@@ -628,41 +628,41 @@
 	 * 绑定动画
 	 */
 	Banner.prototype.bindAnimation = function() {
-		var self = this,
-			options = this.options,
-			$banner = this.$elem,
-			$list = this.$list,
+		var s = this,
+			o = s.option,
+			$banner = s.$elem,
+			$list = s.$list,
 			$item = $list.children(),
-			$thumbBox = this.$thumbBox,
-			$thumbList = this.$thumbList,
-			$thumb = this.$thumb,
-			$thumbSlideBtn = this.$thumbSlideBtn,
+			$thumbBox = s.$thumbBox,
+			$thumbList = s.$thumbList,
+			$thumb = s.$thumb,
+			$thumbSlideBtn = s.$thumbSlideBtn,
 			thumbVisible,
 			thumbListLeft,
-			animation = this.animation = {};
+			animation = s.animation = {};
 
 		// 单张图片时，移除不必要的元素
-		if (self.len === 1) {
+		if (s.len === 1) {
 			$banner.find('.tb-arrow, .tb-btn, .tb-thumb, [class$="duplicate"]').remove();
 		}
 
 		function afterCallback() {
-			options.after.call(self, self.$elem, self.$item, self.currentIndex);
+			o.after.call(s, s.$elem, s.$item, s.currentIndex);
 		}
 
 		// 处理可能会超出范围的索引
 		function handleCurrentIndex() {
-			self.currentIndex =
-			self.currentIndex === self.len ? 0 :
-			self.currentIndex === -1 ? self.len - 1 : self.currentIndex;
+			s.currentIndex =
+			s.currentIndex === s.len ? 0 :
+			s.currentIndex === -1 ? s.len - 1 : s.currentIndex;
 		}
 
 		animation.slide = function() {
 			var slidToLeft = true;
 
-			if (self.currentIndex === self.latestIndex) return;
+			if (s.currentIndex === s.latestIndex) return;
 
-			if (self.currentIndex < self.latestIndex) {
+			if (s.currentIndex < s.latestIndex) {
 				slidToLeft = false;
 			}
 
@@ -670,11 +670,11 @@
 				$list.css('left', '-100%');
 			}
 
-			$item.eq(self.currentIndex + 1).show();
+			$item.eq(s.currentIndex + 1).show();
 
 			if (Util.isSupportTransition) {
 				setTimeout(function() {
-					self.isAnimated = true;
+					s.animating = true;
 
 					var listTransform = slidToLeft ?
 						'translate3d(' + -$item.width() + 'px, 0, 0)' :
@@ -682,47 +682,47 @@
 
 					$list.css(Util.transform, listTransform);
 
-					setTimeout(self.animation.slideCallback, options.speed - 50);
+					setTimeout(s.animation.slideCallback, o.speed - 50);
 				}, 50);
 			} else {
-				self.isAnimated = true;
+				s.animating = true;
 
 				$list.animate({
 					left: slidToLeft? '-100%' : 0
-				}, options.speed, self.animation.slideCallback);
+				}, o.speed, s.animation.slideCallback);
 			}
 
-			self.activeBtnAndThumb();
+			s.activeBtnAndThumb();
 		};
 
 		animation.flash = 
 		animation.fade = function() {
 			handleCurrentIndex();
 
-			self.isAnimated = true;
+			s.animating = true;
 
-			$list.css('left', -self.currentIndex * 100 + '%');
+			$list.css('left', -s.currentIndex * 100 + '%');
 
 			if (Util.isSupportTransition) {
-				$item.eq(self.currentIndex).css('opacity', 1);	
-				setTimeout(self.animation.fadeCallback, options.speed);	
+				$item.eq(s.currentIndex).css('opacity', 1);	
+				setTimeout(s.animation.fadeCallback, o.speed);	
 			} else {
-				$item.eq(self.currentIndex).animate({ opacity: 1 }, {
-					speed: options.speed * 0.8,
-					complete: self.animation.fadeCallback
+				$item.eq(s.currentIndex).animate({ opacity: 1 }, {
+					speed: o.speed * 0.8,
+					complete: s.animation.fadeCallback
 				});
 			}
 
-			self.activeBtnAndThumb();
+			s.activeBtnAndThumb();
 		};
 
 		animation.none = function() {
 			handleCurrentIndex();
 
-			$item.eq(self.currentIndex).show().siblings().hide();
-			$item.eq(self.currentIndex).addClass('active').siblings().removeClass('active');
+			$item.eq(s.currentIndex).show().siblings().hide();
+			$item.eq(s.currentIndex).addClass('active').siblings().removeClass('active');
 
-			self.activeBtnAndThumb();
+			s.activeBtnAndThumb();
 
 			afterCallback();
 		};
@@ -730,8 +730,8 @@
 		animation.thumbListSlide = function() {
 			if ($thumbList.is(':animated')) return;
 
-			if ($.isNumeric(options.thumb.visible)) {
-				thumbVisible = Math.min(options.thumb.visible,
+			if ($.isNumeric(o.thumb.visible)) {
+				thumbVisible = Math.min(o.thumb.visible,
 					parseInt($banner.width() / $thumb.outerWidth(true)));
 			} else {
 				thumbVisible = parseInt($banner.width() / $thumb.outerWidth(true));
@@ -739,7 +739,7 @@
 
 			thumbListLeft = $.isNumeric(arguments[0]) ?
 			arguments[0] : Math.max(
-				-parseInt(self.activeIndex / thumbVisible) * $thumb.outerWidth(true) * thumbVisible,
+				-parseInt(s.activeIndex / thumbVisible) * $thumb.outerWidth(true) * thumbVisible,
 				$thumbBox.width() - $thumbList.width()
 			);
 
@@ -758,12 +758,12 @@
 		};
 
 		animation.slideCallback = function() {
-			self.isAnimated = false;
+			s.animating = false;
 
-			self.latestIndex =
-			self.currentIndex =
-			self.currentIndex === -1 ? self.len - 1 :
-			self.currentIndex === self.len ? 0 : self.currentIndex;
+			s.latestIndex =
+			s.currentIndex =
+			s.currentIndex === -1 ? s.len - 1 :
+			s.currentIndex === s.len ? 0 : s.currentIndex;
 
 			$list.css({
 				left: 0,
@@ -772,42 +772,42 @@
 
 			$list.css(Util.transform, 'translate3d(0, 0, 0)');
 
-			$item.eq(self.currentIndex + 1).show().siblings().hide();
-			$item.eq(self.currentIndex + 1).addClass('active').siblings().removeClass('active');
+			$item.eq(s.currentIndex + 1).show().siblings().hide();
+			$item.eq(s.currentIndex + 1).addClass('active').siblings().removeClass('active');
 
 			setTimeout(function() {
-				$list.css('transition', 'transform ' + options.speed + 'ms');
+				$list.css('transition', 'transform ' + o.speed + 'ms');
 			}, 50);
 
 			afterCallback();
 
-			if (self.useAuto && !self.isHovered) {
-				self.setPlayTimer();
+			if (s.useAuto && !s.isHovered) {
+				s.setPlayTimer();
 			}
 		};
 
 		animation.fadeCallback = function() {
-			self.isAnimated = false;
+			s.animating = false;
 
-			if (options.animation === 'fade') {
-				$list.prev().css('left', -self.currentIndex * 100 + '%');
+			if (o.animation === 'fade') {
+				$list.prev().css('left', -s.currentIndex * 100 + '%');
 				$list.prev().html($list.html());
 			}
 
-			$item.eq(self.currentIndex).siblings().css('opacity', 0);
-			$item.eq(self.currentIndex).addClass('active').siblings().removeClass('active');
+			$item.eq(s.currentIndex).siblings().css('opacity', 0);
+			$item.eq(s.currentIndex).addClass('active').siblings().removeClass('active');
 
 			afterCallback();
 
-			if (self.useAuto && !self.isHovered) {
-				self.setPlayTimer();
+			if (s.useAuto && !s.isHovered) {
+				s.setPlayTimer();
 			}
 		};
 
 		// 轮播初始化完成时调用的函数
-		options.init.call(self, self.$elem, self.$item, 0);
+		o.init.call(s, s.$elem, s.$item, 0);
 		
-		self.touch();
+		s.touch();
 	};
 
 
@@ -817,14 +817,14 @@
 	Banner.prototype.touch = function() {
 		if (!Util.isSupportTouch) return;
 
-		var self = this,
-			options = self.options,
-			$banner = this.$elem,
-			$list = this.$list,
+		var s = this,
+			o = s.option,
+			$banner = s.$elem,
+			$list = s.$list,
 			$item = $list.children(),
 			transform = Util.transform,
-			transformValue,
-			listOffset,     // 列表当前的偏移量
+			listOffset,      // 列表当前的偏移量
+			listTarget,      // 列表滑动的目标位置
 			touch,           // 触摸事件
 			touchStartTime,  // 触摸开始时刻
 			touchStartX,     // 触摸开始的X坐标
@@ -838,29 +838,21 @@
 			return parseInt($list.attr('style').match(/translate3d\((-?\d+)px/)[1]);
 		}
 
-		setInterval(function() {
-			if (Util.isSupportTouch && !self.touching) {
-				$list.css(Util.transform, 'translate3d(' + -$item.width() * (self.currentIndex + 1) + 'px, 0, 0)');
-
-				listOffset = getListOffset();
-			}
-		}, 50);
-
 		$list.css({
 			transitionProperty: 'transform',
 			transitionDuration: '0ms'
 		});
 
 		setTimeout(function() {
-			$list.width($item.width() * (self.len + 2));
+			$list.width($item.width() * (s.len + 2));
 			$list.css(transform, 'translate3d(' + -$item.width() + 'px, 0, 0)');
-			$item.show();
+			$list.children().show();
 		}, 50);
 
 		function touchStart (e)  {
-			if (self.isAnimated) return;
+			if (s.animating) return;
 
-			self.touching = true;
+			s.touching = true;
 
 			touch = e.touches[0];
 			touchStartTime = Date.now();
@@ -871,7 +863,7 @@
 		}
 
 		function touchMove (e) {
-			if (self.isAnimated) return;
+			if (s.animating) return;
 
 			touch = e.touches[0];
 			touchRangeX = touch.pageX - touchStartX;
@@ -880,9 +872,9 @@
 			// 触摸水平滑动距离 小于 触摸垂直滑动距离时不执行滑动动画
 			if (Math.abs(touchRangeX) < Math.abs(touchRangeY)) return;
 
-			if (touchRangeX && !self.beforeUsed) {
-				options.before.call(self, self.$elem, self.$item, self.currentIndex);
-				self.beforeUsed = true;
+			if (touchRangeX && !s.beforeCalled) {
+				o.before.call(s, s.$elem, s.$item, s.currentIndex);
+				s.beforeCalled = true;
 			}
 
 			if (touchRangeX < 0) {
@@ -895,14 +887,13 @@
 		}
 
 		function touchEnd (e) {
-			if (self.isAnimated ||
-				!touchRangeX ||
-				Math.abs(touchRangeX) < Math.abs(touchRangeY)
-			) return;
+			if (s.animating || !touchRangeX || Math.abs(touchRangeX) < Math.abs(touchRangeY)) return;
 
-			if (e) e.preventDefault();
+			// if (e) {
+			// 	e.preventDefault();
+			// }
 
-			self.isAnimated = true;
+			s.animating = true;
 
 			touchDuration = Date.now() - touchStartTime;
 
@@ -910,78 +901,93 @@
 			// 触摸水平距离超过轮播宽度的一半时切换到下一个元素
 			if (touchDuration < 300 || Math.abs(touchRangeX) >= $item.width() / 2) {
 				if (touchDirection === 'left') {
-					transformValue = 'translate3d(' + (listOffset - $item.width()) + 'px, 0, 0)';
-					self.currentIndex++;
+					listTarget = 'translate3d(' + (listOffset - $item.width()) + 'px, 0, 0)';
+					s.currentIndex++;
 				} else {
-					transformValue = 'translate3d(' + (listOffset + $item.width()) + 'px, 0, 0)';
-					self.currentIndex--;
+					listTarget = 'translate3d(' + (listOffset + $item.width()) + 'px, 0, 0)';
+					s.currentIndex--;
 				}
 
-				$list.css('transitionDuration', '200ms');
-				$list.css(transform, transformValue);
+				$list.css({
+					transitionDuration: o.speed / 3 + 'ms',
+					transform: listTarget
+				});
+				// $list.css('transitionDuration', o.speed / 3 + 'ms');
+				// $list.css(transform, listTarget);
 
 				listOffset = getListOffset();
 
-				self.currentIndex =
-				self.currentIndex === -1 ? self.len - 1 :
-				self.currentIndex === self.len ? 0 : self.currentIndex;
+				s.lazyload(s.currentIndex);
 
-				self.activeBtnAndThumb();
+				
+
+				s.activeBtnAndThumb();
 			}
 
 			// 触摸停留时间大于300ms 并且
 			// 触摸水平距离小于轮播宽度的一半时回退到当前元素
 			if (touchDuration >= 300 && Math.abs(touchRangeX) < $item.width() / 2) {
-				transformValue = 'translate3d(' + listOffset + 'px, 0, 0)';
+				listTarget = 'translate3d(' + listOffset + 'px, 0, 0)';
 				$list.css('transitionDuration', '200ms');
-				$list.css(transform, transformValue);
+				$list.css(transform, listTarget);
 			}
 
 			setTimeout(function() {
 				$list.css('transitionDuration', '0ms');
 
-				self.isAnimated = false;
-
-				// 切换到第一个元素时
+				// 切换到最后一个元素时
 				if (!listOffset) {
-					listOffset = -$item.width() * self.len;
+					listOffset = -$item.width() * s.len;
 					$list.css(transform, 'translate3d(' + listOffset + 'px, 0, 0)');
 				}
 
-				// 切换到最后一个元素时
-				if (listOffset === -$item.width() * (self.len + 1)) {
+				// 切换到第一个元素时
+				if (listOffset === -$item.width() * (s.len + 1)) {
 					listOffset = -$item.width();
 					$list.css(transform, 'translate3d(' + listOffset + 'px, 0, 0)');
 				}
 
-				options.after.call(self, self.$elem, self.$item, self.currentIndex);
+				s.currentIndex =
+				s.currentIndex === -1 ? s.len - 1 :
+				s.currentIndex === s.len ? 0 : s.currentIndex;
 
-				self.touching = false;
 				touchRangeX = 0;
-				self.beforeUsed = false;
+				s.animating = false;
+				s.touching = false;
+				s.beforeCalled = false;
 
-				self.lazyload(self.currentIndex);
-			}, 200);
+				o.after.call(s, s.$elem, s.$item, s.currentIndex);
+			}, o.speed / 3);
 		}
 
 		$banner[0].addEventListener('touchstart', touchStart, false);
 		$banner[0].addEventListener('touchmove', touchMove, false);
 		$banner[0].addEventListener('touchend', touchEnd, false);
 
-		self.slidePrev = function() {
+		s.slidePrev = function() {
 			touchRangeX = $item.width() / 2;
 			touchRangeY = 0;
 			touchDirection = 'right';
 			touchEnd();
 		};
 
-		self.slideNext = function() {
+		s.slideNext = function() {
 			touchRangeX = $item.width() / 2;
 			touchRangeY = 0;
 			touchDirection = 'left';
 			touchEnd();
 		};
-		
+
+		// 视口宽度发生改变时，列表和列表项自动更改宽度
+		setInterval(function() {
+			if (Util.isSupportTouch && !s.touching) {
+				$item.width($banner.width());
+				$list.width($item.width() * (s.len + 2));
+				$list.css(Util.transform, 'translate3d(' + -$item.width() * (s.currentIndex + 1) + 'px, 0, 0)');
+
+				listOffset = getListOffset();
+			}
+		}, 50);
 	};
 
 
@@ -989,12 +995,12 @@
 	 * 图片延迟加载
 	 */
 	Banner.prototype.lazyload = function() {
-		var self = this,
-			options = this.options,
+		var s = this,
+			o = s.option,
 			currentIndex = arguments[0] || 0,
-			$banner = this.$elem,
-			$list = this.$list,
-			$item = this.$item,
+			$banner = s.$elem,
+			$list = s.$list,
+			$item = s.$item,
 			$visibleItem = $item.eq(currentIndex),
 			visibleItemImg = $visibleItem.data('origin');
 
@@ -1005,7 +1011,7 @@
 				$visibleItem = $list.children().first();
 			}
 
-			if (options.adaptive) {
+			if (o.adaptive) {
 				$visibleItem.find('img[data-src]').attr('src', visibleItemImg);
 			} else {
 				$visibleItem.css('backgroundImage', 'url(' + visibleItemImg + ')');
@@ -1019,21 +1025,26 @@
 				var loaded = function() {
 					/**
 					 * slide动画模式下，
-					 * 第一个列表项复制之后添加到列表的最后，
-					 * 最后一个列表项复制之后添加到列表的最前，
-					 * 在它们的图片源文件加载完成之后，
-					 * 需要将列表前后同一张图片的两个列表项同步
+					 * 第一个列表项复制之后添加到列表的最后面 => first-duplicate，
+					 * 在 first 图片源文件加载完成之后，
+					 * 需要将 first-duplicate 中的图片和 first 图片同步
+					 * $list.children().last() => first-duplicate 
+					 * $item.first() => first
 					 */
-					if (options.animation === 'slide' && self.len > 1) {
-						if (options.adaptive) {
-							$list.children().last().html($item.first().html());
-						}
-
+					if (o.animation === 'slide' && s.len > 1) {
 						$list.children().last().attr('style', function() {
 							return $item.first().attr('style');
 						})
 						.hide()
 						.data('origin', '');
+
+						if (o.adaptive) {
+							$list.children().last().html($item.first().html());
+						}
+
+						if (Util.isSupportTouch) {
+							$list.children().last().show();
+						}
 					}
 
 					$visibleItem.data('origin', '');
@@ -1047,7 +1058,7 @@
 			} else {
 				$visibleItem.data('origin', '');
 
-				$visibleItem.find('.tb-loading').fadeOut(300, function() {
+				$('.tb-loading').fadeOut(300, function() {
 					$(this).remove();
 
 					setTimeout(function() {
@@ -1055,12 +1066,20 @@
 					}, 50);
 				});
 
-				if (options.animation === 'slide' && self.len > 1) {
+				if (o.animation === 'slide' && s.len > 1) {
 					if (currentIndex === -1) {
-						if (options.adaptive) {
+						if (o.adaptive) {
 							$item.last().html($list.children().first().html());
 						}
 
+						/**
+					 	 * slide动画模式下，
+						 * 最后一个列表项复制之后添加到列表的最前面 => last-duplicate，
+						 * 在 last-duplicate 中的图片源文件加载完成之后，
+						 * 需要将 last 图片 和 last-duplicate 中的图片同步
+						 * $item.last() => last
+						 * $list.children().first() => last-duplicate
+						 */
 						$item.last().attr('style', function() {
 							return $list.children().first().attr('style');
 						})
@@ -1071,8 +1090,22 @@
 						});
 					}
 
-					if (currentIndex === self.len - 1) {
-						if (options.adaptive) {
+					if (currentIndex === s.len - 1) {
+						/**
+					 	 * slide动画模式下，
+						 * 最后一个列表项复制之后添加到列表的最前面 => last-duplicate，
+						 * 在 last 图片源文件加载完成之后，
+						 * 需要将 last-duplicate 中的图片和 last 图片同步
+						 * $list.children().first() => last-duplicate
+						 * $item.last() => last
+						 */
+						$list.children().first().attr('style', function() {
+							return $item.last().attr('style');
+						})
+						.hide()
+						.data('origin', '');
+
+						if (o.adaptive) {
 							// 加载动画需要300ms之后移除
 							// 如果不设置延时会把加载动画的代码也复制到新的列表第一个元素中
 							setTimeout(function() {
@@ -1080,16 +1113,15 @@
 							}, 350);
 						}
 
-						$list.children().first().attr('style', function() {
-							return $item.last().attr('style');
-						})
-						.hide()
-						.data('origin', '');
+						if (Util.isSupportTouch) {
+							$list.children().first().show();
+						}
 					}
 				}
 			}
 		}
 
+		// 第一张图片不设置loading动画
 		if (!currentIndex) {
 			showVisibleItem();
 		} else {
@@ -1108,9 +1140,10 @@
 					'<img src="' + Util.loadingImage + '">' +
 				'</div>';
 
+			console.log('append');
 			$visibleItem.append($loading);
 
-			if (options.animation === 'slide' && currentIndex === -1) {
+			if (o.animation === 'slide' && currentIndex === -1) {
 				$list.children().first().append($loading);
 			}
 
@@ -1131,7 +1164,7 @@
 				return ($banner.height() - $(this).height()) / 2;
 			});
 
-			if (options.animation === 'fade' || options.animation === 'flash') {
+			if (o.animation === 'fade' || o.animation === 'flash') {
 				$('.tb-loading').hide().fadeIn();
 			}
 
@@ -1161,36 +1194,36 @@
 		this.activeIndex = this.currentIndex;
 
 		if (this.len > 1) {
-			this.animation[this.options.animation]();
+			this.animation[this.option.animation]();
 			this.lazyload(this.currentIndex);
 		}
 	};
 
 	// 自动轮播定时器
 	Banner.prototype.setPlayTimer = function() {
-		var self = this,
+		var s = this,
 			clear = function() {
-				self.isHovered = true;
-				clearInterval(self.playTimer);
+				s.isHovered = true;
+				clearInterval(s.playTimer);
 			},
 			reset = function() {
-				self.isHovered = false;
-				if (!self.isAnimated) {
-					self.setPlayTimer();
+				s.isHovered = false;
+				if (!s.isAnimated) {
+					s.setPlayTimer();
 				}
 			};
 
-		clearInterval(self.playTimer);
+		clearInterval(s.playTimer);
 
-		self.playTimer = setInterval(function() {
-			self.options.before.call(self, self.$elem, self.$item, self.currentIndex);
-			self.currentIndex++;
-			self.play();
-		}, self.options.auto);
+		s.playTimer = setInterval(function() {
+			s.option.before.call(s, s.$elem, s.$item, s.currentIndex);
+			s.currentIndex++;
+			s.play();
+		}, s.option.auto);
 
-		self.$elem.off('mouseenter.terseBanner');
-		self.$elem.off('mouseleave.terseBanner');
-		self.$elem.on({
+		s.$elem.off('mouseenter.terseBanner');
+		s.$elem.off('mouseleave.terseBanner');
+		s.$elem.on({
 			'mouseenter.terseBanner': clear,
 			'mouseleave.terseBanner': reset
 		});
@@ -1198,62 +1231,66 @@
 
 	// 导航按钮和缩略图添加高亮样式
 	Banner.prototype.activeBtnAndThumb = function() {
-		this.activeIndex =
-		this.currentIndex === this.len ? 0 :
-		this.currentIndex === -1 ? this.len - 1 : this.currentIndex;
+		var s = this;
 
-		if (this.$btn) {
-			this.$btn.eq(this.activeIndex).addClass('active').siblings().removeClass('active');
+		s.activeIndex =
+		s.currentIndex === s.len ? 0 :
+		s.currentIndex === -1 ? s.len - 1 : s.currentIndex;
+
+		if (s.$btn) {
+			s.$btn.eq(s.activeIndex).addClass('active').siblings().removeClass('active');
 		}
 
-		if (this.$thumb) {
-			this.$thumb.eq(this.activeIndex).addClass('active').siblings().removeClass('active');
-			if (this.$thumbSlideBtn.is(':visible')) {
-				this.animation.thumbListSlide();
+		if (s.$thumb) {
+			s.$thumb.eq(s.activeIndex).addClass('active').siblings().removeClass('active');
+			if (s.$thumbSlideBtn.is(':visible')) {
+				s.animation.thumbListSlide();
 			}
 		}
 	};
 
 	// 切换轮播图片
 	Banner.prototype.playTo = function() {
-		if (this.isAnimated) return;
+		var s = this;
 
-		if ($.isNumeric(arguments[0]) && (arguments[0] < 0 || arguments[0] > this.len)) {
+		if (s.isAnimated) return;
+
+		if ($.isNumeric(arguments[0]) && (arguments[0] < 0 || arguments[0] > s.len)) {
 			throw new Error('TerseBanner\'s index overflow!');
 		}
 
-		this.options.before.call(this, this.$elem, this.$item, this.currentIndex);
+		s.option.before.call(s, s.$elem, s.$item, s.currentIndex);
 		
 		switch (arguments[0]) {
 			case 'prev':
 				if(!Util.isSupportTouch) {
-					this.currentIndex--;
-					this.play();
+					s.currentIndex--;
+					s.play();
 				} else {
-					this.slidePrev();
+					s.slidePrev();
 				}
 				break;
 
 			case 'next':
 				if(!Util.isSupportTouch) {
-					this.currentIndex++;
-					this.play();
+					s.currentIndex++;
+					s.play();
 				} else {
-					this.slideNext();
+					s.slideNext();
 				}
 				break;
 
 			default:
 				if(!Util.isSupportTouch) {
-					this.currentIndex = arguments[0];
-					this.play();
+					s.currentIndex = arguments[0];
+					s.play();
 				}
 				break;
 		}
 	};
 
 
-	$.fn.terseBanner = function(option) {
+	$.fn.terseBanner = function(opt) {
 		if (Util.isLTIE8) {
 			throw new Error('terseBanner cannot work under IE8!');
 		}
@@ -1262,19 +1299,19 @@
 			var terseBanner = $(this).data('terseBanner');
 
 			if (!terseBanner) {
-				var options = $.extend(true, {}, $.fn.terseBanner.defaults,
-					typeof option === 'object' && option);
+				var option = $.extend(true, {}, $.fn.terseBanner.defaults,
+					typeof opt === 'object' && opt);
 
-				$(this).data('terseBanner', (terseBanner = new Banner(this, options)));
+				$(this).data('terseBanner', (terseBanner = new Banner(this, option)));
 
 				terseBanner.init();
 			} else {
-				if (option === 'prev') {
+				if (opt === 'prev') {
 					terseBanner.playTo.call(terseBanner, 'prev');
-				} else if (option === 'next') {
+				} else if (opt === 'next') {
 					terseBanner.playTo.call(terseBanner, 'next');
-				} else if ($.isNumeric(option)) {
-					terseBanner.playTo.call(terseBanner, option);
+				} else if ($.isNumeric(opt)) {
+					terseBanner.playTo.call(terseBanner, opt);
 				}
 			}
 		});
@@ -1282,7 +1319,7 @@
 
 
 	/**
-	 * Plugin default options
+	 * Plugin default option
 	 */
 	$.fn.terseBanner.defaults = {
 		animation: 'slide', // 动画模式: ['slide', 'fade', 'flash', 'none']

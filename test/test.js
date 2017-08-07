@@ -28,16 +28,16 @@ define([
 		});
 	});
 
-	$('#lazyload ul li img').each(function() {
-		$(this).attr('data-src', $(this).attr('data-src') + '?' + Date.now());
+	$('#lazyload ul li img').attr('data-src', function() {
+		return $(this).attr('data-src') + '?' + Date.now();
 	});
-	
+
 	$('#lazyload').terseBanner({
 		arrow: true,
 		adaptive: true,
+		animation: 'fade',
 		auto: 0
 	});
-
 
 	$('#touch').terseBanner();
 

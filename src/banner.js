@@ -2,7 +2,7 @@
 	/**
 	 * Plugin construct function
 	 */
-	function Banner(elem, options) {
+	function Banner(elem, option) {
 		this.$elem = $(elem);
-		this.options = options;
+		this.option = option;
 	}

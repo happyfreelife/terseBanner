@@ -14,7 +14,7 @@
 		// 是否支持CSS3动画过渡
 		isSupportTransition: (function () {
 			var style = document.body.style || document.documentElement.style;
-			return style.transition !== undefined || style.WebkitTransition !== undefined;
+			return style.transition !== undefined || style.webkitTransition !== undefined;
 		}()),
 
 		transform: typeof document.body.style.transform === 'string' ? 'transform' : 'webkitTransform',

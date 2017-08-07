@@ -3,41 +3,41 @@
 	 * 绑定动画
 	 */
 	Banner.prototype.bindAnimation = function() {
-		var self = this,
-			options = this.options,
-			$banner = this.$elem,
-			$list = this.$list,
+		var s = this,
+			o = s.option,
+			$banner = s.$elem,
+			$list = s.$list,
 			$item = $list.children(),
-			$thumbBox = this.$thumbBox,
-			$thumbList = this.$thumbList,
-			$thumb = this.$thumb,
-			$thumbSlideBtn = this.$thumbSlideBtn,
+			$thumbBox = s.$thumbBox,
+			$thumbList = s.$thumbList,
+			$thumb = s.$thumb,
+			$thumbSlideBtn = s.$thumbSlideBtn,
 			thumbVisible,
 			thumbListLeft,
-			animation = this.animation = {};
+			animation = s.animation = {};
 
 		// 单张图片时，移除不必要的元素
-		if (self.len === 1) {
+		if (s.len === 1) {
 			$banner.find('.tb-arrow, .tb-btn, .tb-thumb, [class$="duplicate"]').remove();
 		}
 
 		function afterCallback() {
-			options.after.call(self, self.$elem, self.$item, self.currentIndex);
+			o.after.call(s, s.$elem, s.$item, s.currentIndex);
 		}
 
 		// 处理可能会超出范围的索引
 		function handleCurrentIndex() {
-			self.currentIndex =
-			self.currentIndex === self.len ? 0 :
-			self.currentIndex === -1 ? self.len - 1 : self.currentIndex;
+			s.currentIndex =
+			s.currentIndex === s.len ? 0 :
+			s.currentIndex === -1 ? s.len - 1 : s.currentIndex;
 		}
 
 		animation.slide = function() {
 			var slidToLeft = true;
 
-			if (self.currentIndex === self.latestIndex) return;
+			if (s.currentIndex === s.latestIndex) return;
 
-			if (self.currentIndex < self.latestIndex) {
+			if (s.currentIndex < s.latestIndex) {
 				slidToLeft = false;
 			}
 
@@ -45,11 +45,11 @@
 				$list.css('left', '-100%');
 			}
 
-			$item.eq(self.currentIndex + 1).show();
+			$item.eq(s.currentIndex + 1).show();
 
 			if (Util.isSupportTransition) {
 				setTimeout(function() {
-					self.isAnimated = true;
+					s.animating = true;
 
 					var listTransform = slidToLeft ?
 						'translate3d(' + -$item.width() + 'px, 0, 0)' :
@@ -57,47 +57,47 @@
 
 					$list.css(Util.transform, listTransform);
 
-					setTimeout(self.animation.slideCallback, options.speed - 50);
+					setTimeout(s.animation.slideCallback, o.speed - 50);
 				}, 50);
 			} else {
-				self.isAnimated = true;
+				s.animating = true;
 
 				$list.animate({
 					left: slidToLeft? '-100%' : 0
-				}, options.speed, self.animation.slideCallback);
+				}, o.speed, s.animation.slideCallback);
 			}
 
-			self.activeBtnAndThumb();
+			s.activeBtnAndThumb();
 		};
 
 		animation.flash = 
 		animation.fade = function() {
 			handleCurrentIndex();
 
-			self.isAnimated = true;
+			s.animating = true;
 
-			$list.css('left', -self.currentIndex * 100 + '%');
+			$list.css('left', -s.currentIndex * 100 + '%');
 
 			if (Util.isSupportTransition) {
-				$item.eq(self.currentIndex).css('opacity', 1);	
-				setTimeout(self.animation.fadeCallback, options.speed);	
+				$item.eq(s.currentIndex).css('opacity', 1);	
+				setTimeout(s.animation.fadeCallback, o.speed);	
 			} else {
-				$item.eq(self.currentIndex).animate({ opacity: 1 }, {
-					speed: options.speed * 0.8,
-					complete: self.animation.fadeCallback
+				$item.eq(s.currentIndex).animate({ opacity: 1 }, {
+					speed: o.speed * 0.8,
+					complete: s.animation.fadeCallback
 				});
 			}
 
-			self.activeBtnAndThumb();
+			s.activeBtnAndThumb();
 		};
 
 		animation.none = function() {
 			handleCurrentIndex();
 
-			$item.eq(self.currentIndex).show().siblings().hide();
-			$item.eq(self.currentIndex).addClass('active').siblings().removeClass('active');
+			$item.eq(s.currentIndex).show().siblings().hide();
+			$item.eq(s.currentIndex).addClass('active').siblings().removeClass('active');
 
-			self.activeBtnAndThumb();
+			s.activeBtnAndThumb();
 
 			afterCallback();
 		};
@@ -105,8 +105,8 @@
 		animation.thumbListSlide = function() {
 			if ($thumbList.is(':animated')) return;
 
-			if ($.isNumeric(options.thumb.visible)) {
-				thumbVisible = Math.min(options.thumb.visible,
+			if ($.isNumeric(o.thumb.visible)) {
+				thumbVisible = Math.min(o.thumb.visible,
 					parseInt($banner.width() / $thumb.outerWidth(true)));
 			} else {
 				thumbVisible = parseInt($banner.width() / $thumb.outerWidth(true));
@@ -114,7 +114,7 @@
 
 			thumbListLeft = $.isNumeric(arguments[0]) ?
 			arguments[0] : Math.max(
-				-parseInt(self.activeIndex / thumbVisible) * $thumb.outerWidth(true) * thumbVisible,
+				-parseInt(s.activeIndex / thumbVisible) * $thumb.outerWidth(true) * thumbVisible,
 				$thumbBox.width() - $thumbList.width()
 			);
 
@@ -133,12 +133,12 @@
 		};
 
 		animation.slideCallback = function() {
-			self.isAnimated = false;
+			s.animating = false;
 
-			self.latestIndex =
-			self.currentIndex =
-			self.currentIndex === -1 ? self.len - 1 :
-			self.currentIndex === self.len ? 0 : self.currentIndex;
+			s.latestIndex =
+			s.currentIndex =
+			s.currentIndex === -1 ? s.len - 1 :
+			s.currentIndex === s.len ? 0 : s.currentIndex;
 
 			$list.css({
 				left: 0,
@@ -147,40 +147,40 @@
 
 			$list.css(Util.transform, 'translate3d(0, 0, 0)');
 
-			$item.eq(self.currentIndex + 1).show().siblings().hide();
-			$item.eq(self.currentIndex + 1).addClass('active').siblings().removeClass('active');
+			$item.eq(s.currentIndex + 1).show().siblings().hide();
+			$item.eq(s.currentIndex + 1).addClass('active').siblings().removeClass('active');
 
 			setTimeout(function() {
-				$list.css('transition', 'transform ' + options.speed + 'ms');
+				$list.css('transition', 'transform ' + o.speed + 'ms');
 			}, 50);
 
 			afterCallback();
 
-			if (self.useAuto && !self.isHovered) {
-				self.setPlayTimer();
+			if (s.useAuto && !s.isHovered) {
+				s.setPlayTimer();
 			}
 		};
 
 		animation.fadeCallback = function() {
-			self.isAnimated = false;
+			s.animating = false;
 
-			if (options.animation === 'fade') {
-				$list.prev().css('left', -self.currentIndex * 100 + '%');
+			if (o.animation === 'fade') {
+				$list.prev().css('left', -s.currentIndex * 100 + '%');
 				$list.prev().html($list.html());
 			}
 
-			$item.eq(self.currentIndex).siblings().css('opacity', 0);
-			$item.eq(self.currentIndex).addClass('active').siblings().removeClass('active');
+			$item.eq(s.currentIndex).siblings().css('opacity', 0);
+			$item.eq(s.currentIndex).addClass('active').siblings().removeClass('active');
 
 			afterCallback();
 
-			if (self.useAuto && !self.isHovered) {
-				self.setPlayTimer();
+			if (s.useAuto && !s.isHovered) {
+				s.setPlayTimer();
 			}
 		};
 
 		// 轮播初始化完成时调用的函数
-		options.init.call(self, self.$elem, self.$item, 0);
+		o.init.call(s, s.$elem, s.$item, 0);
 		
-		self.touch();
+		s.touch();
 	};

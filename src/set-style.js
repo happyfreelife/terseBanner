@@ -3,16 +3,17 @@
 	 * 设置轮播元素的样式
 	 */
 	Banner.prototype.setStyle = function(elem) {
-		var options = this.options,
-			$banner = this.$elem,
-			$arrow = this.$arrow,
-			$arrowBox = this.$arrowBox,
-			$btn = this.$btn,
-			$btnBox = this.$btnBox,
-			$thumb = this.$thumb,
-			$thumbList = this.$thumbList,
-			$thumbSlideBtn = this.$thumbSlideBtn,
-			$thumbBox = this.$thumbBox;
+		var s = this,
+			o = s.option,
+			$banner = s.$elem,
+			$arrow = s.$arrow,
+			$arrowBox = s.$arrowBox,
+			$btn = s.$btn,
+			$btnBox = s.$btnBox,
+			$thumb = s.$thumb,
+			$thumbList = s.$thumbList,
+			$thumbSlideBtn = s.$thumbSlideBtn,
+			$thumbBox = s.$thumbBox;
 
 		switch (elem) {
 			case 'arrow' :
@@ -67,9 +68,9 @@
 				});
 
 				$thumb.css({
-					width: options.thumb.width,
-					height: options.thumb.height,
-					marginRight: options.thumb.gap
+					width: o.thumb.width,
+					height: o.thumb.height,
+					marginRight: o.thumb.gap
 				});
 				$thumb.last().css('marginRight', 0);
 				break;
@@ -84,7 +85,7 @@
 			case 'thumbList':
 				$thumbList.css({
 					left: 0,
-					width: $thumb.outerWidth(true) * $thumb.length - options.thumb.gap
+					width: $thumb.outerWidth(true) * $thumb.length - o.thumb.gap
 				});
 				break;
 
@@ -93,14 +94,14 @@
 					thumbBoxWidth,
 					thumbWidth = $thumb.outerWidth(true);
 
-				if ($.isNumeric(options.thumb.visible)) {
-					thumbVisible = Math.min(options.thumb.visible,
+				if ($.isNumeric(o.thumb.visible)) {
+					thumbVisible = Math.min(o.thumb.visible,
 					parseInt($banner.width() / thumbWidth));
 				} else {
 					thumbVisible = parseInt($banner.width() / thumbWidth);
 				}
 
-				thumbBoxWidth = thumbWidth * thumbVisible - options.thumb.gap;
+				thumbBoxWidth = thumbWidth * thumbVisible - o.thumb.gap;
 
 				$thumbBox.css({
 					left: '50%',
@@ -113,12 +114,12 @@
 					$thumbSlideBtn.hide();
 				} else {
 					$thumbSlideBtn.filter('.prev').css({
-						left: options.thumb.gap,
+						left: o.thumb.gap,
 						backgroundImage: 'url(' + Util.prevThumbBtn + ')'
 					});
 
 					$thumbSlideBtn.filter('.next').css({
-						right: options.thumb.gap,
+						right: o.thumb.gap,
 						backgroundImage: 'url(' + Util.nextThumbBtn + ')'
 					});
 				}

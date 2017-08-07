@@ -7,36 +7,36 @@
 		this.activeIndex = this.currentIndex;
 
 		if (this.len > 1) {
-			this.animation[this.options.animation]();
+			this.animation[this.option.animation]();
 			this.lazyload(this.currentIndex);
 		}
 	};
 
 	// 自动轮播定时器
 	Banner.prototype.setPlayTimer = function() {
-		var self = this,
+		var s = this,
 			clear = function() {
-				self.isHovered = true;
-				clearInterval(self.playTimer);
+				s.isHovered = true;
+				clearInterval(s.playTimer);
 			},
 			reset = function() {
-				self.isHovered = false;
-				if (!self.isAnimated) {
-					self.setPlayTimer();
+				s.isHovered = false;
+				if (!s.isAnimated) {
+					s.setPlayTimer();
 				}
 			};
 
-		clearInterval(self.playTimer);
+		clearInterval(s.playTimer);
 
-		self.playTimer = setInterval(function() {
-			self.options.before.call(self, self.$elem, self.$item, self.currentIndex);
-			self.currentIndex++;
-			self.play();
-		}, self.options.auto);
+		s.playTimer = setInterval(function() {
+			s.option.before.call(s, s.$elem, s.$item, s.currentIndex);
+			s.currentIndex++;
+			s.play();
+		}, s.option.auto);
 
-		self.$elem.off('mouseenter.terseBanner');
-		self.$elem.off('mouseleave.terseBanner');
-		self.$elem.on({
+		s.$elem.off('mouseenter.terseBanner');
+		s.$elem.off('mouseleave.terseBanner');
+		s.$elem.on({
 			'mouseenter.terseBanner': clear,
 			'mouseleave.terseBanner': reset
 		});
@@ -44,62 +44,66 @@
 
 	// 导航按钮和缩略图添加高亮样式
 	Banner.prototype.activeBtnAndThumb = function() {
-		this.activeIndex =
-		this.currentIndex === this.len ? 0 :
-		this.currentIndex === -1 ? this.len - 1 : this.currentIndex;
+		var s = this;
 
-		if (this.$btn) {
-			this.$btn.eq(this.activeIndex).addClass('active').siblings().removeClass('active');
+		s.activeIndex =
+		s.currentIndex === s.len ? 0 :
+		s.currentIndex === -1 ? s.len - 1 : s.currentIndex;
+
+		if (s.$btn) {
+			s.$btn.eq(s.activeIndex).addClass('active').siblings().removeClass('active');
 		}
 
-		if (this.$thumb) {
-			this.$thumb.eq(this.activeIndex).addClass('active').siblings().removeClass('active');
-			if (this.$thumbSlideBtn.is(':visible')) {
-				this.animation.thumbListSlide();
+		if (s.$thumb) {
+			s.$thumb.eq(s.activeIndex).addClass('active').siblings().removeClass('active');
+			if (s.$thumbSlideBtn.is(':visible')) {
+				s.animation.thumbListSlide();
 			}
 		}
 	};
 
 	// 切换轮播图片
 	Banner.prototype.playTo = function() {
-		if (this.isAnimated) return;
+		var s = this;
 
-		if ($.isNumeric(arguments[0]) && (arguments[0] < 0 || arguments[0] > this.len)) {
+		if (s.isAnimated) return;
+
+		if ($.isNumeric(arguments[0]) && (arguments[0] < 0 || arguments[0] > s.len)) {
 			throw new Error('TerseBanner\'s index overflow!');
 		}
 
-		this.options.before.call(this, this.$elem, this.$item, this.currentIndex);
+		s.option.before.call(s, s.$elem, s.$item, s.currentIndex);
 		
 		switch (arguments[0]) {
 			case 'prev':
 				if(!Util.isSupportTouch) {
-					this.currentIndex--;
-					this.play();
+					s.currentIndex--;
+					s.play();
 				} else {
-					this.slidePrev();
+					s.slidePrev();
 				}
 				break;
 
 			case 'next':
 				if(!Util.isSupportTouch) {
-					this.currentIndex++;
-					this.play();
+					s.currentIndex++;
+					s.play();
 				} else {
-					this.slideNext();
+					s.slideNext();
 				}
 				break;
 
 			default:
 				if(!Util.isSupportTouch) {
-					this.currentIndex = arguments[0];
-					this.play();
+					s.currentIndex = arguments[0];
+					s.play();
 				}
 				break;
 		}
 	};
 
 
-	$.fn.terseBanner = function(option) {
+	$.fn.terseBanner = function(opt) {
 		if (Util.isLTIE8) {
 			throw new Error('terseBanner cannot work under IE8!');
 		}
@@ -108,19 +112,19 @@
 			var terseBanner = $(this).data('terseBanner');
 
 			if (!terseBanner) {
-				var options = $.extend(true, {}, $.fn.terseBanner.defaults,
-					typeof option === 'object' && option);
+				var option = $.extend(true, {}, $.fn.terseBanner.defaults,
+					typeof opt === 'object' && opt);
 
-				$(this).data('terseBanner', (terseBanner = new Banner(this, options)));
+				$(this).data('terseBanner', (terseBanner = new Banner(this, option)));
 
 				terseBanner.init();
 			} else {
-				if (option === 'prev') {
+				if (opt === 'prev') {
 					terseBanner.playTo.call(terseBanner, 'prev');
-				} else if (option === 'next') {
+				} else if (opt === 'next') {
 					terseBanner.playTo.call(terseBanner, 'next');
-				} else if ($.isNumeric(option)) {
-					terseBanner.playTo.call(terseBanner, option);
+				} else if ($.isNumeric(opt)) {
+					terseBanner.playTo.call(terseBanner, opt);
 				}
 			}
 		});
@@ -128,7 +132,7 @@
 
 
 	/**
-	 * Plugin default options
+	 * Plugin default option
 	 */
 	$.fn.terseBanner.defaults = {
 		animation: 'slide', // 动画模式: ['slide', 'fade', 'flash', 'none']
