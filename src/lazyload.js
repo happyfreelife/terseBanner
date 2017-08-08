@@ -6,7 +6,7 @@
 		var s = this,
 			o = s.option,
 			currentIndex = arguments[0] || 0,
-			$banner = s.$elem,
+			$banner = s.$banner,
 			$list = s.$list,
 			$item = s.$item,
 			$visibleItem = $item.eq(currentIndex),
@@ -50,7 +50,7 @@
 							$list.children().last().html($item.first().html());
 						}
 
-						if (Util.isSupportTouch) {
+						if (Util.IS_MOBILE) {
 							$list.children().last().show();
 						}
 					}
@@ -121,7 +121,7 @@
 							}, 350);
 						}
 
-						if (Util.isSupportTouch) {
+						if (Util.IS_MOBILE) {
 							$list.children().first().show();
 						}
 					}
@@ -145,10 +145,9 @@
 			// 添加loading动画
 			var $loading =
 				'<div class="tb-loading">' +
-					'<img src="' + Util.loadingImage + '">' +
+					'<img src="' + Util.LOADING_IMAGE + '">' +
 				'</div>';
 
-			console.log('append');
 			$visibleItem.append($loading);
 
 			if (o.animation === 'slide' && currentIndex === -1) {

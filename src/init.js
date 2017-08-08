@@ -5,24 +5,29 @@
 	Banner.prototype.init = function() {
 		var s = this;
 
-		s.$list = s.$elem.children().first();
+		s.$list = s.$banner.children().first();
 		s.$item = s.$list.children();
 		s.len = s.$item.length;
 		s.currentIndex = 0;
 		s.activeIndex = 0;
 		s.latestIndex = 0;
 		s.isHovered = false;
-		s.isAnimated = false;
+		s.animating = false;
 
 		var o = s.option,
-			$banner = s.$elem,
+			$banner = s.$banner,
 			$list = s.$list,
 			$item = s.$item,
 			thumbArr = [],
 			regExp = new RegExp('\\?thumb=(.*\\.(gif|jpg|jpeg|png))$');
 
 		// 写入默认样式
-		s.stylesheet();
+		s.style();
+
+		// 设置内部元素的结构和宽度
+		$list.wrap('<div class="tb-list"/>');
+		$list.width((s.len + 2) * 100 + '%');
+		$item.width($banner.width());
 
 		if ($banner.css('position') === 'static') {
 			$banner.css('position', 'relative');
@@ -35,6 +40,7 @@
 
 		// 自适应模式
 		if (o.adaptive) {
+			$banner.addClass('tb-adaptive');
 			if ($banner.css('maxWidth') === 'none') {
 				$banner.css('maxWidth', '100%');
 			}
@@ -89,20 +95,15 @@
 			});
 		} catch (e) {}
 
-		// 设置内部元素的结构和宽度
-		$list.wrap('<div class="tb-list"/>');
-		$list.width((s.len + 2) * 100 + '%');
-		$item.width($banner.width());
-
 		// 触屏模式下，动画只能是'slide'
-		if (Util.isSupportTouch) {
+		if (Util.IS_MOBILE) {
 			o.animation = 'slide';
 		}
 
 		// animation: slide
 		if (o.animation === 'slide') {
-			if (Util.isSupportTransition) {
-				$list.css(Util.transform, 'translate3d(0, 0, 0)');
+			if (Util.IS_SUPPORT_TRANSITION) {
+				$list.css(Util.TRANSFORM, 'translate3d(0, 0, 0)');
 				$list.css('transition', 'transform ' + o.speed + 'ms');
 			}
 
@@ -114,7 +115,7 @@
 
 		// animation: fade || flash
 		if (o.animation === 'fade' || o.animation === 'flash') {
-			if (Util.isSupportTransition) {
+			if (Util.IS_SUPPORT_TRANSITION) {
 				$item.css('transition', 'opacity ' + o.speed + 'ms');
 			}
 
@@ -130,13 +131,13 @@
 			}));
 		}
 		
-		if (!Util.isSupportTouch && $.isNumeric(o.auto) && o.auto > 0) {
+		if (!Util.IS_MOBILE && $.isNumeric(o.auto) && o.auto > 0) {
 			s.useAuto = true;
 			s.setPlayTimer();
 		}
 
 		// Banner的宽度改变时，列表和列表项自动更改宽度
-		if (!Util.isSupportTouch) {
+		if (!Util.IS_MOBILE) {
 			setInterval(function() {
 				$item.width($banner.width());
 	
@@ -146,8 +147,17 @@
 			}, 50);
 		}
 
-		// 使用延迟加载的方法加载banner的第一张图片
+		if (o.arrow) s.arrow();
+		if (o.btn) s.btn();
+		if ($.isNumeric(o.thumbWidth) && o.thumbWidth > 0) s.thumb();
+		if (Util.IS_MOBILE) s.touch();
+
+		// 绑定动画
+		s.animate();
+
+		// 若使用了延迟加载， 在这里加载第一张图片
 		s.lazyload();
 
-		s.addElement().arrow();
+		// Banner初始化完成之后的回调函数
+		o.init.call(s, s.$banner, s.$item, 0);
 	};

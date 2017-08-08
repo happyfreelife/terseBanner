@@ -1,12 +1,11 @@
-
+ 
 	/**
 	 * 写入轮播元素的默认样式
 	 */
-	Banner.prototype.stylesheet = function() {
+	Banner.prototype.style = function() {
 		var style =
 			'.tb-list,\n' +
-			'.tb-list > *,\n' +
-			'.tb-thumb dl{\n' +
+			'.tb-list > *\n{' +
 			'    position: relative;\n' +
 			'    overflow: hidden;\n' +
 			'}\n' +
@@ -25,8 +24,9 @@
 
 			'.tb-arrow{\n' +
 			'    position: absolute;\n' +
-			'    width: 96%;\n' +
-			'    left: 2%;\n' +
+			'    width: 95%;\n' +
+			'    top: 50%;\n' +
+			'    left: 2.5%;\n' +
 			'}\n' +
 			'.tb-arrow a{\n' +
 			'    position: absolute;\n' +
@@ -61,34 +61,6 @@
 			'    background-color: #09c;\n' +
 			'}\n' +
 
-			'.tb-thumb{\n' +
-			'    position: absolute;\n' +
-			'    bottom: 20px;\n' +
-			'    left: 0;\n' +
-			'    width: 100%;\n' +
-			'}\n' +
-			'.tb-thumb > div{' +
-			'    overflow: hidden;\n' +
-			'}\n' +
-			'.tb-thumb a{\n' +
-			'    position: absolute;\n' +
-			'    width: 32px;\n' +
-			'    height: 32px;\n' +
-			'    background-repeat: no-repeat;\n' +
-			'    cursor: pointer;\n' +
-			'}\n' +
-			'.tb-thumb dl dd{\n' +
-			'    position: relative;\n' +
-			'    float: left;\n' +
-			'    margin-left: 0;\n' +
-			'    overflow: hidden;\n' +
-			'    cursor: pointer;\n' +
-			'}\n' +
-			'.tb-thumb dl dd img{\n' +
-			'    position: relative;\n' +
-			'    display: block;\n' +
-			'    width: 100%;\n' +
-			'}\n' +
 
 			'.tb-loading{\n' +
 			'    position: absolute;\n' +
@@ -105,7 +77,7 @@
 			'    margin-left: -20px;\n' +
 			'}\n';
 
-		if (!$('#tb-stylesheet').length) {
-			$('head').append('<style id="tb-stylesheet">\n' + style + '</style>');
+		if (!$('#tb-style').length) {
+			$('head').append('<style id="tb-style">\n' + style + '</style>');
 		}
 	};

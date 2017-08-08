@@ -7,7 +7,7 @@
 		this.activeIndex = this.currentIndex;
 
 		if (this.len > 1) {
-			this.animation[this.option.animation]();
+			this.animation();
 			this.lazyload(this.currentIndex);
 		}
 	};
@@ -21,7 +21,7 @@
 			},
 			reset = function() {
 				s.isHovered = false;
-				if (!s.isAnimated) {
+				if (!s.animating) {
 					s.setPlayTimer();
 				}
 			};
@@ -29,54 +29,45 @@
 		clearInterval(s.playTimer);
 
 		s.playTimer = setInterval(function() {
-			s.option.before.call(s, s.$elem, s.$item, s.currentIndex);
+			s.option.before.call(s, s.$banner, s.$item, s.currentIndex);
 			s.currentIndex++;
 			s.play();
 		}, s.option.auto);
 
-		s.$elem.off('mouseenter.terseBanner');
-		s.$elem.off('mouseleave.terseBanner');
-		s.$elem.on({
+		s.$banner.off('mouseenter.terseBanner');
+		s.$banner.off('mouseleave.terseBanner');
+		s.$banner.on({
 			'mouseenter.terseBanner': clear,
 			'mouseleave.terseBanner': reset
 		});
 	};
 
 	// 导航按钮和缩略图添加高亮样式
-	Banner.prototype.activeBtnAndThumb = function() {
+	Banner.prototype.btnActive = function() {
 		var s = this;
 
 		s.activeIndex =
 		s.currentIndex === s.len ? 0 :
 		s.currentIndex === -1 ? s.len - 1 : s.currentIndex;
 
-		if (s.$btn) {
-			s.$btn.eq(s.activeIndex).addClass('active').siblings().removeClass('active');
-		}
-
-		if (s.$thumb) {
-			s.$thumb.eq(s.activeIndex).addClass('active').siblings().removeClass('active');
-			if (s.$thumbSlideBtn.is(':visible')) {
-				s.animation.thumbListSlide();
-			}
-		}
+		s.$btn.eq(s.activeIndex).addClass('active').siblings().removeClass('active');
 	};
 
 	// 切换轮播图片
 	Banner.prototype.playTo = function() {
 		var s = this;
 
-		if (s.isAnimated) return;
+		if (s.animating) return;
 
 		if ($.isNumeric(arguments[0]) && (arguments[0] < 0 || arguments[0] > s.len)) {
 			throw new Error('TerseBanner\'s index overflow!');
 		}
 
-		s.option.before.call(s, s.$elem, s.$item, s.currentIndex);
-		
+		s.option.before.call(s, s.$banner, s.$item, s.currentIndex);
+
 		switch (arguments[0]) {
 			case 'prev':
-				if(!Util.isSupportTouch) {
+				if(!Util.IS_MOBILE) {
 					s.currentIndex--;
 					s.play();
 				} else {
@@ -85,7 +76,7 @@
 				break;
 
 			case 'next':
-				if(!Util.isSupportTouch) {
+				if(!Util.IS_MOBILE) {
 					s.currentIndex++;
 					s.play();
 				} else {
@@ -94,7 +85,7 @@
 				break;
 
 			default:
-				if(!Util.isSupportTouch) {
+				if(!Util.IS_MOBILE) {
 					s.currentIndex = arguments[0];
 					s.play();
 				}
@@ -104,7 +95,7 @@
 
 
 	$.fn.terseBanner = function(opt) {
-		if (Util.isLTIE8) {
+		if (Util.IS_LTIE8) {
 			throw new Error('terseBanner cannot work under IE8!');
 		}
 
@@ -135,14 +126,15 @@
 	 * Plugin default option
 	 */
 	$.fn.terseBanner.defaults = {
-		animation: 'slide', // 动画模式: ['slide', 'fade', 'flash', 'none']
-		adaptive : false,   // 图片宽度自适应
-		arrow    : false,   // 切换箭头
-		btn      : true,    // 指示按钮: [true, false]
-		auto     : 5000,    // 自动轮播: [为0时禁用此功能]
-		speed    : 800,     // 动画速度
-		init     : $.noop,  // 轮播初始化完成时执行的回调函数
-		before   : $.noop,  // 动画开始时执行的回调函数
-		after    : $.noop,  // 动画完成时执行的回调函数
-		thumb    : {}       // 缩略图
+		animation  : 'slide', // 动画模式: ['slide', 'fade', 'flash', 'none']
+		adaptive   : false,   // 图片宽度自适应
+		arrow      : false,   // 切换箭头
+		btn        : true,    // 指示按钮: [true, false]
+		auto       : 5000,    // 自动轮播: [为0时禁用此功能]
+		speed      : 800,     // 动画速度
+		thumbWidth : 0,       // 缩略图宽度
+		thumbHeight: 0,       // 缩略图高度
+		init       : $.noop,  // 轮播初始化完成时执行的回调函数
+		before     : $.noop,  // 动画开始时执行的回调函数
+		after      : $.noop,  // 动画完成时执行的回调函数
 	};

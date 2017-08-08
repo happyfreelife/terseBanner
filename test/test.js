@@ -1,24 +1,24 @@
 requirejs.config({
 	baseUrl: '../src',
 	paths: {
-		'jquery': '../lib/jquery-1.11.3.min'
+		
 	}
 });
 
-define([
-	'jquery',
+requirejs([
 	'util',
 	'banner',
-	'stylesheet',
+	'style',
 	'init',
-	'set-style',
-	'add-element',
-	'bind-animation',
+	'arrow',
+	'btn',
+	'thumb',
+	'animate',
 	'touch',
 	'lazyload',
 	'main'
-], function($) {
-	$('.banner[id!="lazyload"]').each(function() {
+], function() {
+	$('.banner[id!="lazyload"][id!="thumb"]').each(function() {
 		var animation = this.id;
 
 		$(this).terseBanner({
@@ -39,6 +39,13 @@ define([
 		auto: 0
 	});
 
+	$('#thumb').terseBanner({
+		adaptive: true,
+		thumbWidth: 120
+	});
+
+
+	// 移动端
 	$('#touch').terseBanner();
 
 	$('#touch button').click(function() {

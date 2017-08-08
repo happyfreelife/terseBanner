@@ -3,14 +3,12 @@
 	 * 绑定事件
 	 */
 	Banner.prototype.touch = function() {
-		if (!Util.isSupportTouch) return;
-
 		var s = this,
 			o = s.option,
-			$banner = s.$elem,
+			$banner = s.$banner,
 			$list = s.$list,
 			$item = $list.children(),
-			transform = Util.transform,
+			transform = Util.TRANSFORM,
 			listOffset,      // 列表当前的偏移量
 			listTarget,      // 列表滑动的目标位置
 			touch,           // 触摸事件
@@ -61,7 +59,7 @@
 			if (Math.abs(touchRangeX) < Math.abs(touchRangeY)) return;
 
 			if (touchRangeX && !s.beforeCalled) {
-				o.before.call(s, s.$elem, s.$item, s.currentIndex);
+				o.before.call(s, s.$banner, s.$item, s.currentIndex);
 				s.beforeCalled = true;
 			}
 
@@ -76,10 +74,6 @@
 
 		function touchEnd (e) {
 			if (s.animating || !touchRangeX || Math.abs(touchRangeX) < Math.abs(touchRangeY)) return;
-
-			// if (e) {
-			// 	e.preventDefault();
-			// }
 
 			s.animating = true;
 
@@ -100,16 +94,12 @@
 					transitionDuration: o.speed / 3 + 'ms',
 					transform: listTarget
 				});
-				// $list.css('transitionDuration', o.speed / 3 + 'ms');
-				// $list.css(transform, listTarget);
 
 				listOffset = getListOffset();
 
 				s.lazyload(s.currentIndex);
 
-				
-
-				s.activeBtnAndThumb();
+				s.btnActive();
 			}
 
 			// 触摸停留时间大于300ms 并且
@@ -144,7 +134,7 @@
 				s.touching = false;
 				s.beforeCalled = false;
 
-				o.after.call(s, s.$elem, s.$item, s.currentIndex);
+				o.after.call(s, s.$banner, s.$item, s.currentIndex);
 			}, o.speed / 3);
 		}
 
@@ -168,10 +158,10 @@
 
 		// 视口宽度发生改变时，列表和列表项自动更改宽度
 		setInterval(function() {
-			if (Util.isSupportTouch && !s.touching) {
+			if (Util.IS_MOBILE && !s.touching) {
 				$item.width($banner.width());
 				$list.width($item.width() * (s.len + 2));
-				$list.css(Util.transform, 'translate3d(' + -$item.width() * (s.currentIndex + 1) + 'px, 0, 0)');
+				$list.css(Util.TRANSFORM, 'translate3d(' + -$item.width() * (s.currentIndex + 1) + 'px, 0, 0)');
 
 				listOffset = getListOffset();
 			}

@@ -8,12 +8,12 @@
 <body>
     <!-- side:begin -->
     <div class="side">
-        <h1>简洁优雅的轮播插件</h1>
+        <h1>给网页Banner特别设计的简化插件</h1>
         <div class="anchor">
             <a href="#anchor-1">自动化</a>
             <a href="#anchor-2">自定义样式</a>
             <a href="#anchor-3">动画</a>
-            <a href="#anchor-4">缩略图</a>
+            <a href="#anchor-4">简易缩略图</a>
             <a href="#anchor-5">自适应</a>
             <a href="#anchor-6">延迟加载</a>
             <a href="#anchor-7">切换</a>
@@ -23,7 +23,7 @@
 
         <div class="btn">
             <a href="https://github.com/happyfreelife/terseBanner" class="github" target="_blank">See it on GitHub</a>
-            <a href="https://github.com/happyfreelife/terseBanner/archive/v2.1.8.zip" class="download">Download<sub>2.1.8</sub></a>
+            <a href="https://github.com/happyfreelife/terseBanner/archive/v2.3.0.zip" class="download">Download<sub>2.3.0</sub></a>
         </div>
     </div>
     <!-- side:end -->
@@ -242,8 +242,8 @@
         </div>
 
         <div class="container thumbnail" id="anchor-4">
-            <h2>缩略图</h2>
-            <p>自动截取原始图片的一部分作为缩略图，缩略图列表超出容器时自动添加列表滑动按钮</p>
+            <h2>简易缩略图</h2>
+            <p>自动截取原始图片的一部分作为缩略图</p>
             <div class="clearfix">
                 <div class="banner" id="thumbnail">
                     <ul>
@@ -259,12 +259,8 @@
 <pre><code>
 $('#thumbnail').terseBanner({
     btn: false,
-    thumb: {
-        width: 150,
-        height: 84,
-        gap: 4,
-        visible: 3
-    }
+    thumbWidth: 120,
+    thumbHeight: 68
 });
 </code></pre>
                 </div>
@@ -426,35 +422,28 @@ $('#callback').terseBanner({
                         <td>[String]</td>
                         <td>'slide', 'fade', 'flash', 'none'</td>
                         <td>'slide'</td>
-                        <td>动画模式（不支持垂直方向的图片滑动切换）</td>
+                        <td>动画模式<br>（不支持垂直方向的图片滑动切换）<br>（触屏模式下只能使用'slide'）</td>
                     </tr>
                     <tr>
                         <td>adaptive</td>
                         <td>[Boolean]</td>
                         <td></td>
                         <td>false</td>
-                        <td>轮播图片的宽度自适应</td>
-                    </tr>
-                    <tr>
-                        <td>useHover</td>
-                        <td>[Boolean]</td>
-                        <td></td>
-                        <td>false</td>
-                        <td>导航按钮和缩略图使用 hover 事件触发动画</td>
+                        <td>图片的宽度自适应</td>
                     </tr>
                     <tr>
                         <td>arrow</td>
                         <td>[Boolean]</td>
                         <td></td>
                         <td>false</td>
-                        <td>显示切换箭头</td>
+                        <td>切换箭头</td>
                     </tr>
                     <tr>
                         <td>btn</td>
                         <td>[Boolean]</td>
-                        <td>true, false, 'ol'</td>
-                        <td>false</td>
-                        <td>显示导航按钮（使用 'ol' 在导航按钮中添加序列数字）</td>
+                        <td>true, false</td>
+                        <td>true</td>
+                        <td>指示按钮</td>
                     </tr>
                     <tr>
                         <td>auto</td>
@@ -464,11 +453,25 @@ $('#callback').terseBanner({
                         <td>自动轮播每次的间隔[毫秒]（为0时禁用自动轮播）</td>
                     </tr>
                     <tr>
-                        <td>duration</td>
+                        <td>speed</td>
                         <td>[Number]</td>
                         <td>正整数</td>
                         <td>800</td>
-                        <td>动画速度[毫秒]（移动端自动设置为250ms）</td>
+                        <td>动画速度[毫秒]（移动端自动减少为 1/3）</td>
+                    </tr>
+                    <tr>
+                        <td>thumbWidth</td>
+                        <td>[Number]</td>
+                        <td>正整数</td>
+                        <td>0</td>
+                        <td>缩略图的宽度</td>
+                    </tr>
+                    <tr>
+                        <td>thumbHeight</td>
+                        <td>[Number]</td>
+                        <td>正整数</td>
+                        <td>0</td>
+                        <td>缩略图的高度（不设置的则缩略图自适应高度）</td>
                     </tr>
                     <tr>
                         <td>init</td>
@@ -503,19 +506,6 @@ $('#callback').terseBanner({
                             动画完成时执行的回调函数<br>
                             function ($banner, $item, currentIndex) { }<br>
                             - 参数与before回调函数的一样
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>thumb</td>
-                        <td>[Object]</td>
-                        <td></td>
-                        <td>{ }</td>
-                        <td>缩略图<br>
-                        参数是对象类型，包含4个属性<br>
-                        - width: 缩略图的宽度<br>
-                        - height: 缩略图的高亮<br>
-                        - gap: 缩略图的水平外边距<br>
-                        - visible : 缩略图显示的数量<br>
                         </td>
                     </tr>
                 </tbody>

@@ -158,12 +158,8 @@ $(function() {
 	// 缩略图
 	$('#thumbnail').terseBanner({
 		btn: false,
-		thumb: {
-			width: 150,
-			height: 84,
-			gap: 4,
-			visible: 3
-		}
+		thumbWidth: 120,
+    	thumbHeight: 68
 	});
 
 

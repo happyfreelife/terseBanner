@@ -11,8 +11,11 @@
 		.anchor a{display: block;font: 14px/40px "Verdana";margin-bottom: 10px;background: #333;color: #fff;text-align: center;text-decoration: none;}
 		.anchor a:hover{background: #000;}
 		.container{width: 960px;margin: 0 auto;}
-		h2{font: 30px/30px "Verdana";color: #333;margin-top: 70px;}
-		.banner{width: 960px;margin: 20px auto;overflow: hidden;height: 540px;}
+		h2{font: 30px/50px "Verdana";color: #333;margin-top: 100px;}
+		.banner{margin: 0 auto;overflow: hidden;height: 540px;}
+		#thumb .tb-btn a{-webkit-transition: opacity .3s;transition: opacity .3s;border: 1px solid #fff;opacity: .3;border-radius: 0;}
+		#thumb .tb-btn a:hover,
+		#thumb .tb-btn a.active{opacity: 1;}
 	</style>
 </head>
 <body>
@@ -22,7 +25,10 @@
 		<a href="#flash">animation - flash</a>
 		<a href="#none">animation - none</a>
 		<a href="#lazyload">lazyload</a>
+		<a href="#thumb">thumb</a>
 	</div>
+	</div>
+
 	<div class="container">
 		<h2>animation - slide</h2>
 		<div class="banner" id="slide">
@@ -74,6 +80,18 @@
 				<li><img data-src="http://desk.fd.zol-img.com.cn/t_s1920x1080c5/g5/M00/05/02/ChMkJlbxATqIBOwbAAt1D9lCvKkAAOTUwB9S5IAC3Un823.jpg"></li>
 			</ul>
 		</div>
+
+		<h2>thumb</h2>
+		<div class="banner" id="thumb">
+			<ul>
+				<li><img src="http://desk.fd.zol-img.com.cn/t_s1920x1080c5/g5/M00/05/02/ChMkJ1bxATiIVlzmAAlJIHaXmLkAAOTUgN32YEACUk4716.jpg"></li>
+				<li><img src="http://desk.fd.zol-img.com.cn/t_s1920x1080c5/g5/M00/05/02/ChMkJ1bxATaIevuuABYRrSzYfikAAOTUgI7dk0AFhHF290.jpg"></li>
+				<li><img src="http://desk.fd.zol-img.com.cn/t_s1920x1080c5/g5/M00/05/02/ChMkJ1bxATyIHmOaAA427DMtOHcAAOTUwGiFqgADjcE489.jpg"></li>
+				<li><img src="http://desk.fd.zol-img.com.cn/t_s1920x1080c5/g5/M00/05/02/ChMkJlbxAUCIMqKdAAMVx51HXogAAOTUwP6tOQAAxXf894.jpg"></li>
+				<li><img src="http://desk.fd.zol-img.com.cn/t_s1920x1080c5/g5/M00/05/02/ChMkJlbxATqIBOwbAAt1D9lCvKkAAOTUwB9S5IAC3Un823.jpg"></li>
+			</ul>
+		</div>
+		<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
 	</div>
 </body>
 <script type="text/javascript" src="../lib/require.js" data-main="test.js"></script>
