@@ -60,8 +60,8 @@ td,th{padding:0}
 .animation .select li{display: block;line-height: 26px;background: rgba(0, 0, 0, .7);border-top: 1px solid #fff;color: #fff;text-indent: 10px;cursor: pointer;}
 .animation .select li:hover{background: #09c;}
 
-.thumbnail .tb-thumb dl dd{opacity: .7;-webkit-transition: opacity .3s;transition: opacity .3s;border: 3px solid #fff;}
-.thumbnail .tb-thumb dl dd.active{border-color: #09c;opacity: 1;}
+.thumbnail .tb-btn a{opacity: .5;-webkit-transition: opacity .3s;transition: opacity .3s;border: 1px solid #fff;border-radius: 0;}
+.thumbnail .tb-btn a.active{border-color: #09c;opacity: 1;}
 
 .adaptive .scale{position: absolute;top: 35px;left: 600px;}
 .adaptive .scale span{float: left;line-height: 24px;font-size: 14px;}
