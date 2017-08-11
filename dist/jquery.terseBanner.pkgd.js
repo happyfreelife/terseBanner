@@ -1,8 +1,8 @@
 /**
  * terseBanner
- * Version: 2.3.0
+ * Version: 2.3.1
  * URI: https://github.com/happyfreelife/terseBanner
- * Date: 2017-08-08
+ * Date: 2017-08-11
  **/
 ;(function (window, factory) {
 	if (typeof define === 'function' && define.amd) {
@@ -980,6 +980,8 @@
 
 	// 导航按钮和缩略图添加高亮样式
 	Banner.prototype.btnActive = function() {
+		if (!this.option.btn) return;
+
 		var s = this;
 
 		s.activeIndex =
