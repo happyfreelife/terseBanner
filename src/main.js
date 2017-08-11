@@ -44,6 +44,8 @@
 
 	// 导航按钮和缩略图添加高亮样式
 	Banner.prototype.btnActive = function() {
+		if (!this.option.btn) return;
+
 		var s = this;
 
 		s.activeIndex =

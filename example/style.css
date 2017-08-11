@@ -24,8 +24,8 @@ td,th{padding:0}
 .side .anchor a.active{background: #09c;color: #fff;}
 .side .btn{margin-top: 50px;}
 .side .btn a{display: block;line-height: 60px;color: #fff;text-align: center;font-weight: bold;font-size: 20px;-webkit-transition: all .3s;transition: all .3s;margin-bottom: 20px;}
-.side .btn .github{background: #e0869f;}
-.side .btn .github:hover{box-shadow: 1px 1px 5px #e0869f;}
+.side .btn .github{background: #000;}
+.side .btn .github:hover{box-shadow: 0 0 10px rgba(0, 0, 0, .8);}
 .side .btn .download{background: #ef7520;}
 .side .btn .download sub{font-weight:normal;font-size:14px;vertical-align:baseline;margin-left:5px;}
 .side .btn .download:hover{box-shadow: 1px 1px 5px #ef7520;}
