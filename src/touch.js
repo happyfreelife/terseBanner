@@ -36,7 +36,7 @@
 		}, 50);
 
 		function touchStart (e)  {
-			if (s.animating) return;
+			if (s.isAnimated) return;
 
 			s.touching = true;
 
@@ -49,7 +49,7 @@
 		}
 
 		function touchMove (e) {
-			if (s.animating) return;
+			if (s.isAnimated) return;
 
 			touch = e.touches[0];
 			touchRangeX = touch.pageX - touchStartX;
@@ -57,11 +57,6 @@
 
 			// 触摸水平滑动距离 小于 触摸垂直滑动距离时不执行滑动动画
 			if (Math.abs(touchRangeX) < Math.abs(touchRangeY)) return;
-
-			if (touchRangeX && !s.beforeCalled) {
-				o.before.call(s, s.$banner, s.$item, s.currentIndex);
-				s.beforeCalled = true;
-			}
 
 			if (touchRangeX < 0) {
 				touchDirection = 'left';
@@ -73,15 +68,17 @@
 		}
 
 		function touchEnd (e) {
-			if (s.animating || !touchRangeX || Math.abs(touchRangeX) < Math.abs(touchRangeY)) return;
+			if (s.isAnimated || !touchRangeX || Math.abs(touchRangeX) < Math.abs(touchRangeY)) return;
 
-			s.animating = true;
+			s.isAnimated = true;
 
 			touchDuration = Date.now() - touchStartTime;
 
 			// 触摸停留时间小于300ms 或者
 			// 触摸水平距离超过轮播宽度的一半时切换到下一个元素
 			if (touchDuration < 300 || Math.abs(touchRangeX) >= $item.width() / 2) {
+				o.before.call(s, s.$banner, s.$item, s.currentIndex);
+				
 				if (touchDirection === 'left') {
 					listTarget = 'translate3d(' + (listOffset - $item.width()) + 'px, 0, 0)';
 					s.currentIndex++;
@@ -130,9 +127,8 @@
 				s.currentIndex === s.len ? 0 : s.currentIndex;
 
 				touchRangeX = 0;
-				s.animating = false;
+				s.isAnimated = false;
 				s.touching = false;
-				s.beforeCalled = false;
 
 				o.after.call(s, s.$banner, s.$item, s.currentIndex);
 			}, o.speed / 3);

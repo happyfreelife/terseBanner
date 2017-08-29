@@ -12,7 +12,7 @@
 		s.activeIndex = 0;
 		s.latestIndex = 0;
 		s.isHovered = false;
-		s.animating = false;
+		s.isAnimated = false;
 
 		var o = s.option,
 			$banner = s.$banner,
@@ -84,6 +84,9 @@
 			});
 		}
 
+		// 当列表项的数量只有一个时不使用任何功能
+		if (s.len === 1) return;
+
 		// 获取图片缩略图的路径
 		try {
 			$item.each(function() {
@@ -139,7 +142,7 @@
 		// Banner的宽度改变时，列表和列表项自动更改宽度
 		if (!Util.IS_MOBILE) {
 			setInterval(function() {
-				$item.width($banner.width());
+				$list.children().width($banner.width());
 	
 				if (o.animation === 'fade') {
 					$list.prev().children().width($banner.width());
@@ -147,6 +150,7 @@
 			}, 50);
 		}
 
+		// 自动添加必需的结构
 		if (o.arrow) s.arrow();
 		if (o.btn) s.btn();
 		if ($.isNumeric(o.thumbWidth) && o.thumbWidth > 0) s.thumb();

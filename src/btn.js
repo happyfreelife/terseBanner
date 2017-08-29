@@ -23,7 +23,7 @@
 
 		if (!Util.IS_MOBILE) {
 			$btn.on('click.terseBanner', function() {
-				if (s.animating) return;
+				if (s.isAnimated) return;
 
 				o.before.call(s, s.$banner, s.$item, s.currentIndex);
 				s.currentIndex = $(this).index();

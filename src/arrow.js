@@ -19,13 +19,17 @@
 
 		$arrow.on({
 			'click.terseBanner': function() {
-				if (s.animating) return;
+				if (s.isAnimated) return;
 
 				o.before.call(s, s.$banner, s.$item, s.currentIndex);
 
-				$(this).hasClass('prev') ? s.currentIndex-- : s.currentIndex++;
 
-				s.play();
+				if (Util.IS_MOBILE) {
+					$(this).hasClass('prev') ? s.slidePrev() : s.slideNext();
+				} else {
+					$(this).hasClass('prev') ? s.currentIndex-- : s.currentIndex++;
+					s.play();
+				}
 			},
 
 			// 阻止连续点击箭头按钮时选中按钮

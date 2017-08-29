@@ -33,7 +33,7 @@
 
 				if (Util.IS_SUPPORT_TRANSITION) {
 					setTimeout(function() {
-						s.animating = true;
+						s.isAnimated = true;
 
 						var listTransform = slidToLeft ?
 							'translate3d(' + -$item.width() + 'px, 0, 0)' :
@@ -44,7 +44,7 @@
 						setTimeout(slideCallback, o.speed - 50);
 					}, 50);
 				} else {
-					s.animating = true;
+					s.isAnimated = true;
 
 					$list.animate({
 						left: slidToLeft? '-100%' : 0
@@ -59,7 +59,7 @@
 			s.animation = function() {
 				handleCurrentIndex();
 
-				s.animating = true;
+				s.isAnimated = true;
 
 				$list.css('left', -s.currentIndex * 100 + '%');
 
@@ -102,7 +102,7 @@
 		}
 
 		function slideCallback() {
-			s.animating = false;
+			s.isAnimated = false;
 
 			s.latestIndex =
 			s.currentIndex =
@@ -131,7 +131,7 @@
 		}
 
 		function fadeCallback() {
-			s.animating = false;
+			s.isAnimated = false;
 
 			if (o.animation === 'fade') {
 				$list.prev().css('left', -s.currentIndex * 100 + '%');

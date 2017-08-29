@@ -8,14 +8,8 @@
 		// 是否是移动端
 		IS_MOBILE: !!navigator.userAgent.match(/AppleWebKit.*Mobile.*/),
 
-		// 是否支持触摸事件
-		// IS_SUPPORT_TOUCH: 'ontouchstart' in window,
-
 		// 是否支持CSS3动画过渡
-		IS_SUPPORT_TRANSITION: (function () {
-			var style = document.body.style || document.documentElement.style;
-			return style.transition !== undefined || style.webkitTransition !== undefined;
-		}()),
+		IS_SUPPORT_TRANSITION: 'transition' in document.documentElement.style,
 
 		TRANSFORM: typeof document.body.style.transform === 'string' ? 'transform' : 'webkitTransform',
 

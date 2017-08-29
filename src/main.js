@@ -5,11 +5,8 @@
 	// 播放
 	Banner.prototype.play = function() {
 		this.activeIndex = this.currentIndex;
-
-		if (this.len > 1) {
-			this.animation();
-			this.lazyload(this.currentIndex);
-		}
+		this.animation();
+		this.lazyload(this.currentIndex);
 	};
 
 	// 自动轮播定时器
@@ -21,7 +18,7 @@
 			},
 			reset = function() {
 				s.isHovered = false;
-				if (!s.animating) {
+				if (!s.isAnimated) {
 					s.setPlayTimer();
 				}
 			};
@@ -42,7 +39,7 @@
 		});
 	};
 
-	// 导航按钮和缩略图添加高亮样式
+	// 指示按钮或缩略图添加高亮样式
 	Banner.prototype.btnActive = function() {
 		if (!this.option.btn) return;
 
@@ -59,10 +56,10 @@
 	Banner.prototype.playTo = function() {
 		var s = this;
 
-		if (s.animating) return;
+		if (s.isAnimated) return;
 
 		if ($.isNumeric(arguments[0]) && (arguments[0] < 0 || arguments[0] > s.len)) {
-			throw new Error('TerseBanner\'s index overflow!');
+			throw new Error('terseBanner\'s index overflow!');
 		}
 
 		s.option.before.call(s, s.$banner, s.$item, s.currentIndex);

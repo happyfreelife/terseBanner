@@ -46,9 +46,7 @@ requirejs([
 
 
 	// 移动端
-	$('#touch').terseBanner();
-
-	$('#touch button').click(function() {
-		$('#touch').terseBanner(this.className);
+	$('#touch').terseBanner({
+		arrow: true
 	});
 });

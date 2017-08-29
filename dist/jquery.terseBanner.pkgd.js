@@ -1,8 +1,8 @@
 /**
  * terseBanner
- * Version: 2.3.1
+ * Version: 2.3.2
  * URI: https://github.com/happyfreelife/terseBanner
- * Date: 2017-08-11
+ * Date: 2017-08-29
  **/
 ;(function (window, factory) {
 	if (typeof define === 'function' && define.amd) {
@@ -25,14 +25,8 @@
 		// 是否是移动端
 		IS_MOBILE: !!navigator.userAgent.match(/AppleWebKit.*Mobile.*/),
 
-		// 是否支持触摸事件
-		// IS_SUPPORT_TOUCH: 'ontouchstart' in window,
-
 		// 是否支持CSS3动画过渡
-		IS_SUPPORT_TRANSITION: (function () {
-			var style = document.body.style || document.documentElement.style;
-			return style.transition !== undefined || style.webkitTransition !== undefined;
-		}()),
+		IS_SUPPORT_TRANSITION: 'transition' in document.documentElement.style,
 
 		TRANSFORM: typeof document.body.style.transform === 'string' ? 'transform' : 'webkitTransform',
 
@@ -50,8 +44,8 @@
 	/**
 	 * Plugin construct function
 	 */
-	function Banner(elem, option) {
-		this.$banner = $(elem);
+	function Banner(banner, option) {
+		this.$banner = $(banner);
 		this.option = option;
 	}
 
@@ -153,7 +147,7 @@
 		s.activeIndex = 0;
 		s.latestIndex = 0;
 		s.isHovered = false;
-		s.animating = false;
+		s.isAnimated = false;
 
 		var o = s.option,
 			$banner = s.$banner,
@@ -225,6 +219,9 @@
 			});
 		}
 
+		// 当列表项的数量只有一个时不使用任何功能
+		if (s.len === 1) return;
+
 		// 获取图片缩略图的路径
 		try {
 			$item.each(function() {
@@ -280,7 +277,7 @@
 		// Banner的宽度改变时，列表和列表项自动更改宽度
 		if (!Util.IS_MOBILE) {
 			setInterval(function() {
-				$item.width($banner.width());
+				$list.children().width($banner.width());
 	
 				if (o.animation === 'fade') {
 					$list.prev().children().width($banner.width());
@@ -288,6 +285,7 @@
 			}, 50);
 		}
 
+		// 自动添加必需的结构
 		if (o.arrow) s.arrow();
 		if (o.btn) s.btn();
 		if ($.isNumeric(o.thumbWidth) && o.thumbWidth > 0) s.thumb();
@@ -324,13 +322,17 @@
 
 		$arrow.on({
 			'click.terseBanner': function() {
-				if (s.animating) return;
+				if (s.isAnimated) return;
 
 				o.before.call(s, s.$banner, s.$item, s.currentIndex);
 
-				$(this).hasClass('prev') ? s.currentIndex-- : s.currentIndex++;
 
-				s.play();
+				if (Util.IS_MOBILE) {
+					$(this).hasClass('prev') ? s.slidePrev() : s.slideNext();
+				} else {
+					$(this).hasClass('prev') ? s.currentIndex-- : s.currentIndex++;
+					s.play();
+				}
 			},
 
 			// 阻止连续点击箭头按钮时选中按钮
@@ -385,7 +387,7 @@
 
 		if (!Util.IS_MOBILE) {
 			$btn.on('click.terseBanner', function() {
-				if (s.animating) return;
+				if (s.isAnimated) return;
 
 				o.before.call(s, s.$banner, s.$item, s.currentIndex);
 				s.currentIndex = $(this).index();
@@ -454,7 +456,7 @@
 
 				if (Util.IS_SUPPORT_TRANSITION) {
 					setTimeout(function() {
-						s.animating = true;
+						s.isAnimated = true;
 
 						var listTransform = slidToLeft ?
 							'translate3d(' + -$item.width() + 'px, 0, 0)' :
@@ -465,7 +467,7 @@
 						setTimeout(slideCallback, o.speed - 50);
 					}, 50);
 				} else {
-					s.animating = true;
+					s.isAnimated = true;
 
 					$list.animate({
 						left: slidToLeft? '-100%' : 0
@@ -480,7 +482,7 @@
 			s.animation = function() {
 				handleCurrentIndex();
 
-				s.animating = true;
+				s.isAnimated = true;
 
 				$list.css('left', -s.currentIndex * 100 + '%');
 
@@ -523,7 +525,7 @@
 		}
 
 		function slideCallback() {
-			s.animating = false;
+			s.isAnimated = false;
 
 			s.latestIndex =
 			s.currentIndex =
@@ -552,7 +554,7 @@
 		}
 
 		function fadeCallback() {
-			s.animating = false;
+			s.isAnimated = false;
 
 			if (o.animation === 'fade') {
 				$list.prev().css('left', -s.currentIndex * 100 + '%');
@@ -608,7 +610,7 @@
 		}, 50);
 
 		function touchStart (e)  {
-			if (s.animating) return;
+			if (s.isAnimated) return;
 
 			s.touching = true;
 
@@ -621,7 +623,7 @@
 		}
 
 		function touchMove (e) {
-			if (s.animating) return;
+			if (s.isAnimated) return;
 
 			touch = e.touches[0];
 			touchRangeX = touch.pageX - touchStartX;
@@ -629,11 +631,6 @@
 
 			// 触摸水平滑动距离 小于 触摸垂直滑动距离时不执行滑动动画
 			if (Math.abs(touchRangeX) < Math.abs(touchRangeY)) return;
-
-			if (touchRangeX && !s.beforeCalled) {
-				o.before.call(s, s.$banner, s.$item, s.currentIndex);
-				s.beforeCalled = true;
-			}
 
 			if (touchRangeX < 0) {
 				touchDirection = 'left';
@@ -645,15 +642,17 @@
 		}
 
 		function touchEnd (e) {
-			if (s.animating || !touchRangeX || Math.abs(touchRangeX) < Math.abs(touchRangeY)) return;
+			if (s.isAnimated || !touchRangeX || Math.abs(touchRangeX) < Math.abs(touchRangeY)) return;
 
-			s.animating = true;
+			s.isAnimated = true;
 
 			touchDuration = Date.now() - touchStartTime;
 
 			// 触摸停留时间小于300ms 或者
 			// 触摸水平距离超过轮播宽度的一半时切换到下一个元素
 			if (touchDuration < 300 || Math.abs(touchRangeX) >= $item.width() / 2) {
+				o.before.call(s, s.$banner, s.$item, s.currentIndex);
+				
 				if (touchDirection === 'left') {
 					listTarget = 'translate3d(' + (listOffset - $item.width()) + 'px, 0, 0)';
 					s.currentIndex++;
@@ -702,9 +701,8 @@
 				s.currentIndex === s.len ? 0 : s.currentIndex;
 
 				touchRangeX = 0;
-				s.animating = false;
+				s.isAnimated = false;
 				s.touching = false;
-				s.beforeCalled = false;
 
 				o.after.call(s, s.$banner, s.$item, s.currentIndex);
 			}, o.speed / 3);
@@ -941,11 +939,8 @@
 	// 播放
 	Banner.prototype.play = function() {
 		this.activeIndex = this.currentIndex;
-
-		if (this.len > 1) {
-			this.animation();
-			this.lazyload(this.currentIndex);
-		}
+		this.animation();
+		this.lazyload(this.currentIndex);
 	};
 
 	// 自动轮播定时器
@@ -957,7 +952,7 @@
 			},
 			reset = function() {
 				s.isHovered = false;
-				if (!s.animating) {
+				if (!s.isAnimated) {
 					s.setPlayTimer();
 				}
 			};
@@ -978,7 +973,7 @@
 		});
 	};
 
-	// 导航按钮和缩略图添加高亮样式
+	// 指示按钮或缩略图添加高亮样式
 	Banner.prototype.btnActive = function() {
 		if (!this.option.btn) return;
 
@@ -995,10 +990,10 @@
 	Banner.prototype.playTo = function() {
 		var s = this;
 
-		if (s.animating) return;
+		if (s.isAnimated) return;
 
 		if ($.isNumeric(arguments[0]) && (arguments[0] < 0 || arguments[0] > s.len)) {
-			throw new Error('TerseBanner\'s index overflow!');
+			throw new Error('terseBanner\'s index overflow!');
 		}
 
 		s.option.before.call(s, s.$banner, s.$item, s.currentIndex);

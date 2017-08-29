@@ -17,9 +17,10 @@
 		.touch ul li.item-4{background: #808000;}
 		.touch ul li.item-5{background: #ff00ff;}
 		.touch ul li img{display: block;max-width: 100%;}
-		.touch button{position: absolute;top: 50%;width: 50px;line-height: 50px;background: rgba(0, 0, 0, .8);color: #fff;text-align: center;outline: none;border: none;}
-		.touch button.prev{left: 0;}
-		.touch button.next{right: 0;}
+		.touch .tb-arrow{width: 100%;left: 0;}
+		.touch .tb-arrow a{position: absolute;top: 50%;width: 40px;height: 40px;background: rgba(0, 0, 0, .8);color: #fff;text-align: center;outline: none;border: none;padding: 10px 5px;}
+		.touch .tb-arrow a.prev{left: 0;}
+		.touch .tb-arrow a.next{right: 0;}
 	</style>
 </head>
 <body>
@@ -31,8 +32,6 @@
 			<li class="item-4">Page 4</li>
 			<li class="item-5">Page 5</li>
 		</ul>
-		<button class="prev">prev</button>
-		<button class="next">next</button>
 	</div>
 </body>
 <script src="../lib/jquery-1.11.3.min.js"></script>
