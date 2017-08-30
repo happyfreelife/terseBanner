@@ -1,8 +1,8 @@
 /**
  * terseBanner
- * Version: 2.3.2
+ * Version: 2.3.3
  * URI: https://github.com/happyfreelife/terseBanner
- * Date: 2017-08-29
+ * Date: 2017-08-30
  **/
 ;(function (window, factory) {
 	if (typeof define === 'function' && define.amd) {
@@ -631,6 +631,8 @@
 
 			// 触摸水平滑动距离 小于 触摸垂直滑动距离时不执行滑动动画
 			if (Math.abs(touchRangeX) < Math.abs(touchRangeY)) return;
+
+			e.preventDefault();
 
 			if (touchRangeX < 0) {
 				touchDirection = 'left';

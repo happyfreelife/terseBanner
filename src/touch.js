@@ -58,6 +58,8 @@
 			// 触摸水平滑动距离 小于 触摸垂直滑动距离时不执行滑动动画
 			if (Math.abs(touchRangeX) < Math.abs(touchRangeY)) return;
 
+			e.preventDefault();
+
 			if (touchRangeX < 0) {
 				touchDirection = 'left';
 			} else if (touchRangeX > 0) {
