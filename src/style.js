@@ -78,6 +78,8 @@
 			'}\n';
 
 		if (!$('#tb-style').length) {
-			$('head').append('<style id="tb-style">\n' + style + '</style>');
+			$(document).ready(function($) {
+				$('head').append('<style id="tb-style">\n' + style + '</style>');
+			});
 		}
 	};
