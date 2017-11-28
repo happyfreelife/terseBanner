@@ -1,8 +1,8 @@
 /**
  * terseBanner
- * Version: 2.3.4
+ * Version: 2.3.5
  * URI: https://github.com/happyfreelife/terseBanner
- * Date: 2017-10-13
+ * Date: 2017-11-28
  **/
 ;(function (window, factory) {
 	if (typeof define === 'function' && define.amd) {
@@ -221,9 +221,6 @@
 			});
 		}
 
-		// 当列表项的数量只有一个时不使用任何功能
-		if (s.len === 1) return;
-
 		// 获取图片缩略图的路径
 		try {
 			$item.each(function() {
@@ -287,6 +284,9 @@
 			}, 50);
 		}
 
+		// 当列表项的数量只有一个时不使用任何功能
+		if (s.len === 1) return;
+		
 		// 自动添加必需的结构
 		if (o.arrow) s.arrow();
 		if (o.btn) s.btn();
