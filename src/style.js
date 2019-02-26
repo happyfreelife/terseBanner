@@ -10,10 +10,6 @@
 			'    overflow: hidden;\n' +
 			'}\n' +
 
-			'.tb-list > *\n{' +
-			'    list-style: none;\n' +
-			'}\n' +
-
 			'.tb-list > * > *{\n' +
 			'    position: relative;\n' +
 			'    float: left;\n' +

@@ -131,12 +131,7 @@
 			}));
 		}
 		
-		if (
-			!Util.IS_MOBILE &&
-			$.isNumeric(o.auto) &&
-			o.auto > 0 &&
-			s.len > 1
-		) {
+		if (!Util.IS_MOBILE && $.isNumeric(o.auto) && o.auto > 0) {
 			s.useAuto = true;
 			s.setPlayTimer();
 		}

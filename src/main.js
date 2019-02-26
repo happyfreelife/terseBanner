@@ -53,20 +53,18 @@
 	};
 
 	// 切换轮播图片
-	Banner.prototype.playTo = function(targetIndex) {
+	Banner.prototype.playTo = function() {
 		var s = this;
 
-		// 正在执行的动画不可中断，动画执行时进行的切换操作无效
 		if (s.isAnimated) return;
 
-		// 使用自定义方法切换时，检测传入的目标索引是否溢出
-		if ($.isNumeric(targetIndex) && (targetIndex < 0 || targetIndex > s.len)) {
+		if ($.isNumeric(arguments[0]) && (arguments[0] < 0 || arguments[0] > s.len)) {
 			throw new Error('terseBanner\'s index overflow!');
 		}
 
 		s.option.before.call(s, s.$banner, s.$item, s.currentIndex);
 
-		switch (targetIndex) {
+		switch (arguments[0]) {
 			case 'prev':
 				if(!Util.IS_MOBILE) {
 					s.currentIndex--;
@@ -87,7 +85,7 @@
 
 			default:
 				if(!Util.IS_MOBILE) {
-					s.currentIndex = targetIndex;
+					s.currentIndex = arguments[0];
 					s.play();
 				}
 				break;
@@ -130,12 +128,12 @@
 		animation  : 'slide', // 动画模式: ['slide', 'fade', 'flash', 'none']
 		adaptive   : false,   // 图片宽度自适应
 		arrow      : false,   // 切换箭头
-		btn        : true,    // 指示按钮(在移动端中不可点击)
-		auto       : 5000,    // 自动轮播的间隔(毫秒数，为0时禁用此功能)
+		btn        : true,    // 指示按钮: [true, false]
+		auto       : 5000,    // 自动轮播: [为0时禁用此功能]
 		speed      : 800,     // 动画速度
 		thumbWidth : 0,       // 缩略图宽度
 		thumbHeight: 0,       // 缩略图高度
-		init       : $.noop,  // 初始化完时执行的回调函数
+		init       : $.noop,  // 轮播初始化完成时执行的回调函数
 		before     : $.noop,  // 动画开始时执行的回调函数
 		after      : $.noop,  // 动画完成时执行的回调函数
 	};
