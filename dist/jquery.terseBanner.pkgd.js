@@ -1,8 +1,8 @@
 /**
  * terseBanner
- * Version: 2.3.5
+ * Version: 2.3.6
  * URI: https://github.com/happyfreelife/terseBanner
- * Date: 2017-11-28
+ * Date: 2019-02-26
  **/
 ;(function (window, factory) {
 	if (typeof define === 'function' && define.amd) {
@@ -59,6 +59,10 @@
 			'.tb-list > *\n{' +
 			'    position: relative;\n' +
 			'    overflow: hidden;\n' +
+			'}\n' +
+
+			'.tb-list > *\n{' +
+			'    list-style: none;\n' +
 			'}\n' +
 
 			'.tb-list > * > *{\n' +
@@ -268,7 +272,12 @@
 			}));
 		}
 		
-		if (!Util.IS_MOBILE && $.isNumeric(o.auto) && o.auto > 0) {
+		if (
+			!Util.IS_MOBILE &&
+			$.isNumeric(o.auto) &&
+			o.auto > 0 &&
+			s.len > 1
+		) {
 			s.useAuto = true;
 			s.setPlayTimer();
 		}
@@ -311,6 +320,8 @@
 		var s = this,
 			o = this.option,
 			$banner = this.$banner,
+			$list = s.$list,
+			$item = s.$item,
 			$arrow;
 
 		$banner.append(
@@ -344,7 +355,7 @@
 		});
 
 		if ($arrow.css('backgroundImage') === 'none') {
-			if (!$arrow.height()) {
+			function setArrowHeight() {
 				var bannerHeight = Math.max(
 					$banner.height(),
 					$.isNumeric(parseInt($banner.css('maxHeight'))) ? parseInt($banner.css('maxHeight')) : 0,
@@ -352,8 +363,30 @@
 				);
 
 				$arrow.height(parseInt(bannerHeight * 0.1));
-				$arrow.css('marginTop', -$arrow.outerHeight() / 2);
 			}
+
+			if (!$arrow.height()) {
+				setArrowHeight();
+
+				/* 自适应模式下，最外层容器没有高度
+				 * 计算之后的箭头高度为0，无法显示
+				 * 在首张图片加载完成之后重新计算下
+				 */
+				if (o.adaptive) {
+					var img = new Image(),
+						$firstImage = $item.first().find('img');
+					
+					img.src = $firstImage.attr('src') || $firstImage.attr('data-src');
+
+					if (img.complete) {
+						setArrowHeight();
+					} else {
+						img.onload = setArrowHeight;
+					}
+				}
+			}
+
+			$arrow.css('marginTop', -$arrow.outerHeight() / 2);
 
 			$arrow.filter('.prev').html('<img src="' + Util.PREV_ARROW + '">');
 			$arrow.filter('.next').html('<img src="' + Util.NEXT_ARROW + '">');
@@ -991,18 +1024,20 @@
 	};
 
 	// 切换轮播图片
-	Banner.prototype.playTo = function() {
+	Banner.prototype.playTo = function(targetIndex) {
 		var s = this;
 
+		// 正在执行的动画不可中断，动画执行时进行的切换操作无效
 		if (s.isAnimated) return;
 
-		if ($.isNumeric(arguments[0]) && (arguments[0] < 0 || arguments[0] > s.len)) {
+		// 使用自定义方法切换时，检测传入的目标索引是否溢出
+		if ($.isNumeric(targetIndex) && (targetIndex < 0 || targetIndex > s.len)) {
 			throw new Error('terseBanner\'s index overflow!');
 		}
 
 		s.option.before.call(s, s.$banner, s.$item, s.currentIndex);
 
-		switch (arguments[0]) {
+		switch (targetIndex) {
 			case 'prev':
 				if(!Util.IS_MOBILE) {
 					s.currentIndex--;
@@ -1023,7 +1058,7 @@
 
 			default:
 				if(!Util.IS_MOBILE) {
-					s.currentIndex = arguments[0];
+					s.currentIndex = targetIndex;
 					s.play();
 				}
 				break;
@@ -1066,12 +1101,12 @@
 		animation  : 'slide', // 动画模式: ['slide', 'fade', 'flash', 'none']
 		adaptive   : false,   // 图片宽度自适应
 		arrow      : false,   // 切换箭头
-		btn        : true,    // 指示按钮: [true, false]
-		auto       : 5000,    // 自动轮播: [为0时禁用此功能]
+		btn        : true,    // 指示按钮(在移动端中不可点击)
+		auto       : 5000,    // 自动轮播的间隔(毫秒数，为0时禁用此功能)
 		speed      : 800,     // 动画速度
 		thumbWidth : 0,       // 缩略图宽度
 		thumbHeight: 0,       // 缩略图高度
-		init       : $.noop,  // 轮播初始化完成时执行的回调函数
+		init       : $.noop,  // 初始化完时执行的回调函数
 		before     : $.noop,  // 动画开始时执行的回调函数
 		after      : $.noop,  // 动画完成时执行的回调函数
 	};

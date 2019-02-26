@@ -1,22 +1,7 @@
-requirejs.config({
-	baseUrl: '../src',
-	paths: {
-		
-	}
-});
+requirejs.config({ baseUrl: '../src' });
 
 requirejs([
-	'util',
-	'banner',
-	'style',
-	'init',
-	'arrow',
-	'btn',
-	'thumb',
-	'animate',
-	'touch',
-	'lazyload',
-	'main'
+	'util', 'banner', 'style', 'init', 'arrow', 'btn', 'thumb', 'animate', 'touch', 'lazyload', 'main'
 ], function() {
 	$('.banner[id!="lazyload"][id!="thumb"]').each(function() {
 		var animation = this.id;
