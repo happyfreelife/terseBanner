@@ -1,6 +1,6 @@
 ## terseBanner
 
-#### 适合新手的简化版轮播插件  [在线示例  Online Example](https://happyfreelife.github.io/terseBanner/example/example.html)
+#### 适合前端新手的简化版轮播插件  [在线示例  Online Example](https://happyfreelife.github.io/terseBanner/example/example.html)
 
 <br><br>
 **特点介绍**

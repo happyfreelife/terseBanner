@@ -1,0 +1,72 @@
+@charset "utf-8";
+*, *:before, *:after{box-sizing: border-box;}
+body,h1,h2,h3,h4,h5,h6,hr,p,blockquote,ul,ol,li,dl,dd,input,button,textarea,fieldset,legend,figure,menu,th,td,pre{margin: 0;padding: 0;}
+body{min-width: 1000px;max-width: 1920px;margin: 0 auto;overflow-x: hidden;font-size: 14px;font-family: "Arial", "Microsoft YaHei", "PingFang SC", sans-serif;color: #666;}
+h1,h2,h3,h4,h5,h6{font-weight: normal;font-size: inherit;}
+a{color: #999;text-decoration: none;outline: none;}
+img{border: none;}
+ul,ol{list-style: none;}
+i,em{font-style: normal;}
+table{border-collapse: collapse;}
+td,th{padding: 0;}
+
+
+.container{position: relative;width: 1000px;margin: 0 auto;}
+.container:after,.clearfix:after{content: "";display: block;clear: both;}
+
+.header{background: #000;}
+.header{position: fixed;top: 0;left: 0;z-index: 10;width: 100%;height: 80px;background: #000;background: rgba(0, 0, 0, .8);border-bottom: 1px solid rgba(255, 255, 255, .3);}
+.header .logo{float: left;width: 280px;height: 80px;background: url(img/logo.png) no-repeat;}
+.header .link{float: right;margin-top: 40px;overflow: hidden;}
+.header .link a{float: left;line-height: 26px;margin-left: 15px;padding: 0 10px;background: #fff;border-radius: 3px;color: #333;-webkit-transition: all .15s;transition: all .15s;}
+.header .link a.active,.header .link a:hover{background: #09c;color: #fff;}
+.header .github{position: absolute;top: 40px;right: -34px;width: 24px;height: 24px;background: #fff url(img/github.png) no-repeat center;border-radius: 4px;}
+
+.banner-index{height: 100vh;}
+.banner-index .tb-list ul li{background-position: center;}
+
+.banner-animation{height: 100vh;}
+
+.banner-custom{height: 600px;margin-top: 80px;}
+.banner-custom .tb-arrow a{width: 64px;height: 64px;opacity: 0;-webkit-transition: all .3s;transition: all .3s;}
+.banner-custom .tb-arrow a.prev{background: url(img/custom-arrow-prev.png) no-repeat;-webkit-transform: translate3d(-50%, 0, 0);transform: translate3d(-50%, 0, 0);}
+.banner-custom .tb-arrow a.next{background: url(img/custom-arrow-next.png) no-repeat;-webkit-transform: translate3d(50%, 0, 0);transform: translate3d(50%, 0, 0);}
+.banner-custom:hover .tb-arrow a{opacity: 1;-webkit-transform: none;transform: none;}
+.banner-custom .tb-btn{bottom: 40px;}
+.banner-custom .tb-btn a{width: 20px;height: 20px;margin: 0 20px;-webkit-transition: transform .3s;transition: transform .3s;}
+.banner-custom .tb-btn a.active{background: #f03;-webkit-transform: scale(1.8);transform: scale(1.8);}
+
+.banner-function{height: 600px;margin-top: 80px;}
+.banner-function .tb-btn{bottom: auto;top: 50%;left: 0;margin: -15px 0 0 40px !important;}
+.banner-function .tb-btn a{width: 30px;height: 30px;line-height: 30px;margin: 0 10px;background: #f60;color: #fff;text-align: center;-webkit-transition: background .3s;transition: background .3s;}
+.banner-function .tb-btn a.active{background: #333;}
+.banner-function .name{position: absolute;width: 180px;left: 50px;top: 50%;margin-top: -80px;}
+.banner-function .name h2{display: none;line-height: 20px;background: #fff3cd;border: 1px solid #fde59b;color: #856404;letter-spacing: 2px;padding: 8px 10px;text-align: center;}
+.banner-function .toggle{position: absolute;top: 50%;margin-top: -15px;right: 40px;}
+.banner-function .toggle a{float: left;width: 60px;line-height: 30px;color: #fff;background: #f60;-webkit-transition: all .3s;transition: all .3s;text-align: center;margin-left: 20px;text-transform: uppercase;letter-spacing: 1px;;}
+.banner-function .toggle a:hover{background: #333;}
+
+/* PrismJS 1.15.0
+https://prismjs.com/download.html#themes=prism-tomorrow&languages=markup+css+clike+javascript */
+/**
+ * prism.js tomorrow night eighties for JavaScript, CoffeeScript, CSS and HTML
+ * Based on https://github.com/chriskempson/tomorrow-theme
+ * @author Rose Pritchard
+ */
+code[class*="language-"],pre[class*="language-"]{line-height: 1.5;background: none;font-family: Consolas, Monaco, "Andale Mono", "Ubuntu Mono", monospace;color: #ccc;text-align: left;word-wrap: normal;word-break: normal;word-spacing: normal;white-space: pre;-moz-tab-size: 4;-o-tab-size: 4;tab-size: 4;-webkit-hyphens: none;-moz-hyphens: none;hyphens: none;-ms-hyphens: none;}
+pre[class*="language-"]{margin: .5em 0;padding: 1em;overflow: auto;}
+:not(pre) > code[class*="language-"],pre[class*="language-"]{background: #2d2d2d;}
+:not(pre) > code[class*="language-"]{padding: .1em;border-radius: .3em;white-space: normal;}
+.token.comment,.token.block-comment,.token.prolog,.token.doctype,.token.cdata{color: #999;}
+.token.punctuation{color: #ccc;}
+.token.tag,.token.attr-name,.token.namespace,.token.deleted{color: #e2777a;}
+.token.function-name{color: #6196cc;}
+.token.boolean,.token.number,.token.function{color: #f08d49;}
+.token.property,.token.class-name,.token.constant,.token.symbol{color: #f8c555;}
+.token.selector,.token.important,.token.atrule,.token.keyword,.token.builtin{color: #cc99cd;}
+.token.string,.token.char,.token.attr-value,.token.regex,.token.variable{color: #7ec699;}
+.token.operator,.token.entity,.token.url{color: #67cdcc;}
+.token.important,.token.bold{font-weight: bold;}
+.token.italic{font-style: italic;}
+.token.entity{cursor: help;}
+.token.inserted{color: green;}

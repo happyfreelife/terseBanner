@@ -1,8 +1,8 @@
 /**
  * terseBanner
- * Version: 2.3.6
+ * Version: 2.3.7
  * URI: https://github.com/happyfreelife/terseBanner
- * Date: 2019-02-26
+ * Date: 2019-02-28
  **/
 ;(function (window, factory) {
 	if (typeof define === 'function' && define.amd) {
@@ -102,6 +102,7 @@
 			'.tb-btn{\n' +
 			'    position: absolute;\n' +
 			'    bottom: 20px;\n' +
+			'    left: 50%;\n' +
 			'}\n' +		
 			'.tb-btn a{\n' +
 			'    float: left;\n' +
@@ -286,9 +287,11 @@
 		if (!Util.IS_MOBILE) {
 			setInterval(function() {
 				$list.children().width($banner.width());
+				$list.children().height($banner.height());
 	
 				if (o.animation === 'fade') {
 					$list.prev().children().width($banner.width());
+					$list.prev().children().height($banner.height());
 				}
 			}, 50);
 		}
@@ -309,7 +312,7 @@
 		s.lazyload();
 
 		// Banner初始化完成之后的回调函数
-		o.init.call(s, s.$banner, s.$item, 0);
+		o.init.call(s);
 	};
 
 
@@ -337,7 +340,7 @@
 			'click.terseBanner': function() {
 				if (s.isAnimated) return;
 
-				o.before.call(s, s.$banner, s.$item, s.currentIndex);
+				o.before.call(s, s.currentIndex);
 
 
 				if (Util.IS_MOBILE) {
@@ -386,8 +389,6 @@
 				}
 			}
 
-			$arrow.css('marginTop', -$arrow.outerHeight() / 2);
-
 			$arrow.filter('.prev').html('<img src="' + Util.PREV_ARROW + '">');
 			$arrow.filter('.next').html('<img src="' + Util.NEXT_ARROW + '">');
 
@@ -395,6 +396,10 @@
 				return false;
 			});
 		}
+
+		setTimeout(function() {
+			$arrow.css('marginTop', -$arrow.outerHeight() / 2);
+		}, 0);
 	};
 
 
@@ -415,16 +420,18 @@
 		s.$btn = $btn = $('.tb-btn a', $banner);
 
 		$btn.first().addClass('active');
-		$btn.parent().css({
-			left: '50%',
-			marginLeft: -($btn.outerWidth(true) * $btn.length / 2)
-		});
+
+		setTimeout(function() {
+			$btn.parent().css({
+				marginLeft: -($btn.outerWidth(true) * $btn.length / 2)
+			});
+		}, 0);
 
 		if (!Util.IS_MOBILE) {
 			$btn.on('click.terseBanner', function() {
 				if (s.isAnimated) return;
 
-				o.before.call(s, s.$banner, s.$item, s.currentIndex);
+				o.before.call(s, s.currentIndex);
 				s.currentIndex = $(this).index();
 				s.play();
 			});
@@ -549,7 +556,7 @@
 		}
 
 		function afterCallback() {
-			o.after.call(s, s.$banner, s.$item, s.currentIndex);
+			o.after.call(s, s.currentIndex);
 		}
 
 		// 处理可能会超出范围的索引
@@ -688,7 +695,7 @@
 			// 触摸停留时间小于300ms 或者
 			// 触摸水平距离超过轮播宽度的一半时切换到下一个元素
 			if (touchDuration < 300 || Math.abs(touchRangeX) >= $item.width() / 2) {
-				o.before.call(s, s.$banner, s.$item, s.currentIndex);
+				o.before.call(s, s.currentIndex);
 				
 				if (touchDirection === 'left') {
 					listTarget = 'translate3d(' + (listOffset - $item.width()) + 'px, 0, 0)';
@@ -741,7 +748,7 @@
 				s.isAnimated = false;
 				s.touching = false;
 
-				o.after.call(s, s.$banner, s.$item, s.currentIndex);
+				o.after.call(s, s.currentIndex);
 			}, o.speed / 3);
 		}
 
@@ -997,7 +1004,7 @@
 		clearInterval(s.playTimer);
 
 		s.playTimer = setInterval(function() {
-			s.option.before.call(s, s.$banner, s.$item, s.currentIndex);
+			s.option.before.call(s, s.currentIndex);
 			s.currentIndex++;
 			s.play();
 		}, s.option.auto);
@@ -1035,7 +1042,7 @@
 			throw new Error('terseBanner\'s index overflow!');
 		}
 
-		s.option.before.call(s, s.$banner, s.$item, s.currentIndex);
+		s.option.before.call(s, s.currentIndex);
 
 		switch (targetIndex) {
 			case 'prev':

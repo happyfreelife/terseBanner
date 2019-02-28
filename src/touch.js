@@ -79,7 +79,7 @@
 			// 触摸停留时间小于300ms 或者
 			// 触摸水平距离超过轮播宽度的一半时切换到下一个元素
 			if (touchDuration < 300 || Math.abs(touchRangeX) >= $item.width() / 2) {
-				o.before.call(s, s.$banner, s.$item, s.currentIndex);
+				o.before.call(s, s.currentIndex);
 				
 				if (touchDirection === 'left') {
 					listTarget = 'translate3d(' + (listOffset - $item.width()) + 'px, 0, 0)';
@@ -132,7 +132,7 @@
 				s.isAnimated = false;
 				s.touching = false;
 
-				o.after.call(s, s.$banner, s.$item, s.currentIndex);
+				o.after.call(s, s.currentIndex);
 			}, o.speed / 3);
 		}
 

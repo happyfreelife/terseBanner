@@ -51,6 +51,7 @@
 			'.tb-btn{\n' +
 			'    position: absolute;\n' +
 			'    bottom: 20px;\n' +
+			'    left: 50%;\n' +
 			'}\n' +		
 			'.tb-btn a{\n' +
 			'    float: left;\n' +

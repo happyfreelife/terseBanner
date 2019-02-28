@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>terseBanner</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" type="text/css" href="example.css">
+</head>
+<body>
+    <div class="header">
+        <div class="container">
+            <a href="index.html" class="logo"></a>
+            <div class="link">
+                <a href="animation.html">动画模式</a>
+                <a href="custom.html" class="active">自定义样式</a>
+                <a href="function.html">函数和方法</a>
+                <a href="lazyload.html">延迟加载</a>
+                <a href="thumb.html">缩略图</a>
+                <a href="mobile.html">移动端</a>
+            </div>
+            <a href="https://github.com/happyfreelife/terseBanner/" target="_blank" class="github" title="look me on github"></a>
+        </div>
+    </div>
+    
+    <div class="banner-custom">
+        <ul>
+            <li><img src="img/custom-1.jpg"></li>
+            <li><img src="img/custom-2.jpg"></li>
+            <li><img src="img/custom-3.jpg"></li>
+            <li><img src="img/custom-4.jpg"></li>
+        </ul>
+    </div>
+</body>
+<script src="../lib/prism.js"></script>
+<script src="../lib/jquery-1.11.3.min.js"></script>
+<script src="../dist/jquery.terseBanner.min.js"></script>
+<!-- <script src="../lib/require.js" data-main="test.js"></script> -->
+<script>
+    $('.banner-custom').terseBanner({
+        arrow: true
+    });
+</script>
+</html>

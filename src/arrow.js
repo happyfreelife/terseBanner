@@ -23,7 +23,7 @@
 			'click.terseBanner': function() {
 				if (s.isAnimated) return;
 
-				o.before.call(s, s.$banner, s.$item, s.currentIndex);
+				o.before.call(s, s.currentIndex);
 
 
 				if (Util.IS_MOBILE) {
@@ -72,8 +72,6 @@
 				}
 			}
 
-			$arrow.css('marginTop', -$arrow.outerHeight() / 2);
-
 			$arrow.filter('.prev').html('<img src="' + Util.PREV_ARROW + '">');
 			$arrow.filter('.next').html('<img src="' + Util.NEXT_ARROW + '">');
 
@@ -81,4 +79,8 @@
 				return false;
 			});
 		}
+
+		setTimeout(function() {
+			$arrow.css('marginTop', -$arrow.outerHeight() / 2);
+		}, 0);
 	};

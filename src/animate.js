@@ -91,7 +91,7 @@
 		}
 
 		function afterCallback() {
-			o.after.call(s, s.$banner, s.$item, s.currentIndex);
+			o.after.call(s, s.currentIndex);
 		}
 
 		// 处理可能会超出范围的索引

@@ -28,7 +28,7 @@ module.exports = function(grunt) {
 					'src/main.js',
 					'src/wrap-end.js'
 				],
-				dest: 'dist/jquery.<%= pkg.name %>.pkgd.js',
+				dest: 'dist/jquery.<%= pkg.name %>.js',
 			}
 		},
 
@@ -39,7 +39,7 @@ module.exports = function(grunt) {
 			},
 			my_target: {
 				files: {
-					'dist/jquery.<%= pkg.name %>.min.js': ['dist/jquery.<%= pkg.name %>.pkgd.js']
+					'dist/jquery.<%= pkg.name %>.min.js': ['dist/jquery.<%= pkg.name %>.js']
 				}
 			}
 		}

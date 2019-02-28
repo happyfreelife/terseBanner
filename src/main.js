@@ -26,7 +26,7 @@
 		clearInterval(s.playTimer);
 
 		s.playTimer = setInterval(function() {
-			s.option.before.call(s, s.$banner, s.$item, s.currentIndex);
+			s.option.before.call(s, s.currentIndex);
 			s.currentIndex++;
 			s.play();
 		}, s.option.auto);
@@ -64,7 +64,7 @@
 			throw new Error('terseBanner\'s index overflow!');
 		}
 
-		s.option.before.call(s, s.$banner, s.$item, s.currentIndex);
+		s.option.before.call(s, s.currentIndex);
 
 		switch (targetIndex) {
 			case 'prev':

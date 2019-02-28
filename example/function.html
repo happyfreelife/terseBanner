@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>terseBanner</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" type="text/css" href="example.css">
+</head>
+<body>
+    <div class="header">
+        <div class="container">
+            <a href="index.html" class="logo"></a>
+            <div class="link">
+                <a href="animation.html">动画模式</a>
+                <a href="custom.html">自定义样式</a>
+                <a href="function.html" class="active">函数和方法</a>
+                <a href="lazyload.html">延迟加载</a>
+                <a href="thumb.html">缩略图</a>
+                <a href="mobile.html">移动端</a>
+            </div>
+            <a href="https://github.com/happyfreelife/terseBanner/" target="_blank" class="github" title="look me on github"></a>
+        </div>
+    </div>
+
+    <div class="banner-function">
+        <ul>
+            <li><img src="img/function-1.jpg"></li>
+            <li><img src="img/function-2.jpg"></li>
+            <li><img src="img/function-3.jpg"></li>
+            <li><img src="img/function-4.jpg"></li>
+        </ul>
+        <div class="name">
+            <h2>Racoon</h2>
+            <h2>Owl</h2>
+            <h2>Elephants</h2>
+            <h2>Chick</h2>
+        </div>
+        <div class="toggle">
+            <a class="prev" href="javascript:">prev</a>
+            <a class="next" href="javascript:">next</a>
+        </div>
+    </div>
+</body>
+<script src="../lib/prism.js"></script>
+<script src="../lib/jquery-1.11.3.min.js"></script>
+<script src="../dist/jquery.terseBanner.min.js"></script>
+<!-- <script src="../lib/require.js" data-main="test.js"></script> -->
+<script>
+    var $banner = $('.banner-function');
+    var $name = $('.banner-function .name h2');
+    var $toggle = $('.banner-function .toggle a');
+
+    $banner.terseBanner({
+        init: function() {
+            $name.first().show();
+
+            // 指示按钮添加数字
+            this.$btn.each(function(i) {
+                $(this).text(i+1);
+            });
+        },
+        before: function(index) {
+            // 折叠当前的图片的名称
+            $name.eq(index).slideUp();
+        },
+        after: function(index) {
+            // 展开当前的图片的名称
+            $name.eq(index).slideDown();
+        },
+    });
+
+    // 自定义切换事件
+    $toggle.click(function() {
+        // terseBanner()中可以传入数字
+        if (this.className === 'prev') $banner.terseBanner('prev');
+        if (this.className === 'next') $banner.terseBanner('next');
+    });
+</script>
+</html>

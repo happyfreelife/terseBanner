@@ -145,9 +145,11 @@
 		if (!Util.IS_MOBILE) {
 			setInterval(function() {
 				$list.children().width($banner.width());
+				$list.children().height($banner.height());
 	
 				if (o.animation === 'fade') {
 					$list.prev().children().width($banner.width());
+					$list.prev().children().height($banner.height());
 				}
 			}, 50);
 		}
@@ -168,5 +170,5 @@
 		s.lazyload();
 
 		// Banner初始化完成之后的回调函数
-		o.init.call(s, s.$banner, s.$item, 0);
+		o.init.call(s);
 	};
