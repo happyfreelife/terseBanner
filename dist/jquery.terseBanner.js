@@ -1,8 +1,8 @@
 /**
  * terseBanner
- * Version: 2.3.7
+ * Version: 2.3.8
  * URI: https://github.com/happyfreelife/terseBanner
- * Date: 2019-02-28
+ * Date: 2019-03-02
  **/
 ;(function (window, factory) {
 	if (typeof define === 'function' && define.amd) {
@@ -23,7 +23,8 @@
 		IS_LTIE8: /msie (6.0|7.0)/i.test(navigator.userAgent),
 
 		// 是否是移动端
-		IS_MOBILE: !!navigator.userAgent.match(/AppleWebKit.*Mobile.*/),
+		// IS_MOBILE: !!navigator.userAgent.match(/AppleWebKit.*Mobile.*/),
+		IS_MOBILE: document.ontouchstart === null,
 
 		// 是否支持CSS3动画过渡
 		IS_SUPPORT_TRANSITION: 'transition' in document.documentElement.style,
@@ -70,7 +71,7 @@
 			'    float: left;\n' +
 			'    min-height: 1px;\n' +
 			'    background-repeat: no-repeat;\n' +
-			'    background-position: center top;\n' +
+			'    background-position: center center;\n' +
 			'}\n' +
 			'.tb-list > .touching{\n' +
 			'    -webkit-transition-duration: 0ms !important;\n' +
@@ -287,11 +288,17 @@
 		if (!Util.IS_MOBILE) {
 			setInterval(function() {
 				$list.children().width($banner.width());
-				$list.children().height($banner.height());
+
+				if (!o.adaptive) {
+					$list.children().height($banner.height());
+				}
 	
 				if (o.animation === 'fade') {
 					$list.prev().children().width($banner.width());
-					$list.prev().children().height($banner.height());
+
+					if (!o.adaptive) {
+						$list.prev().children().height($banner.height());
+					}
 				}
 			}, 50);
 		}
@@ -357,37 +364,14 @@
 			}
 		});
 
-		if ($arrow.css('backgroundImage') === 'none') {
-			function setArrowHeight() {
-				var bannerHeight = Math.max(
-					$banner.height(),
-					$.isNumeric(parseInt($banner.css('maxHeight'))) ? parseInt($banner.css('maxHeight')) : 0,
-					$.isNumeric(parseInt($banner.css('minHeight'))) ? parseInt($banner.css('minHeight')) : 0
-				);
+		function setArrowHeight() {
+			var bannerHeight = Math.max(
+				$banner.height(),
+				$.isNumeric(parseInt($banner.css('maxHeight'))) ? parseInt($banner.css('maxHeight')) : 0,
+				$.isNumeric(parseInt($banner.css('minHeight'))) ? parseInt($banner.css('minHeight')) : 0
+			);
 
-				$arrow.height(parseInt(bannerHeight * 0.1));
-			}
-
-			if (!$arrow.height()) {
-				setArrowHeight();
-
-				/* 自适应模式下，最外层容器没有高度
-				 * 计算之后的箭头高度为0，无法显示
-				 * 在首张图片加载完成之后重新计算下
-				 */
-				if (o.adaptive) {
-					var img = new Image(),
-						$firstImage = $item.first().find('img');
-					
-					img.src = $firstImage.attr('src') || $firstImage.attr('data-src');
-
-					if (img.complete) {
-						setArrowHeight();
-					} else {
-						img.onload = setArrowHeight;
-					}
-				}
-			}
+			$arrow.height(parseInt(bannerHeight * 0.1));
 
 			$arrow.filter('.prev').html('<img src="' + Util.PREV_ARROW + '">');
 			$arrow.filter('.next').html('<img src="' + Util.NEXT_ARROW + '">');
@@ -395,11 +379,33 @@
 			$arrow.find('img').on('dragstart', function() {
 				return false;
 			});
+
+			setTimeout(function() {
+				$arrow.css('marginTop', -$arrow.outerHeight() / 2);
+			}, 0);
 		}
 
-		setTimeout(function() {
-			$arrow.css('marginTop', -$arrow.outerHeight() / 2);
-		}, 0);
+		// 样式中没有定义箭头的尺寸，就自动设置
+		if (!$arrow.width()) {
+			/* 自适应模式下，最外层容器没有高度
+			 * 计算之后的箭头高度为0，无法显示
+			 * 在首张图片加载完成之后再计算
+			 */
+			if (o.adaptive) {
+				var img = new Image(),
+					$firstImage = $item.first().find('img');
+				
+				img.src = $firstImage.attr('src') || $firstImage.attr('data-src');
+
+				if (img.complete) {
+					setArrowHeight();
+				} else {
+					img.onload = setArrowHeight;
+				}
+			} else {
+				setArrowHeight();
+			}
+		}
 	};
 
 
@@ -637,7 +643,8 @@
 			touchDuration;   // 触摸持续时间
 
 		function getListOffset() {
-			return parseInt($list.attr('style').match(/translate3d\((-?\d+)px/)[1]);
+			var offset = $list.attr('style').match(/translate3d\((-?\d+)px/);
+			if (offset) return parseInt(offset[1]);
 		}
 
 		$list.css({
@@ -774,6 +781,7 @@
 		setInterval(function() {
 			if (Util.IS_MOBILE && !s.touching) {
 				$item.width($banner.width());
+				$item.height($banner.height());
 				$list.width($item.width() * (s.len + 2));
 				$list.css(Util.TRANSFORM, 'translate3d(' + -$item.width() * (s.currentIndex + 1) + 'px, 0, 0)');
 
