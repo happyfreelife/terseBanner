@@ -19,7 +19,7 @@
 			'    float: left;\n' +
 			'    min-height: 1px;\n' +
 			'    background-repeat: no-repeat;\n' +
-			'    background-position: center top;\n' +
+			'    background-position: center center;\n' +
 			'}\n' +
 			'.tb-list > .touching{\n' +
 			'    -webkit-transition-duration: 0ms !important;\n' +

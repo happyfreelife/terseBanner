@@ -3,16 +3,53 @@
 <head>
     <title>terseBanner</title>
     <meta charset="utf-8">
-    <link rel="stylesheet" type="text/css" href="example.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="format-detection" content="telephone=no, email=no, adress=no">
+    <link rel="stylesheet" href="example.css">
 </head>
 <body>
-    为=提示语或二维码
+	<header>
+	    <div class="container">
+	        <a href="index.html" class="logo"></a>
+	        <div class="link">
+	            <a href="animation.html">动画模式</a>
+	            <a href="custom.html">自定义样式</a>
+	            <a href="function.html">函数和方法</a>
+	            <a href="lazyload.html">延迟加载</a>
+	            <a href="thumb.html">缩略图</a>
+	            <a href="mobile.html" class="active">移动端</a>
+	        </div>
+	        <a href="https://github.com/happyfreelife/terseBanner/" target="_blank" class="github" title="look me on github"></a>
+	    </div>
+	</header>
+
+	<section class="mobile">
+		<div class="tip">
+			<p>在<em>Chrome</em>中，按<em>F12</em>显示开发者工具，工具栏<em>左上角</em>点击<em>移动设备</em>模式，再刷新页面</p>
+			<p>或者</p>
+			<p>直接使用移动设备扫描下方的二维码</p>
+			<img src="img/mobile.png">
+		</div>
+
+		<div class="touch">
+			<ul>
+				<li class="item-1">← item 1 →</li>
+				<li class="item-2">← item 2 →</li>
+				<li class="item-3">← item 3 →</li>
+				<li class="item-4">← item 4 →</li>
+				<li class="item-5">← item 5 →</li>
+			</ul>
+		</div>
+
+		<div class="text">请在移动设备中刷新页面<br>更多功能请在电脑浏览器中查看</div>
+	</section>
 </body>
 <script src="../lib/prism.js"></script>
 <script src="../lib/jquery-1.11.3.min.js"></script>
-<script src="../dist/jquery.terseBanner.min.js"></script>
-<!-- <script src="../lib/require.js" data-main="test.js"></script> -->
+<script src="../dist/jquery.terseBanner.js"></script>
 <script>
-    
+    if (document.ontouchstart === null) {
+    	$('.mobile .touch').terseBanner();
+    }
 </script>
 </html>

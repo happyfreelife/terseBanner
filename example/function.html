@@ -3,10 +3,11 @@
 <head>
     <title>terseBanner</title>
     <meta charset="utf-8">
-    <link rel="stylesheet" type="text/css" href="example.css">
+    <link rel="stylesheet" href="example.css">
+    <script type="text/javascript" src="example.js"></script>
 </head>
 <body>
-    <div class="header">
+    <header>
         <div class="container">
             <a href="index.html" class="logo"></a>
             <div class="link">
@@ -19,9 +20,9 @@
             </div>
             <a href="https://github.com/happyfreelife/terseBanner/" target="_blank" class="github" title="look me on github"></a>
         </div>
-    </div>
+    </header>
 
-    <div class="banner-function">
+    <section class="banner-function">
         <ul>
             <li><img src="img/function-1.jpg"></li>
             <li><img src="img/function-2.jpg"></li>
@@ -38,18 +39,17 @@
             <a class="prev" href="javascript:">prev</a>
             <a class="next" href="javascript:">next</a>
         </div>
-    </div>
+    </section>
 </body>
 <script src="../lib/prism.js"></script>
 <script src="../lib/jquery-1.11.3.min.js"></script>
 <script src="../dist/jquery.terseBanner.min.js"></script>
-<!-- <script src="../lib/require.js" data-main="test.js"></script> -->
 <script>
-    var $banner = $('.banner-function');
-    var $name = $('.banner-function .name h2');
-    var $toggle = $('.banner-function .toggle a');
+    var $function = $('.banner-function');
+    var $name = $function.find('.name h2');
+    var $toggle = $function.find('.toggle a');
 
-    $banner.terseBanner({
+    $function.terseBanner({
         init: function() {
             $name.first().show();
 
@@ -59,16 +59,13 @@
             });
         },
         before: function(index) {
-            // 折叠当前的图片的名称
-            $name.eq(index).slideUp();
+            $name.eq(index).slideUp(); // 折叠当前的图片的名称
         },
         after: function(index) {
-            // 展开当前的图片的名称
-            $name.eq(index).slideDown();
+            $name.eq(index).slideDown(); // 展开当前的图片的名称
         },
     });
 
-    // 自定义切换事件
     $toggle.click(function() {
         // terseBanner()中可以传入数字
         if (this.className === 'prev') $banner.terseBanner('prev');

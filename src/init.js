@@ -145,11 +145,17 @@
 		if (!Util.IS_MOBILE) {
 			setInterval(function() {
 				$list.children().width($banner.width());
-				$list.children().height($banner.height());
+
+				if (!o.adaptive) {
+					$list.children().height($banner.height());
+				}
 	
 				if (o.animation === 'fade') {
 					$list.prev().children().width($banner.width());
-					$list.prev().children().height($banner.height());
+
+					if (!o.adaptive) {
+						$list.prev().children().height($banner.height());
+					}
 				}
 			}, 50);
 		}

@@ -6,7 +6,8 @@
 		IS_LTIE8: /msie (6.0|7.0)/i.test(navigator.userAgent),
 
 		// 是否是移动端
-		IS_MOBILE: !!navigator.userAgent.match(/AppleWebKit.*Mobile.*/),
+		// IS_MOBILE: !!navigator.userAgent.match(/AppleWebKit.*Mobile.*/),
+		IS_MOBILE: document.ontouchstart === null,
 
 		// 是否支持CSS3动画过渡
 		IS_SUPPORT_TRANSITION: 'transition' in document.documentElement.style,

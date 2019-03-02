@@ -11,21 +11,21 @@ table{border-collapse: collapse;}
 td,th{padding: 0;}
 
 
-.container{position: relative;width: 1000px;margin: 0 auto;}
+.container{position: relative;margin: 0 auto;width: 1000px;}
 .container:after,.clearfix:after{content: "";display: block;clear: both;}
 
-.header{background: #000;}
-.header{position: fixed;top: 0;left: 0;z-index: 10;width: 100%;height: 80px;background: #000;background: rgba(0, 0, 0, .8);border-bottom: 1px solid rgba(255, 255, 255, .3);}
-.header .logo{float: left;width: 280px;height: 80px;background: url(img/logo.png) no-repeat;}
-.header .link{float: right;margin-top: 40px;overflow: hidden;}
-.header .link a{float: left;line-height: 26px;margin-left: 15px;padding: 0 10px;background: #fff;border-radius: 3px;color: #333;-webkit-transition: all .15s;transition: all .15s;}
-.header .link a.active,.header .link a:hover{background: #09c;color: #fff;}
-.header .github{position: absolute;top: 40px;right: -34px;width: 24px;height: 24px;background: #fff url(img/github.png) no-repeat center;border-radius: 4px;}
+header{background: #000;}
+header{position: fixed;top: 0;left: 0;z-index: 10;width: 100%;height: 80px;background: #000;background: rgba(0, 0, 0, .8);border-bottom: 1px solid rgba(255, 255, 255, .3);}
+header .logo{float: left;width: 280px;height: 80px;background: url(img/logo.png) no-repeat;}
+header .link{float: right;margin-top: 40px;overflow: hidden;}
+header .link a{float: left;line-height: 26px;margin-left: 15px;padding: 0 10px;background: #fff;border-radius: 3px;color: #333;-webkit-transition: all .15s;transition: all .15s;}
+header .link a.active,
+header .link a:hover{background: #09c;color: #fff;}
+header .github{position: absolute;top: 40px;right: -34px;width: 24px;height: 24px;background: #fff url(img/github.png) no-repeat center;border-radius: 4px;}
 
 .banner-index{height: 100vh;}
-.banner-index .tb-list ul li{background-position: center;}
 
-.banner-animation{height: 100vh;}
+.banner-animation{height: 100vh;margin-top: 0;}
 
 .banner-custom{height: 600px;margin-top: 80px;}
 .banner-custom .tb-arrow a{width: 64px;height: 64px;opacity: 0;-webkit-transition: all .3s;transition: all .3s;}
@@ -36,7 +36,7 @@ td,th{padding: 0;}
 .banner-custom .tb-btn a{width: 20px;height: 20px;margin: 0 20px;-webkit-transition: transform .3s;transition: transform .3s;}
 .banner-custom .tb-btn a.active{background: #f03;-webkit-transform: scale(1.8);transform: scale(1.8);}
 
-.banner-function{height: 600px;margin-top: 80px;}
+.banner-function{margin-top: 80px;height: 600px;}
 .banner-function .tb-btn{bottom: auto;top: 50%;left: 0;margin: -15px 0 0 40px !important;}
 .banner-function .tb-btn a{width: 30px;height: 30px;line-height: 30px;margin: 0 10px;background: #f60;color: #fff;text-align: center;-webkit-transition: background .3s;transition: background .3s;}
 .banner-function .tb-btn a.active{background: #333;}
@@ -45,6 +45,37 @@ td,th{padding: 0;}
 .banner-function .toggle{position: absolute;top: 50%;margin-top: -15px;right: 40px;}
 .banner-function .toggle a{float: left;width: 60px;line-height: 30px;color: #fff;background: #f60;-webkit-transition: all .3s;transition: all .3s;text-align: center;margin-left: 20px;text-transform: uppercase;letter-spacing: 1px;;}
 .banner-function .toggle a:hover{background: #333;}
+
+.banner-lazyload{margin-top: 80px;}
+
+.banner-thumb{margin-top: 80px;}
+.banner-thumb .tb-btn a{opacity: .5;-webkit-transition: all .3s;transition: all .3s;margin: 0 10px;border: 1px solid #fff;border-radius: 0;}
+.banner-thumb .tb-btn a.active{opacity: 1;}
+
+.mobile{width: 1000px;margin: 0 auto;}
+.mobile .tip{padding-top: 100px;}
+.mobile .tip p{line-height: 30px;font-size: 16px;color: #333;text-align: center;}
+.mobile .tip p em{color: #09c;}
+.mobile .tip img{display: block;width: 200px;margin: 20px auto;}
+
+.mobile .touch{display: none;}
+.mobile .touch ul li{font: 30px/100vh "Consolas";color: #fff;text-align: center;text-transform: capitalize;/*padding: calc(50vh - 25px) 0;*/}
+.mobile .touch ul li.item-1{background: #ff0000;}
+.mobile .touch ul li.item-2{background: #ff8000;}
+.mobile .touch ul li.item-3{background: #0000a0;}
+.mobile .touch ul li.item-4{background: #808000;}
+.mobile .touch ul li.item-5{background: #ff00ff;}
+.mobile .text{display: none;}
+
+@media screen and (max-width: 768px) {
+	body{min-width: initial;max-width: initial;}
+	header{display: none;}
+
+	.mobile{width: auto;}
+	.mobile .tip{display: none;}
+	.mobile .touch{display: block;height: 100vh;}
+	.mobile .text{position: fixed;top: 0;left: 0;z-index: 10;display: block;width: 100%;line-height: 20px;padding: 5px 0;background: rgba(0, 0, 0, .5);font-size: 12px;color: #fff;text-align: center;letter-spacing: 1px;}
+}
 
 /* PrismJS 1.15.0
 https://prismjs.com/download.html#themes=prism-tomorrow&languages=markup+css+clike+javascript */
@@ -70,3 +101,36 @@ pre[class*="language-"]{margin: .5em 0;padding: 1em;overflow: auto;}
 .token.italic{font-style: italic;}
 .token.entity{cursor: help;}
 .token.inserted{color: green;}
+
+
+
+
+/* PrismJS 1.15.0
+https://prismjs.com/download.html#themes=prism-solarizedlight&languages=markup+css+clike+javascript */
+/*
+ Solarized Color Schemes originally by Ethan Schoonover
+ http://ethanschoonover.com/solarized
+
+ Ported for PrismJS by Hector Matos
+ Website: https://krakendev.io
+ Twitter Handle: https://twitter.com/allonsykraken)
+*/
+
+/*code[class*="language-"],pre[class*="language-"]{line-height: 1.5;font-family: Consolas, Monaco, "Andale Mono", "Ubuntu Mono", monospace;color: #657b83;text-align: left;word-wrap: normal;word-break: normal;word-spacing: normal;white-space: pre;-moz-tab-size: 4;-o-tab-size: 4;tab-size: 4;-webkit-hyphens: none;-moz-hyphens: none;hyphens: none;-ms-hyphens: none;}
+pre[class*="language-"]::-moz-selection,pre[class*="language-"] ::-moz-selection,code[class*="language-"]::-moz-selection,code[class*="language-"] ::-moz-selection{background: #073642;}
+pre[class*="language-"]::selection,pre[class*="language-"] ::selection,code[class*="language-"]::selection,code[class*="language-"] ::selection{background: #073642;}
+pre[class*="language-"]{margin: .5em 0;padding: 1em;overflow: auto;border-radius: .3em;}
+:not(pre) > code[class*="language-"],pre[class*="language-"]{background-color: #fdf6e3;}
+:not(pre) > code[class*="language-"]{padding: .1em;border-radius: .3em;}
+.token.comment,.token.prolog,.token.doctype,.token.cdata{color: #93a1a1;}
+.token.punctuation{color: #586e75;}
+.namespace{opacity: .7;}
+.token.property,.token.tag,.token.boolean,.token.number,.token.constant,.token.symbol,.token.deleted{color: #268bd2;}
+.token.selector,.token.attr-name,.token.string,.token.char,.token.builtin,.token.url,.token.inserted{color: #2aa198;}
+.token.entity{background: #eee8d5;color: #657b83;}
+.token.atrule,.token.attr-value,.token.keyword{color: #859900;}
+.token.function,.token.class-name{color: #b58900;}
+.token.regex,.token.important,.token.variable{color: #cb4b16;}
+.token.important,.token.bold{font-weight: bold;}
+.token.italic{font-style: italic;}
+.token.entity{cursor: help;}*/

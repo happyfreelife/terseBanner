@@ -21,7 +21,8 @@
 			touchDuration;   // 触摸持续时间
 
 		function getListOffset() {
-			return parseInt($list.attr('style').match(/translate3d\((-?\d+)px/)[1]);
+			var offset = $list.attr('style').match(/translate3d\((-?\d+)px/);
+			if (offset) return parseInt(offset[1]);
 		}
 
 		$list.css({
@@ -158,6 +159,7 @@
 		setInterval(function() {
 			if (Util.IS_MOBILE && !s.touching) {
 				$item.width($banner.width());
+				$item.height($banner.height());
 				$list.width($item.width() * (s.len + 2));
 				$list.css(Util.TRANSFORM, 'translate3d(' + -$item.width() * (s.currentIndex + 1) + 'px, 0, 0)');
 
