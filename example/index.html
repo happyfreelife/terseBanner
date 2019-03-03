@@ -4,18 +4,16 @@
     <title>terseBanner</title>
     <meta charset="utf-8">
     <link rel="stylesheet" href="example.css">
-    <script type="text/javascript" src="example.js"></script>
 </head>
 <body>
     <header>
         <div class="container">
             <a href="index.html" class="logo"></a>
             <div class="link">
-                <a href="animation.html">动画模式</a>
                 <a href="custom.html">自定义样式</a>
                 <a href="function.html">函数和方法</a>
-                <a href="lazyload.html">延迟加载</a>
                 <a href="thumb.html">缩略图</a>
+                <a href="lazyload.html">延迟加载</a>
                 <a href="mobile.html">移动端</a>
             </div>
             <a href="https://github.com/happyfreelife/terseBanner/" target="_blank" class="github" title="look me on github"></a>
@@ -24,18 +22,19 @@
 
     <section class="banner-index">
         <ul>
-            <li><img src="img/index-1.jpg"></li>
-            <li><img src="img/index-2.jpg"></li>
-            <li><img src="img/index-3.jpg"></li>
-            <li><img src="img/index-4.jpg"></li>
-            <li><img src="img/index-5.jpg"></li>
-            <li><img src="img/index-6.jpg"></li>
+            <li bg="#ffca0a"><img src="img/index-1.jpg"></li>
+            <li bg="#0099d2"><img src="img/index-2.jpg"></li>
+            <li bg="#a3248f"><img src="img/index-3.jpg"></li>
+            <li bg="#00a77b"><img src="img/index-4.jpg"></li>
+            <li bg="#466f85"><img src="img/index-5.jpg"></li>
+            <li bg="#000002"><img src="img/index-6.jpg"></li>
         </ul>
     </section>
 </body>
 <script src="../lib/prism.js"></script>
 <script src="../lib/jquery-1.11.3.min.js"></script>
 <script src="../dist/jquery.terseBanner.min.js"></script>
+<script src="example.js"></script>
 <script>
     $('.banner-index').terseBanner({
         arrow: true

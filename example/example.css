@@ -10,24 +10,20 @@ i,em{font-style: normal;}
 table{border-collapse: collapse;}
 td,th{padding: 0;}
 
-
-.container{position: relative;margin: 0 auto;width: 1000px;}
+.container{position: relative;width: 1000px;margin: 0 auto;}
 .container:after,.clearfix:after{content: "";display: block;clear: both;}
 
-header{background: #000;}
-header{position: fixed;top: 0;left: 0;z-index: 10;width: 100%;height: 80px;background: #000;background: rgba(0, 0, 0, .8);border-bottom: 1px solid rgba(255, 255, 255, .3);}
+header{position: fixed;top: 0;left: 0;z-index: 10;width: 100%;height: 80px;background: #333;border-bottom: 1px solid rgba(255, 255, 255, .3);}
 header .logo{float: left;width: 280px;height: 80px;background: url(img/logo.png) no-repeat;}
 header .link{float: right;margin-top: 40px;overflow: hidden;}
 header .link a{float: left;line-height: 26px;margin-left: 15px;padding: 0 10px;background: #fff;border-radius: 3px;color: #333;-webkit-transition: all .15s;transition: all .15s;}
-header .link a.active,
-header .link a:hover{background: #09c;color: #fff;}
+header .link a.active,header .link a:hover{background: #09c;color: #fff;}
 header .github{position: absolute;top: 40px;right: -34px;width: 24px;height: 24px;background: #fff url(img/github.png) no-repeat center;border-radius: 4px;}
 
-.banner-index{height: 100vh;}
+section[class*="banner-"]{height: calc(100vh - 80px);margin-top: 80px;}
 
-.banner-animation{height: 100vh;margin-top: 0;}
 
-.banner-custom{height: 600px;margin-top: 80px;}
+.banner-custom{height: calc(100vh - 80px);margin-top: 80px;}
 .banner-custom .tb-arrow a{width: 64px;height: 64px;opacity: 0;-webkit-transition: all .3s;transition: all .3s;}
 .banner-custom .tb-arrow a.prev{background: url(img/custom-arrow-prev.png) no-repeat;-webkit-transform: translate3d(-50%, 0, 0);transform: translate3d(-50%, 0, 0);}
 .banner-custom .tb-arrow a.next{background: url(img/custom-arrow-next.png) no-repeat;-webkit-transform: translate3d(50%, 0, 0);transform: translate3d(50%, 0, 0);}
@@ -36,20 +32,22 @@ header .github{position: absolute;top: 40px;right: -34px;width: 24px;height: 24p
 .banner-custom .tb-btn a{width: 20px;height: 20px;margin: 0 20px;-webkit-transition: transform .3s;transition: transform .3s;}
 .banner-custom .tb-btn a.active{background: #f03;-webkit-transform: scale(1.8);transform: scale(1.8);}
 
-.banner-function{margin-top: 80px;height: 600px;}
-.banner-function .tb-btn{bottom: auto;top: 50%;left: 0;margin: -15px 0 0 40px !important;}
+.banner-function{height: calc(100vh - 80px);margin-top: 80px;}
+.banner-function .tb-btn{top: 50%;bottom: auto;left: 0;margin: -15px 0 0 40px !important;}
 .banner-function .tb-btn a{width: 30px;height: 30px;line-height: 30px;margin: 0 10px;background: #f60;color: #fff;text-align: center;-webkit-transition: background .3s;transition: background .3s;}
 .banner-function .tb-btn a.active{background: #333;}
-.banner-function .name{position: absolute;width: 180px;left: 50px;top: 50%;margin-top: -80px;}
-.banner-function .name h2{display: none;line-height: 20px;background: #fff3cd;border: 1px solid #fde59b;color: #856404;letter-spacing: 2px;padding: 8px 10px;text-align: center;}
-.banner-function .toggle{position: absolute;top: 50%;margin-top: -15px;right: 40px;}
-.banner-function .toggle a{float: left;width: 60px;line-height: 30px;color: #fff;background: #f60;-webkit-transition: all .3s;transition: all .3s;text-align: center;margin-left: 20px;text-transform: uppercase;letter-spacing: 1px;;}
+.banner-function .name{position: absolute;top: 50%;left: 50px;width: 180px;margin-top: -80px;}
+.banner-function .name h2{display: none;line-height: 20px;padding: 8px 10px;background: #fff3cd;border: 1px solid #fde59b;color: #856404;text-align: center;letter-spacing: 2px;}
+.banner-function .name h2:nth-child(1){display: block;}
+.banner-function .toggle{position: absolute;top: 50%;right: 40px;margin-top: -15px;}
+.banner-function .toggle a{float: left;width: 60px;line-height: 30px;margin-left: 20px;background: #f60;color: #fff;text-align: center;letter-spacing: 1px;-webkit-transition: all .3s;transition: all .3s;text-transform: uppercase;;}
 .banner-function .toggle a:hover{background: #333;}
 
-.banner-lazyload{margin-top: 80px;}
+.banner-lazyload{height: calc(100vh - 80px);margin-top: 80px;}
+.banner-lazyload .tb-list li{background-size: cover;}
 
-.banner-thumb{margin-top: 80px;}
-.banner-thumb .tb-btn a{opacity: .5;-webkit-transition: all .3s;transition: all .3s;margin: 0 10px;border: 1px solid #fff;border-radius: 0;}
+.banner-thumb{height: calc(100vh - 80px);margin-top: 80px;}
+.banner-thumb .tb-btn a{margin: 0 10px;border: 1px solid #fff;border-radius: 0;opacity: .5;-webkit-transition: all .3s;transition: all .3s;}
 .banner-thumb .tb-btn a.active{opacity: 1;}
 
 .mobile{width: 1000px;margin: 0 auto;}
@@ -60,12 +58,19 @@ header .github{position: absolute;top: 40px;right: -34px;width: 24px;height: 24p
 
 .mobile .touch{display: none;}
 .mobile .touch ul li{font: 30px/100vh "Consolas";color: #fff;text-align: center;text-transform: capitalize;/*padding: calc(50vh - 25px) 0;*/}
-.mobile .touch ul li.item-1{background: #ff0000;}
+.mobile .touch ul li.item-1{background: #f00;}
 .mobile .touch ul li.item-2{background: #ff8000;}
 .mobile .touch ul li.item-3{background: #0000a0;}
 .mobile .touch ul li.item-4{background: #808000;}
-.mobile .touch ul li.item-5{background: #ff00ff;}
+.mobile .touch ul li.item-5{background: #f0f;}
 .mobile .text{display: none;}
+
+.code{position: fixed;top: 100px;left: calc(50% - 500px);z-index: 10;;}
+.code i{display: block;width: 50px;height: 50px;background: rgba(0, 0, 0, .8) url(img/code.png) no-repeat 5px / 40px;border-radius: 4px;cursor: pointer;}
+.code i.active{background-color: #09c;}
+.code .wrapper{display: none;padding-top: 5px;overflow: hidden;}
+
+
 
 @media screen and (max-width: 768px) {
 	body{min-width: initial;max-width: initial;}
@@ -77,49 +82,13 @@ header .github{position: absolute;top: 40px;right: -34px;width: 24px;height: 24p
 	.mobile .text{position: fixed;top: 0;left: 0;z-index: 10;display: block;width: 100%;line-height: 20px;padding: 5px 0;background: rgba(0, 0, 0, .5);font-size: 12px;color: #fff;text-align: center;letter-spacing: 1px;}
 }
 
-/* PrismJS 1.15.0
-https://prismjs.com/download.html#themes=prism-tomorrow&languages=markup+css+clike+javascript */
-/**
- * prism.js tomorrow night eighties for JavaScript, CoffeeScript, CSS and HTML
- * Based on https://github.com/chriskempson/tomorrow-theme
- * @author Rose Pritchard
- */
-code[class*="language-"],pre[class*="language-"]{line-height: 1.5;background: none;font-family: Consolas, Monaco, "Andale Mono", "Ubuntu Mono", monospace;color: #ccc;text-align: left;word-wrap: normal;word-break: normal;word-spacing: normal;white-space: pre;-moz-tab-size: 4;-o-tab-size: 4;tab-size: 4;-webkit-hyphens: none;-moz-hyphens: none;hyphens: none;-ms-hyphens: none;}
-pre[class*="language-"]{margin: .5em 0;padding: 1em;overflow: auto;}
-:not(pre) > code[class*="language-"],pre[class*="language-"]{background: #2d2d2d;}
-:not(pre) > code[class*="language-"]{padding: .1em;border-radius: .3em;white-space: normal;}
-.token.comment,.token.block-comment,.token.prolog,.token.doctype,.token.cdata{color: #999;}
-.token.punctuation{color: #ccc;}
-.token.tag,.token.attr-name,.token.namespace,.token.deleted{color: #e2777a;}
-.token.function-name{color: #6196cc;}
-.token.boolean,.token.number,.token.function{color: #f08d49;}
-.token.property,.token.class-name,.token.constant,.token.symbol{color: #f8c555;}
-.token.selector,.token.important,.token.atrule,.token.keyword,.token.builtin{color: #cc99cd;}
-.token.string,.token.char,.token.attr-value,.token.regex,.token.variable{color: #7ec699;}
-.token.operator,.token.entity,.token.url{color: #67cdcc;}
-.token.important,.token.bold{font-weight: bold;}
-.token.italic{font-style: italic;}
-.token.entity{cursor: help;}
-.token.inserted{color: green;}
 
 
 
-
-/* PrismJS 1.15.0
-https://prismjs.com/download.html#themes=prism-solarizedlight&languages=markup+css+clike+javascript */
-/*
- Solarized Color Schemes originally by Ethan Schoonover
- http://ethanschoonover.com/solarized
-
- Ported for PrismJS by Hector Matos
- Website: https://krakendev.io
- Twitter Handle: https://twitter.com/allonsykraken)
-*/
-
-/*code[class*="language-"],pre[class*="language-"]{line-height: 1.5;font-family: Consolas, Monaco, "Andale Mono", "Ubuntu Mono", monospace;color: #657b83;text-align: left;word-wrap: normal;word-break: normal;word-spacing: normal;white-space: pre;-moz-tab-size: 4;-o-tab-size: 4;tab-size: 4;-webkit-hyphens: none;-moz-hyphens: none;hyphens: none;-ms-hyphens: none;}
+code[class*="language-"],pre[class*="language-"]{line-height: 1.5;font-family: Consolas, Monaco, "Andale Mono", "Ubuntu Mono", monospace;color: #657b83;text-align: left;word-wrap: normal;word-break: normal;word-spacing: normal;white-space: pre;-moz-tab-size: 4;-o-tab-size: 4;tab-size: 4;-webkit-hyphens: none;-moz-hyphens: none;hyphens: none;-ms-hyphens: none;}
 pre[class*="language-"]::-moz-selection,pre[class*="language-"] ::-moz-selection,code[class*="language-"]::-moz-selection,code[class*="language-"] ::-moz-selection{background: #073642;}
 pre[class*="language-"]::selection,pre[class*="language-"] ::selection,code[class*="language-"]::selection,code[class*="language-"] ::selection{background: #073642;}
-pre[class*="language-"]{margin: .5em 0;padding: 1em;overflow: auto;border-radius: .3em;}
+pre[class*="language-"]{margin: .5em 0;padding: 0.5em;overflow: auto;border-radius: .3em;}
 :not(pre) > code[class*="language-"],pre[class*="language-"]{background-color: #fdf6e3;}
 :not(pre) > code[class*="language-"]{padding: .1em;border-radius: .3em;}
 .token.comment,.token.prolog,.token.doctype,.token.cdata{color: #93a1a1;}
@@ -133,4 +102,7 @@ pre[class*="language-"]{margin: .5em 0;padding: 1em;overflow: auto;border-radius
 .token.regex,.token.important,.token.variable{color: #cb4b16;}
 .token.important,.token.bold{font-weight: bold;}
 .token.italic{font-style: italic;}
-.token.entity{cursor: help;}*/
+.token.entity{cursor: help;}
+
+pre[class*="language-"]{margin: 0;width: auto;float: left;margin-right: 10px;}
+:not(pre) > code[class*="language-"],pre[class*="language-"]{background-color: rgba(253, 246, 227, 0.9);}

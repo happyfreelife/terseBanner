@@ -1,75 +1,125 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>terseBanner</title>
-    <meta charset="utf-8">
-    <link rel="stylesheet" href="example.css">
-    <script type="text/javascript" src="example.js"></script>
+	<title>terseBanner</title>
+	<meta charset="utf-8">
+	<link rel="stylesheet" href="example.css">
 </head>
 <body>
-    <header>
-        <div class="container">
-            <a href="index.html" class="logo"></a>
-            <div class="link">
-                <a href="animation.html">动画模式</a>
-                <a href="custom.html">自定义样式</a>
-                <a href="function.html" class="active">函数和方法</a>
-                <a href="lazyload.html">延迟加载</a>
-                <a href="thumb.html">缩略图</a>
-                <a href="mobile.html">移动端</a>
-            </div>
-            <a href="https://github.com/happyfreelife/terseBanner/" target="_blank" class="github" title="look me on github"></a>
-        </div>
-    </header>
+	<header>
+		<div class="container">
+			<a href="index.html" class="logo"></a>
+			<div class="link">
+				<a href="custom.html">自定义样式</a>
+				<a href="function.html" class="active">函数和方法</a>
+				<a href="thumb.html">缩略图</a>
+				<a href="lazyload.html">延迟加载</a>
+				<a href="mobile.html">移动端</a>
+			</div>
+			<a href="https://github.com/happyfreelife/terseBanner/" target="_blank" class="github" title="look me on github"></a>
+		</div>
+	</header>
 
-    <section class="banner-function">
-        <ul>
-            <li><img src="img/function-1.jpg"></li>
-            <li><img src="img/function-2.jpg"></li>
-            <li><img src="img/function-3.jpg"></li>
-            <li><img src="img/function-4.jpg"></li>
-        </ul>
-        <div class="name">
-            <h2>Racoon</h2>
-            <h2>Owl</h2>
-            <h2>Elephants</h2>
-            <h2>Chick</h2>
-        </div>
-        <div class="toggle">
-            <a class="prev" href="javascript:">prev</a>
-            <a class="next" href="javascript:">next</a>
-        </div>
-    </section>
+	<section class="banner-function">
+		<ul>
+			<li bg="#f1ebdd"><img src="img/function-1.jpg"></li>
+			<li bg="#e2e2e2"><img src="img/function-2.jpg"></li>
+			<li bg="#d3e6f7"><img src="img/function-3.jpg"></li>
+			<li bg="#f5f1cc"><img src="img/function-4.jpg"></li>
+		</ul>
+		<div class="name">
+			<h2>Racoon</h2>
+			<h2>Owl</h2>
+			<h2>Elephants</h2>
+			<h2>Chick</h2>
+		</div>
+		<div class="toggle">
+			<a class="prev" href="javascript:">prev</a>
+			<a class="next" href="javascript:">next</a>
+		</div>
+	</section>
+		<div class="code">
+			<i></i>
+			<div class="wrapper">
+<pre>
+<code class="language-javascript">/* 参数中有三个可用的回调函数init, before, after */
+$function.terseBanner({
+	// 初始化完时执行的回调函数
+	// this指向terseBanner的实例对象
+	// 实例对象中拥有$banner, $arrow, $btn等属性
+	init: function() {
+		this.$btn.each(function(i) {
+			$(this).text(i+1); // 给指示按钮添加数字
+		});
+	},
+	// 动画开始时执行的回调函数
+	// @param index 是当前显示的图片的索引
+	before: function(index) {
+		$name.eq(index).slideUp();
+	},
+	// 动画完成时执行的回调函数
+	after: function(index) {
+		$name.eq(index).slideDown();
+	},
+});</code>
+</pre>
+
+<pre>
+<code class="language-javascript">/* 在自定义事件中使用terseBanner()方法切换图片 */
+var $toggle = $function.find('.toggle a');
+
+// $toggle是右侧的PREV, NEXT按钮
+$toggle.click(function() {
+	// terseBanner()中可以传入数字
+	if (this.className === 'prev')
+		$function.terseBanner('prev');
+
+	if (this.className === 'next')
+		$function.terseBanner('next');
+});</code>
+</pre>
+			</div>
+		</div>
 </body>
 <script src="../lib/prism.js"></script>
 <script src="../lib/jquery-1.11.3.min.js"></script>
 <script src="../dist/jquery.terseBanner.min.js"></script>
+<script src="example.js"></script>
 <script>
-    var $function = $('.banner-function');
-    var $name = $function.find('.name h2');
-    var $toggle = $function.find('.toggle a');
+	var $function = $('.banner-function');
+	var $name = $function.find('.name h2');
 
-    $function.terseBanner({
-        init: function() {
-            $name.first().show();
+	$function.terseBanner({
+		// 初始化完时执行的回调函数
+		// this指向terseBanner的实例对象
+		// 实例对象中拥有$banner, $arrow, $btn等属性
+		init: function() {
+			this.$btn.each(function(i) {
+				$(this).text(i+1); // 给指示按钮添加数字
+			});
+		},
+		// 动画开始时执行的回调函数
+		// @param index 是当前显示的图片的索引
+		before: function(index) {
+			$name.eq(index).slideUp();
+		},
+		// 动画完成时执行的回调函数
+		after: function(index) {
+			$name.eq(index).slideDown();
+		},
+	});
 
-            // 指示按钮添加数字
-            this.$btn.each(function(i) {
-                $(this).text(i+1);
-            });
-        },
-        before: function(index) {
-            $name.eq(index).slideUp(); // 折叠当前的图片的名称
-        },
-        after: function(index) {
-            $name.eq(index).slideDown(); // 展开当前的图片的名称
-        },
-    });
 
-    $toggle.click(function() {
-        // terseBanner()中可以传入数字
-        if (this.className === 'prev') $banner.terseBanner('prev');
-        if (this.className === 'next') $banner.terseBanner('next');
-    });
+	var $toggle = $function.find('.toggle a');
+
+	// $toggle是右侧的PREV, NEXT按钮
+	$toggle.click(function() {
+		// terseBanner()中可以传入数字
+		if (this.className === 'prev')
+			$function.terseBanner('prev');
+
+		if (this.className === 'next')
+			$function.terseBanner('next');
+	});
 </script>
 </html>

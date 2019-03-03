@@ -1,8 +1,8 @@
 /**
  * terseBanner
- * Version: 2.3.8
+ * Version: 2.3.9
  * URI: https://github.com/happyfreelife/terseBanner
- * Date: 2019-03-02
+ * Date: 2019-03-03
  **/
 ;(function (window, factory) {
 	if (typeof define === 'function' && define.amd) {
@@ -385,8 +385,8 @@
 			}, 0);
 		}
 
-		// 样式中没有定义箭头的尺寸，就自动设置
-		if (!$arrow.width()) {
+		// 没有定义箭头的样式，就自动设置
+		if (!$arrow.width() && $arrow.css('backgroundImage') === 'none') {
 			/* 自适应模式下，最外层容器没有高度
 			 * 计算之后的箭头高度为0，无法显示
 			 * 在首张图片加载完成之后再计算

@@ -1,42 +1,59 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>terseBanner</title>
-    <meta charset="utf-8">
-    <link rel="stylesheet" href="example.css">
-    <script type="text/javascript" src="example.js"></script>
+	<title>terseBanner</title>
+	<meta charset="utf-8">
+	<link rel="stylesheet" href="example.css">
 </head>
 <body>
-    <header>
-        <div class="container">
-            <a href="index.html" class="logo"></a>
-            <div class="link">
-                <a href="animation.html">动画模式</a>
-                <a href="custom.html" class="active">自定义样式</a>
-                <a href="function.html">函数和方法</a>
-                <a href="lazyload.html">延迟加载</a>
-                <a href="thumb.html">缩略图</a>
-                <a href="mobile.html">移动端</a>
-            </div>
-            <a href="https://github.com/happyfreelife/terseBanner/" target="_blank" class="github" title="look me on github"></a>
-        </div>
-    </header>
-    
-    <section class="banner-custom">
-        <ul>
-            <li><img src="img/custom-1.jpg"></li>
-            <li><img src="img/custom-2.jpg"></li>
-            <li><img src="img/custom-3.jpg"></li>
-            <li><img src="img/custom-4.jpg"></li>
-        </ul>
-    </section>
+	<header>
+		<div class="container">
+			<a href="index.html" class="logo"></a>
+			<div class="link">
+				<a href="custom.html" class="active">自定义样式</a>
+				<a href="function.html">函数和方法</a>
+				<a href="thumb.html">缩略图</a>
+				<a href="lazyload.html">延迟加载</a>
+				<a href="mobile.html">移动端</a>
+			</div>
+			<a href="https://github.com/happyfreelife/terseBanner/" target="_blank" class="github" title="look me on github"></a>
+		</div>
+	</header>
+
+	<section class="banner-custom">
+		<ul>
+			<li bg="#342d34"><img src="img/custom-1.jpg"></li>
+			<li bg="#565179"><img src="img/custom-2.jpg"></li>
+			<li bg="#eddc84"><img src="img/custom-3.jpg"></li>
+			<li bg="#242f35"><img src="img/custom-4.jpg"></li>
+		</ul>
+
+	</section>
+
+	<div class="code">
+		<i></i>
+		<div class="wrapper">
+<pre>
+<code class="language-css">/* 图片如果是固定的高度，banner容器必须设置高度 */
+.banner-selector{height: 600px;}
+
+/* 图片如果是自适应高度，banner不需要设置高度 */
+/* 在js中调用terseBanner时添加参数 adaptive:true */
+
+/* 切换箭头和指示按钮会自动添加样式， 你可以使用自己的代码来覆盖这些默认的样式 */
+.banner-selector .tb-arrow a{...}
+.banner-selector .tb-btn a{...}</code>
+</pre>
+		</div>
+	</div>
 </body>
 <script src="../lib/prism.js"></script>
 <script src="../lib/jquery-1.11.3.min.js"></script>
 <script src="../dist/jquery.terseBanner.min.js"></script>
+<script src="example.js"></script>
 <script>
-    $('.banner-custom').terseBanner({
-        arrow: true
-    });
+	$('.banner-custom').terseBanner({
+		arrow: true
+	});
 </script>
 </html>
