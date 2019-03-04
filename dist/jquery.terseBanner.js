@@ -1,8 +1,8 @@
 /**
  * terseBanner
- * Version: 2.3.9
+ * Version: 2.4.0
  * URI: https://github.com/happyfreelife/terseBanner
- * Date: 2019-03-03
+ * Date: 2019-03-04
  **/
 ;(function (window, factory) {
 	if (typeof define === 'function' && define.amd) {
