@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>terseBanner | Web Banner Plugin</title>
+	<meta charset="utf-8">
+	<meta name="description" content="Simplified banner plugin that fit for beginner">
+	<meta name="keywords" content="simple, banner, beginner, jquery, slider, carousel, plugin, swipe">
+	<link rel="stylesheet" href="example.css">
+</head>
+<body>
+	<header>
+		<div class="container">
+			<a href="index.html" class="logo"></a>
+			<div class="link">
+				<a href="custom.html">自定义样式</a>
+				<a href="function.html">函数和方法</a>
+				<a href="thumb.html" class="active">缩略图</a>
+				<a href="lazyload.html">延迟加载</a>
+				<a href="mobile.html">移动端</a>
+			</div>
+			<a href="https://github.com/happyfreelife/terseBanner/" target="_blank" class="github" title="look me on github"></a>
+		</div>
+	</header>
+
+	<section class="banner-thumb">
+		<ul>
+			<li bg="#ef7520"><img src="img/thumb-1.jpg?thumb=img/thumb-small-1.jpg"></li>
+			<li bg="#697138"><img src="img/thumb-2.jpg?thumb=img/thumb-small-2.jpg"></li>
+			<li bg="#659997"><img src="img/thumb-3.jpg?thumb=img/thumb-small-3.jpg"></li>
+			<li bg="#499437"><img src="img/thumb-4.jpg?thumb=img/thumb-small-4.jpg"></li>
+		</ul>
+	</section>
+		<div class="code">
+		<i></i>
+		<div class="wrapper">
+<pre>
+<code class="language-javascript">/**
+ * 同时使用参数thumbWidth, thumbHeight
+ * 即可开启缩略图功能
+ * 缩略图会替换原来的指示按钮
+ */
+
+$thumb.terseBanner({
+	thumbWidth: 120,
+	thumbHeight: 80
+});
+
+/**
+ * 不指定图片对应的缩略图，缩略图就是原图片
+ * 指定图片对应的缩略图：在img的src属性值后面添加 ?thumb=... (...为缩略图的路径)
+ * &lt;img src="img/thumb-1.jpg?thumb=img/thumb-small-1.jpg"&gt;
+ */</code>
+</pre>
+<pre>
+<code class="language-css">/* 可以使用自定义样式来修改缩略图 */
+.thumb .tb-btn a{
+	margin: 0 10px;
+	border: 1px solid #fff;
+	border-radius: 0;
+	opacity: .5;
+}
+.thumb .tb-btn a.active{
+	opacity: 1;
+}</code>
+</pre>
+		</div>
+	</div>
+</body>
+<script src="../lib/prism.js"></script>
+<script src="../lib/jquery-1.11.3.min.js"></script>
+<script src="../dist/jquery.terseBanner.min.js"></script>
+<script src="example.js"></script>
+<script>
+	$('.banner-thumb').terseBanner({
+		thumbWidth: 120,
+		thumbHeight: 80
+	});
+</script>
+</html>

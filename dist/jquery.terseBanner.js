@@ -1,8 +1,8 @@
 /**
  * terseBanner
- * Version: 2.3.1
+ * Version: 2.4.0
  * URI: https://github.com/happyfreelife/terseBanner
- * Date: 2017-08-11
+ * Date: 2019-03-04
  **/
 ;(function (window, factory) {
 	if (typeof define === 'function' && define.amd) {
@@ -23,18 +23,13 @@
 		IS_LTIE8: /msie (6.0|7.0)/i.test(navigator.userAgent),
 
 		// 是否是移动端
-		IS_MOBILE: !!navigator.userAgent.match(/AppleWebKit.*Mobile.*/),
-
-		// 是否支持触摸事件
-		// IS_SUPPORT_TOUCH: 'ontouchstart' in window,
+		// IS_MOBILE: !!navigator.userAgent.match(/AppleWebKit.*Mobile.*/),
+		IS_MOBILE: document.ontouchstart === null,
 
 		// 是否支持CSS3动画过渡
-		IS_SUPPORT_TRANSITION: (function () {
-			var style = document.body.style || document.documentElement.style;
-			return style.transition !== undefined || style.webkitTransition !== undefined;
-		}()),
+		IS_SUPPORT_TRANSITION: 'transition' in document.documentElement.style,
 
-		TRANSFORM: typeof document.body.style.transform === 'string' ? 'transform' : 'webkitTransform',
+		TRANSFORM: typeof document.documentElement.style.transform === 'string' ? 'transform' : 'webkitTransform',
 
 		// 箭头 - 上一个
 		PREV_ARROW: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADcAAABuCAMAAAC0hHtLAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyJpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMy1jMDExIDY2LjE0NTY2MSwgMjAxMi8wMi8wNi0xNDo1NjoyNyAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNiAoV2luZG93cykiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6QjdGOUJEQTlBRjU5MTFFNUFFQjJBQzRBNEM1MkYzMzEiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6QjdGOUJEQUFBRjU5MTFFNUFFQjJBQzRBNEM1MkYzMzEiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDpCN0Y5QkRBN0FGNTkxMUU1QUVCMkFDNEE0QzUyRjMzMSIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDpCN0Y5QkRBOEFGNTkxMUU1QUVCMkFDNEE0QzUyRjMzMSIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PhEdN5oAAAAGUExURf///////1V89WwAAAACdFJOU/8A5bcwSgAAARBJREFUeNq82EEOwDAIA8Hl/58OH4gizSG9R20D2Isbe7JThcfCt4UfGf5beCXhTYYFCOsWljvskrC5wp4MWzmcgHBwwnkLxzSc7lAUQi0JJSg79jp3Fa5QJ0N5DVU5FPPQA0LrCB0nNKrQ30JbDN00NOHQu0PLD0khBIyQS0KcCSkohKeQuUJUCwkvBMOQJ0MMDek1hN6GmfcnYvt38r1wHbju3Gfc1zxHPLesE6xLrIOsu6zz7CvsY+yb7NPMBcwhzD3MWcx1zJHMrczJzOW8B/DewXsO71W8x/HeyHsq78W8h/PezzkD5xqco3BuwzkR51Kcg3Huxjkf54qcY3Juyjkt58KcQzuUa86+zxFgAFs9FmHsomPPAAAAAElFTkSuQmCC',
@@ -50,8 +45,8 @@
 	/**
 	 * Plugin construct function
 	 */
-	function Banner(elem, option) {
-		this.$banner = $(elem);
+	function Banner(banner, option) {
+		this.$banner = $(banner);
 		this.option = option;
 	}
 
@@ -67,12 +62,16 @@
 			'    overflow: hidden;\n' +
 			'}\n' +
 
+			'.tb-list > *\n{' +
+			'    list-style: none;\n' +
+			'}\n' +
+
 			'.tb-list > * > *{\n' +
 			'    position: relative;\n' +
 			'    float: left;\n' +
 			'    min-height: 1px;\n' +
 			'    background-repeat: no-repeat;\n' +
-			'    background-position: center top;\n' +
+			'    background-position: center center;\n' +
 			'}\n' +
 			'.tb-list > .touching{\n' +
 			'    -webkit-transition-duration: 0ms !important;\n' +
@@ -104,6 +103,7 @@
 			'.tb-btn{\n' +
 			'    position: absolute;\n' +
 			'    bottom: 20px;\n' +
+			'    left: 50%;\n' +
 			'}\n' +		
 			'.tb-btn a{\n' +
 			'    float: left;\n' +
@@ -135,7 +135,9 @@
 			'}\n';
 
 		if (!$('#tb-style').length) {
-			$('head').append('<style id="tb-style">\n' + style + '</style>');
+			$(document).ready(function($) {
+				$('head').append('<style id="tb-style">\n' + style + '</style>');
+			});
 		}
 	};
 
@@ -153,7 +155,7 @@
 		s.activeIndex = 0;
 		s.latestIndex = 0;
 		s.isHovered = false;
-		s.animating = false;
+		s.isAnimated = false;
 
 		var o = s.option,
 			$banner = s.$banner,
@@ -272,7 +274,12 @@
 			}));
 		}
 		
-		if (!Util.IS_MOBILE && $.isNumeric(o.auto) && o.auto > 0) {
+		if (
+			!Util.IS_MOBILE &&
+			$.isNumeric(o.auto) &&
+			o.auto > 0 &&
+			s.len > 1
+		) {
 			s.useAuto = true;
 			s.setPlayTimer();
 		}
@@ -280,14 +287,26 @@
 		// Banner的宽度改变时，列表和列表项自动更改宽度
 		if (!Util.IS_MOBILE) {
 			setInterval(function() {
-				$item.width($banner.width());
+				$list.children().width($banner.width());
+
+				if (!o.adaptive) {
+					$list.children().height($banner.height());
+				}
 	
 				if (o.animation === 'fade') {
 					$list.prev().children().width($banner.width());
+
+					if (!o.adaptive) {
+						$list.prev().children().height($banner.height());
+					}
 				}
 			}, 50);
 		}
 
+		// 当列表项的数量只有一个时不使用任何功能
+		if (s.len === 1) return;
+		
+		// 自动添加必需的结构
 		if (o.arrow) s.arrow();
 		if (o.btn) s.btn();
 		if ($.isNumeric(o.thumbWidth) && o.thumbWidth > 0) s.thumb();
@@ -300,7 +319,7 @@
 		s.lazyload();
 
 		// Banner初始化完成之后的回调函数
-		o.init.call(s, s.$banner, s.$item, 0);
+		o.init.call(s);
 	};
 
 
@@ -311,6 +330,8 @@
 		var s = this,
 			o = this.option,
 			$banner = this.$banner,
+			$list = s.$list,
+			$item = s.$item,
 			$arrow;
 
 		$banner.append(
@@ -324,13 +345,17 @@
 
 		$arrow.on({
 			'click.terseBanner': function() {
-				if (s.animating) return;
+				if (s.isAnimated) return;
 
-				o.before.call(s, s.$banner, s.$item, s.currentIndex);
+				o.before.call(s, s.currentIndex);
 
-				$(this).hasClass('prev') ? s.currentIndex-- : s.currentIndex++;
 
-				s.play();
+				if (Util.IS_MOBILE) {
+					$(this).hasClass('prev') ? s.slidePrev() : s.slideNext();
+				} else {
+					$(this).hasClass('prev') ? s.currentIndex-- : s.currentIndex++;
+					s.play();
+				}
 			},
 
 			// 阻止连续点击箭头按钮时选中按钮
@@ -339,17 +364,14 @@
 			}
 		});
 
-		if ($arrow.css('backgroundImage') === 'none') {
-			if (!$arrow.height()) {
-				var bannerHeight = Math.max(
-					$banner.height(),
-					$.isNumeric(parseInt($banner.css('maxHeight'))) ? parseInt($banner.css('maxHeight')) : 0,
-					$.isNumeric(parseInt($banner.css('minHeight'))) ? parseInt($banner.css('minHeight')) : 0
-				);
+		function setArrowHeight() {
+			var bannerHeight = Math.max(
+				$banner.height(),
+				$.isNumeric(parseInt($banner.css('maxHeight'))) ? parseInt($banner.css('maxHeight')) : 0,
+				$.isNumeric(parseInt($banner.css('minHeight'))) ? parseInt($banner.css('minHeight')) : 0
+			);
 
-				$arrow.height(parseInt(bannerHeight * 0.1));
-				$arrow.css('marginTop', -$arrow.outerHeight() / 2);
-			}
+			$arrow.height(parseInt(bannerHeight * 0.1));
 
 			$arrow.filter('.prev').html('<img src="' + Util.PREV_ARROW + '">');
 			$arrow.filter('.next').html('<img src="' + Util.NEXT_ARROW + '">');
@@ -357,6 +379,32 @@
 			$arrow.find('img').on('dragstart', function() {
 				return false;
 			});
+
+			setTimeout(function() {
+				$arrow.css('marginTop', -$arrow.outerHeight() / 2);
+			}, 0);
+		}
+
+		// 没有定义箭头的样式，就自动设置
+		if (!$arrow.width() && $arrow.css('backgroundImage') === 'none') {
+			/* 自适应模式下，最外层容器没有高度
+			 * 计算之后的箭头高度为0，无法显示
+			 * 在首张图片加载完成之后再计算
+			 */
+			if (o.adaptive) {
+				var img = new Image(),
+					$firstImage = $item.first().find('img');
+				
+				img.src = $firstImage.attr('src') || $firstImage.attr('data-src');
+
+				if (img.complete) {
+					setArrowHeight();
+				} else {
+					img.onload = setArrowHeight;
+				}
+			} else {
+				setArrowHeight();
+			}
 		}
 	};
 
@@ -378,16 +426,18 @@
 		s.$btn = $btn = $('.tb-btn a', $banner);
 
 		$btn.first().addClass('active');
-		$btn.parent().css({
-			left: '50%',
-			marginLeft: -($btn.outerWidth(true) * $btn.length / 2)
-		});
+
+		setTimeout(function() {
+			$btn.parent().css({
+				marginLeft: -($btn.outerWidth(true) * $btn.length / 2)
+			});
+		}, 0);
 
 		if (!Util.IS_MOBILE) {
 			$btn.on('click.terseBanner', function() {
-				if (s.animating) return;
+				if (s.isAnimated) return;
 
-				o.before.call(s, s.$banner, s.$item, s.currentIndex);
+				o.before.call(s, s.currentIndex);
 				s.currentIndex = $(this).index();
 				s.play();
 			});
@@ -454,7 +504,7 @@
 
 				if (Util.IS_SUPPORT_TRANSITION) {
 					setTimeout(function() {
-						s.animating = true;
+						s.isAnimated = true;
 
 						var listTransform = slidToLeft ?
 							'translate3d(' + -$item.width() + 'px, 0, 0)' :
@@ -465,7 +515,7 @@
 						setTimeout(slideCallback, o.speed - 50);
 					}, 50);
 				} else {
-					s.animating = true;
+					s.isAnimated = true;
 
 					$list.animate({
 						left: slidToLeft? '-100%' : 0
@@ -480,7 +530,7 @@
 			s.animation = function() {
 				handleCurrentIndex();
 
-				s.animating = true;
+				s.isAnimated = true;
 
 				$list.css('left', -s.currentIndex * 100 + '%');
 
@@ -512,7 +562,7 @@
 		}
 
 		function afterCallback() {
-			o.after.call(s, s.$banner, s.$item, s.currentIndex);
+			o.after.call(s, s.currentIndex);
 		}
 
 		// 处理可能会超出范围的索引
@@ -523,7 +573,7 @@
 		}
 
 		function slideCallback() {
-			s.animating = false;
+			s.isAnimated = false;
 
 			s.latestIndex =
 			s.currentIndex =
@@ -552,7 +602,7 @@
 		}
 
 		function fadeCallback() {
-			s.animating = false;
+			s.isAnimated = false;
 
 			if (o.animation === 'fade') {
 				$list.prev().css('left', -s.currentIndex * 100 + '%');
@@ -593,7 +643,8 @@
 			touchDuration;   // 触摸持续时间
 
 		function getListOffset() {
-			return parseInt($list.attr('style').match(/translate3d\((-?\d+)px/)[1]);
+			var offset = $list.attr('style').match(/translate3d\((-?\d+)px/);
+			if (offset) return parseInt(offset[1]);
 		}
 
 		$list.css({
@@ -608,7 +659,7 @@
 		}, 50);
 
 		function touchStart (e)  {
-			if (s.animating) return;
+			if (s.isAnimated) return;
 
 			s.touching = true;
 
@@ -621,7 +672,7 @@
 		}
 
 		function touchMove (e) {
-			if (s.animating) return;
+			if (s.isAnimated) return;
 
 			touch = e.touches[0];
 			touchRangeX = touch.pageX - touchStartX;
@@ -630,10 +681,7 @@
 			// 触摸水平滑动距离 小于 触摸垂直滑动距离时不执行滑动动画
 			if (Math.abs(touchRangeX) < Math.abs(touchRangeY)) return;
 
-			if (touchRangeX && !s.beforeCalled) {
-				o.before.call(s, s.$banner, s.$item, s.currentIndex);
-				s.beforeCalled = true;
-			}
+			e.preventDefault();
 
 			if (touchRangeX < 0) {
 				touchDirection = 'left';
@@ -645,15 +693,17 @@
 		}
 
 		function touchEnd (e) {
-			if (s.animating || !touchRangeX || Math.abs(touchRangeX) < Math.abs(touchRangeY)) return;
+			if (s.isAnimated || !touchRangeX || Math.abs(touchRangeX) < Math.abs(touchRangeY)) return;
 
-			s.animating = true;
+			s.isAnimated = true;
 
 			touchDuration = Date.now() - touchStartTime;
 
 			// 触摸停留时间小于300ms 或者
 			// 触摸水平距离超过轮播宽度的一半时切换到下一个元素
 			if (touchDuration < 300 || Math.abs(touchRangeX) >= $item.width() / 2) {
+				o.before.call(s, s.currentIndex);
+				
 				if (touchDirection === 'left') {
 					listTarget = 'translate3d(' + (listOffset - $item.width()) + 'px, 0, 0)';
 					s.currentIndex++;
@@ -702,11 +752,10 @@
 				s.currentIndex === s.len ? 0 : s.currentIndex;
 
 				touchRangeX = 0;
-				s.animating = false;
+				s.isAnimated = false;
 				s.touching = false;
-				s.beforeCalled = false;
 
-				o.after.call(s, s.$banner, s.$item, s.currentIndex);
+				o.after.call(s, s.currentIndex);
 			}, o.speed / 3);
 		}
 
@@ -732,6 +781,7 @@
 		setInterval(function() {
 			if (Util.IS_MOBILE && !s.touching) {
 				$item.width($banner.width());
+				$item.height($banner.height());
 				$list.width($item.width() * (s.len + 2));
 				$list.css(Util.TRANSFORM, 'translate3d(' + -$item.width() * (s.currentIndex + 1) + 'px, 0, 0)');
 
@@ -941,11 +991,8 @@
 	// 播放
 	Banner.prototype.play = function() {
 		this.activeIndex = this.currentIndex;
-
-		if (this.len > 1) {
-			this.animation();
-			this.lazyload(this.currentIndex);
-		}
+		this.animation();
+		this.lazyload(this.currentIndex);
 	};
 
 	// 自动轮播定时器
@@ -957,7 +1004,7 @@
 			},
 			reset = function() {
 				s.isHovered = false;
-				if (!s.animating) {
+				if (!s.isAnimated) {
 					s.setPlayTimer();
 				}
 			};
@@ -965,7 +1012,7 @@
 		clearInterval(s.playTimer);
 
 		s.playTimer = setInterval(function() {
-			s.option.before.call(s, s.$banner, s.$item, s.currentIndex);
+			s.option.before.call(s, s.currentIndex);
 			s.currentIndex++;
 			s.play();
 		}, s.option.auto);
@@ -978,7 +1025,7 @@
 		});
 	};
 
-	// 导航按钮和缩略图添加高亮样式
+	// 指示按钮或缩略图添加高亮样式
 	Banner.prototype.btnActive = function() {
 		if (!this.option.btn) return;
 
@@ -992,18 +1039,20 @@
 	};
 
 	// 切换轮播图片
-	Banner.prototype.playTo = function() {
+	Banner.prototype.playTo = function(targetIndex) {
 		var s = this;
 
-		if (s.animating) return;
+		// 正在执行的动画不可中断，动画执行时进行的切换操作无效
+		if (s.isAnimated) return;
 
-		if ($.isNumeric(arguments[0]) && (arguments[0] < 0 || arguments[0] > s.len)) {
-			throw new Error('TerseBanner\'s index overflow!');
+		// 使用自定义方法切换时，检测传入的目标索引是否溢出
+		if ($.isNumeric(targetIndex) && (targetIndex < 0 || targetIndex > s.len)) {
+			throw new Error('terseBanner\'s index overflow!');
 		}
 
-		s.option.before.call(s, s.$banner, s.$item, s.currentIndex);
+		s.option.before.call(s, s.currentIndex);
 
-		switch (arguments[0]) {
+		switch (targetIndex) {
 			case 'prev':
 				if(!Util.IS_MOBILE) {
 					s.currentIndex--;
@@ -1024,7 +1073,7 @@
 
 			default:
 				if(!Util.IS_MOBILE) {
-					s.currentIndex = arguments[0];
+					s.currentIndex = targetIndex;
 					s.play();
 				}
 				break;
@@ -1067,12 +1116,12 @@
 		animation  : 'slide', // 动画模式: ['slide', 'fade', 'flash', 'none']
 		adaptive   : false,   // 图片宽度自适应
 		arrow      : false,   // 切换箭头
-		btn        : true,    // 指示按钮: [true, false]
-		auto       : 5000,    // 自动轮播: [为0时禁用此功能]
+		btn        : true,    // 指示按钮(在移动端中不可点击)
+		auto       : 5000,    // 自动轮播的间隔(毫秒数，为0时禁用此功能)
 		speed      : 800,     // 动画速度
 		thumbWidth : 0,       // 缩略图宽度
 		thumbHeight: 0,       // 缩略图高度
-		init       : $.noop,  // 轮播初始化完成时执行的回调函数
+		init       : $.noop,  // 初始化完时执行的回调函数
 		before     : $.noop,  // 动画开始时执行的回调函数
 		after      : $.noop,  // 动画完成时执行的回调函数
 	};
